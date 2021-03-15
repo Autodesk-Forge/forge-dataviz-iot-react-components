@@ -815,19 +815,12 @@ function BaseApp(props) {
 
     useEffect(() => {
         if (!selectedGroupNode && appStateRef.current.propertyMap && props.data.shadingData) {
-            if (props.data.shadingData.children.length > 0)
-                // let the reference app decide the default selected node
-                if (props.selectedGroupNodeId) {
-                    dispatchEventToHandler({
-                        type: EventTypes.LEVELS_TREE_MOUSE_CLICK,
-                        data: props.data.shadingData.getNodeById(props.selectedGroupNodeId)
-                    });
-                } else {
-                    dispatchEventToHandler({
-                        type: EventTypes.LEVELS_TREE_MOUSE_CLICK,
-                        data: props.data.shadingData.children[0]
-                    })
-                }
+            if (props.data.shadingData.children.length > 0) {
+                dispatchEventToHandler({
+                    type: EventTypes.LEVELS_TREE_MOUSE_CLICK,
+                    data: props.data.shadingData.children[0]
+                })
+            }
         }
 
     }, [appStateRef.current.propertyMap])
