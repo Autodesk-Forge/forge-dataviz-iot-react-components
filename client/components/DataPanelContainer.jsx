@@ -33,20 +33,20 @@ import Dashboard from "./Dashboard.jsx";
  * @param {DeviceTreeNode[]} props.devices Array of device {@link DeviceTreeNode} in the scene
  * @param {Function} props.onNodeSelected A callback function that is invoked
  * &nbsp;when a tree node is selected
- * @param {Map<String,String>} props.deviceId2DbIdMap A mapping of device identifiers
+ * @param {Map<Number,String>} props.deviceId2DbIdMap A mapping of device identifiers
  * &nbsp;to the dbId corresponding to its visual representation in the viewer.
  * @param {Object} props.dataVizExtn Represents the Forge Viewer Data Visualization extension
  * @param {ChartData} props.chartData Data used to generate charts for each property associated with props.selectedDevice
  * @param {CurrentDeviceData} props.currentDeviceData Data containing the estimated propertyValue for each property
  * &nbsp;associated with props.selectedDevice
  * @param {Object} props.propertyIconMap  A mapping of property names to image paths used for
- * &nbsp;each {@link Autodesk.Hyperion.UI.DeviceStats} object.
+ * &nbsp;each {@link Autodesk.DataVisualization.UI.DeviceStats} object.
  * @param {Object} props.selectedFloorNode Represents the floor that is currently selected in the scene.
  * @param {Function} props.updateSelectedFloor A callback function to update the floor visible in the scene
- * &nbsp;when a user expands a different grouping of devices in the {@link Autodesk.Hyperion.UI.DeviceTree} object.
+ * &nbsp;when a user expands a different grouping of devices in the {@link Autodesk.DataVisualization.UI.DeviceTree} object.
  *
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.DataPanelContainer
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.DataPanelContainer
  */
 function DataPanelContainer(props) {
     const [panelSpecs, setPanelSpecs] = useState({
@@ -64,11 +64,11 @@ function DataPanelContainer(props) {
 
     /**
      * Generates contents for display on the side of viewer. If a device has been selected, the
-     * {@link Autodesk.Hyperion.UI.Dashboard} is rendered. Otherwise, {@link Autodesk.Hyperion.UI.DevicePanel} is rendered.
+     * {@link Autodesk.DataVisualization.UI.Dashboard} is rendered. Otherwise, {@link Autodesk.DataVisualization.UI.DevicePanel} is rendered.
      *
      * @returns {JSX.Element} The contents to be rendered in place of the panel.
-     * @memberof Autodesk.Hyperion.UI
-     * @alias Autodesk.Hyperion.UI.DataPanelContainer#generatePanelContents
+     * @memberof Autodesk.DataVisualization.UI
+     * @alias Autodesk.DataVisualization.UI.DataPanelContainer#generatePanelContents
      */
     function generatePanelContents() {
         if (props.selectedDevice) {
@@ -90,6 +90,8 @@ function DataPanelContainer(props) {
                     selectedFloorNode={props.selectedFloorNode}
                     currentDeviceData={props.currentDeviceData}
                     updateSelectedFloor={props.updateSelectedFloor}
+                    selectedGroupNode={props.selectedGroupNode}
+                    eventBus={props.eventBus}
                 />
             );
         }

@@ -48,15 +48,14 @@ const useStyles = makeStyles(() => ({
  * @component
  * @param {Object} props
  * @param {TreeNode[]} props.data Array of {@link TreeNode} representing levels in the model.
- * @param {any[]} props.levelsExt Represents the AEC Levels Extension object
  * @param {Function} props.onMouseOver Called when a user hovers over a level.
  * @param {Function} props.onMouseOut Called when a user removes the cursor from a level.
  * @param {Function} props.onLabelClick Called when a user selects a level.
  * @param {Function} props.onIconClick Called when a user expands/closes a grouping.
- * @param {string} props.expandedNodeId Identifier of currently expanded node
- * @param {string} props.selectedNodeId Identifier of currently selected node
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.LevelsTree
+ * @param {string[]} props.expandedNodeId Identifier of currently expanded node
+ * @param {string} props.selectedNode Identifier of currently selected node
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.LevelsTree
  */
 function LevelsTree(props) {
     const styles = useStyles();
@@ -89,7 +88,6 @@ function LevelsTree(props) {
             onMouseOut={props.onMouseOut}
             onIconClick={props.onIconClick}
             onLabelClick={props.onLabelClick}
-            levelsExt={props.levelsExt}
             classes={styles}
         />
     );

@@ -36,7 +36,7 @@ const HtmlTooltip = withStyles(() => ({
 }))(Tooltip);
 
 /**
- * A custom tool-tip that is displayed over Forge Viewer canvas when a user hovers over a device. Contains a {@link Autodesk.Hyperion.UI.DataChart} for each property along with the estimated current property value.
+ * A custom tool-tip that is displayed over Forge Viewer canvas when a user hovers over a device. Contains a {@link Autodesk.DataVisualization.UI.DataChart} for each property along with the estimated current property value.
  * @component
  *
  * @param {Object} props
@@ -46,8 +46,8 @@ const HtmlTooltip = withStyles(() => ({
  * @param {CurrentDeviceData} props.currentDeviceData Data containing the estimated propertyValue for each property
  * &nbsp;associated with props.hoveredDeviceInfo
  *
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.CustomToolTip
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.CustomToolTip
  */
 function CustomToolTip(props) {
     if (props.hoveredDeviceInfo.id) {

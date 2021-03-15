@@ -57,8 +57,8 @@ const useStyles = makeStyles({
  * @param {ChartData} props.chartData Data used to generate charts for each property
  * &nbsp;associated with props.selectedDeviceId
  *
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.Dashboard
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.Dashboard
  */
 function Dashboard(props) {
     const classes = useStyles();
@@ -70,11 +70,11 @@ function Dashboard(props) {
     }
 
     /**
-     * Creates a {@link Autodesk.Hyperion.UI.DataChart} for each property associated with props.selectedDeviceId.
+     * Creates a {@link Autodesk.DataVisualization.UI.DataChart} for each property associated with props.selectedDeviceId.
      *
-     * @returns {JSX.Element[]} An array of {@link Autodesk.Hyperion.UI.DataChart} objects.
-     * @memberof Autodesk.Hyperion.UI
-     * @alias Autodesk.Hyperion.UI.Dashboard#generateChartElements
+     * @returns {JSX.Element[]} An array of {@link Autodesk.DataVisualization.UI.DataChart} objects.
+     * @memberof Autodesk.DataVisualization.UI
+     * @alias Autodesk.DataVisualization.UI.Dashboard#generateChartElements
      */
     function generateChartElements() {
         // Get all the properties for this given device.

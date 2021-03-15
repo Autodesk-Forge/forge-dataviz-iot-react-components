@@ -56,23 +56,23 @@ const useStyles = makeStyles(() => ({
  * &nbsp;selected; undefined otherwise.
  * @param {Function} props.onNavigateBack A callback function invoked when "Back
  * &nbsp;to devices" button is clicked.
- * @param {Object} props.propertyIconMap A mapping of property names to image paths used for each {@link Autodesk.Hyperion.UI.DeviceStats} in the {@link Autodesk.Hyperion.UI.DeviceTree} .
+ * @param {Object} props.propertyIconMap A mapping of property names to image paths used for each {@link Autodesk.DataVisualization.UI.DeviceStats} in the {@link Autodesk.DataVisualization.UI.DeviceTree} .
  * @param {Object} props.selectedFloorNode Represents the floor that is currently selected in the scene.
  * @param {CurrentDeviceData} props.currentDeviceData Data containing the estimated propertyValue for each property
  * &nbsp;associated with props.selectedDeviceId.
  * @param {Function} props.updateSelectedFloor A callback function to update the floor visible in the scene
- * &nbsp;when a user expands a different grouping of devices in the {@link Autodesk.Hyperion.UI.DeviceTree}.
+ * &nbsp;when a user expands a different grouping of devices in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
  *
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.DevicePanel
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.DevicePanel
  */
 function DevicePanel(props) {
     /**
      * Generates the labels used for searching for each device that data has been fetched for.
      *
      * @returns {Object[]} A list of device label records that is used by the AutoComplete component to show and identify a device.
-     * @memberof Autodesk.Hyperion.UI
-     * @alias Autodesk.Hyperion.UI.DevicePanel#getDeviceLabels
+     * @memberof Autodesk.DataVisualization.UI
+     * @alias Autodesk.DataVisualization.UI.DevicePanel#getDeviceLabels
      * @private
      */
     function getDeviceLabels() {
@@ -158,6 +158,8 @@ function DevicePanel(props) {
                     selectedFloorNode={props.selectedFloorNode}
                     currentDeviceData={props.currentDeviceData}
                     updateSelectedFloor={props.updateSelectedFloor}
+                    selectedGroupNode={props.selectedGroupNode}
+                    eventBus={props.eventBus}
                 />
             </div>
         </React.Fragment>

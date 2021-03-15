@@ -32,8 +32,8 @@ import { timeEqual } from "../../shared/Utility";
  * &nbsp;invoked when changes are made to the DatePicker.
  *
  * @returns {JSX.Element} The element that represents a BasicDatePicker object.
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.BasicDatePicker
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.BasicDatePicker
  */
 function BasicDatePicker(props) {
     const startDate = moment.utc(props.startTime);

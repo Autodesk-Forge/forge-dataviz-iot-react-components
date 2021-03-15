@@ -25,8 +25,8 @@ import { DataChartSeriesBase } from "./DataChartSeries";
 
 /**
  * X-axis options for a chart to be added to a {@link DataChartOptions} object
- * @memberof Autodesk.Hyperion.UI.DataChart
- * @alias Autodesk.Hyperion.UI.DataChart.DataChartXAxis
+ * @memberof Autodesk.DataVisualization.UI.DataChart
+ * @alias Autodesk.DataVisualization.UI.DataChart.DataChartXAxis
  */
 export class DataChartXAxis {
     /**
@@ -43,8 +43,8 @@ export class DataChartXAxis {
      * @function
      * @param {PointerLabelFormatter} callback The callback function that
      * &nbsp;will be invoked when the chart requires a pointer label string.
-     * @memberof Autodesk.Hyperion.UI.DataChart
-     * @alias Autodesk.Hyperion.UI.DataChart.DataChartXAxis#pointerFormatter
+     * @memberof Autodesk.DataVisualization.UI.DataChart
+     * @alias Autodesk.DataVisualization.UI.DataChart.DataChartXAxis#pointerFormatter
      */
     set pointerFormatter(callback) {
         this._pointerFormatter = callback;
@@ -52,8 +52,8 @@ export class DataChartXAxis {
 
     /**
      * Generates the options object representing the Echarts configurations.
-     * @memberof Autodesk.Hyperion.UI.DataChart
-     * @alias Autodesk.Hyperion.UI.DataChart.DataChartXAxis#generateOptions
+     * @memberof Autodesk.DataVisualization.UI.DataChart
+     * @alias Autodesk.DataVisualization.UI.DataChart.DataChartXAxis#generateOptions
      */
     generateOptions() {
         const results = {
@@ -88,8 +88,8 @@ export class DataChartXAxis {
 
 /**
  * Y-axis options for a chart to be added to a {@link DataChartOptions} object
- * @memberof Autodesk.Hyperion.UI.DataChart
- * @alias Autodesk.Hyperion.UI.DataChart.DataChartYAxis
+ * @memberof Autodesk.DataVisualization.UI.DataChart
+ * @alias Autodesk.DataVisualization.UI.DataChart.DataChartYAxis
  */
 class DataChartYAxis {
     constructor() { }
@@ -121,8 +121,8 @@ class DataChartYAxis {
      * 
      * @param {IndexedFormatterFunc} callback The callback function
      * invoked when the chart requires a label string.
-     * @memberof Autodesk.Hyperion.UI.DataChart.DataChartYAxis
-     * @alias Autodesk.Hyperion.UI.DataChart.DataChartYAxis#labelFormatter
+     * @memberof Autodesk.DataVisualization.UI.DataChart.DataChartYAxis
+     * @alias Autodesk.DataVisualization.UI.DataChart.DataChartYAxis#labelFormatter
      */
     set labelFormatter(callback) {
         this._labelFormatter = callback;
@@ -134,8 +134,8 @@ class DataChartYAxis {
      * 
      * @param {PointerLabelFormatter} callback The callback function
      * &nbsp;invoked when the chart requires a pointer label string.
-     * @memberof Autodesk.Hyperion.UI.DataChart.DataChartYAxis
-     * @alias Autodesk.Hyperion.UI.DataChart.DataChartYAxis#pointerFormatter
+     * @memberof Autodesk.DataVisualization.UI.DataChart.DataChartYAxis
+     * @alias Autodesk.DataVisualization.UI.DataChart.DataChartYAxis#pointerFormatter
      */
     set pointerFormatter(callback) {
         this._pointerFormatter = callback;
@@ -144,8 +144,8 @@ class DataChartYAxis {
     /**
      * Generates the options object representing the Echarts configurations.
      * 
-     * @memberof Autodesk.Hyperion.UI.DataChart.DataChartYAxis
-     * @alias Autodesk.Hyperion.UI.DataChart.DataChartYAxis#generateOptions
+     * @memberof Autodesk.DataVisualization.UI.DataChart.DataChartYAxis
+     * @alias Autodesk.DataVisualization.UI.DataChart.DataChartYAxis#generateOptions
      */
     generateOptions() {
         return {
@@ -177,8 +177,8 @@ export { DataChartYAxis }
 /**
  * Tooltip options for the data chart to be used with {@link DataChartOptions}
  * 
- * @memberof Autodesk.Hyperion.UI.DataChart
- * @alias Autodesk.Hyperion.UI.DataChart.DataChartToolTip
+ * @memberof Autodesk.DataVisualization.UI.DataChart
+ * @alias Autodesk.DataVisualization.UI.DataChart.DataChartToolTip
  */
 export class DataChartToolTip {
     /**
@@ -194,8 +194,8 @@ export class DataChartToolTip {
      * 
      * @param {Function} callback The callback function
      * invoked when the chart requires a tool-tip string.
-     * @memberof Autodesk.Hyperion.UI.DataChart
-     * @alias Autodesk.Hyperion.UI.DataChart.DataChartToolTip#formatter
+     * @memberof Autodesk.DataVisualization.UI.DataChart
+     * @alias Autodesk.DataVisualization.UI.DataChart.DataChartToolTip#formatter
      */
     set formatter(callback) {
         this._formatter = callback;
@@ -204,8 +204,8 @@ export class DataChartToolTip {
     /**
      * Generates the options object representing the Echarts configurations.
      * 
-     * @memberof Autodesk.Hyperion.UI.DataChart
-     * @alias Autodesk.Hyperion.UI.DataChart.DataChartToolTip#generateOptions
+     * @memberof Autodesk.DataVisualization.UI.DataChart
+     * @alias Autodesk.DataVisualization.UI.DataChart.DataChartToolTip#generateOptions
      */
     generateOptions() {
         return {
@@ -231,8 +231,8 @@ export class DataChartToolTip {
 
 /**
  * Options for rendering a chart
- * @memberof Autodesk.Hyperion.UI.DataChart
- * @alias Autodesk.Hyperion.UI.DataChart.DataChartOptions
+ * @memberof Autodesk.DataVisualization.UI.DataChart
+ * @alias Autodesk.DataVisualization.UI.DataChart.DataChartOptions
  */
 export class DataChartOptions {
     /**
@@ -274,8 +274,8 @@ export class DataChartOptions {
      *
      * @param {DataChartSeriesBase} series The series to be added to the
      * &nbsp;chart. This can be any of the derived classes of DataChartSeriesBase.
-     * @memberof Autodesk.Hyperion.UI.DataChart
-     * @alias Autodesk.Hyperion.UI.DataChart.DataChartOptions#addSeries
+     * @memberof Autodesk.DataVisualization.UI.DataChart
+     * @alias Autodesk.DataVisualization.UI.DataChart.DataChartOptions#addSeries
      */
     addSeries(series) {
         this._series = this._series || [];
@@ -284,8 +284,8 @@ export class DataChartOptions {
 
     /**
      * Generates the options object for E-Chart's consumption.
-     * @memberof Autodesk.Hyperion.UI.DataChart
-     * @alias Autodesk.Hyperion.UI.DataChart.DataChartOptions#generateOptions
+     * @memberof Autodesk.DataVisualization.UI.DataChart
+     * @alias Autodesk.DataVisualization.UI.DataChart.DataChartOptions#generateOptions
      */
     generateOptions() {
         const options = {
@@ -326,8 +326,8 @@ export class DataChartOptions {
 
     /**
      * Generates the options objects for charts displayed inside a tooltip.
-     * @memberof Autodesk.Hyperion.UI.DataChart
-     * @alias Autodesk.Hyperion.UI.DataChart.DataChartOptions#generateToolTipOptions
+     * @memberof Autodesk.DataVisualization.UI.DataChart
+     * @alias Autodesk.DataVisualization.UI.DataChart.DataChartOptions#generateToolTipOptions
      */
     generateToolTipOptions() {
         const options = this.generateOptions();

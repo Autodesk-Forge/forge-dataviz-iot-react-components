@@ -37,8 +37,8 @@ const useStyles = makeStyles((theme) => ({
  * @param {string} props.deviceId String identifier of the device
  * @param {string} props.propertyValue String representation of the numerical value of the property and the corresponding data unit.
  * @param {string} props.propertyIcon Image src used to visually represent a property.
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.DeviceStats
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.DeviceStats
  */
 function DeviceStats(props) {
     const styles = useStyles();

@@ -22,8 +22,8 @@
 
 /**
  * The base class for data series types used in the Reference App.
- * @memberof Autodesk.Hyperion.UI.DataChart
- * @alias Autodesk.Hyperion.UI.DataChart.DataChartSeriesBase
+ * @memberof Autodesk.DataVisualization.UI.DataChart
+ * @alias Autodesk.DataVisualization.UI.DataChart.DataChartSeriesBase
  */
 export class DataChartSeriesBase {
     /**
@@ -70,8 +70,8 @@ export class DataChartSeriesBase {
     /**
      * Generates the options object representing the Echarts configurations.
      *
-     * @memberof Autodesk.Hyperion.UI.DataChart
-     * @alias Autodesk.Hyperion.UI.DataChart.DataChartSeriesBase#generateOptions
+     * @memberof Autodesk.DataVisualization.UI.DataChart
+     * @alias Autodesk.DataVisualization.UI.DataChart.DataChartSeriesBase#generateOptions
      */
     generateOptions() {
         return {
@@ -89,8 +89,8 @@ export class DataChartSeriesBase {
  * which are used to show the trend of changing data. Can be used with rectangular or polar coordinates.
  *
  * @augments DataChartSeriesBase
- * @memberof Autodesk.Hyperion.UI.DataChart
- * @alias Autodesk.Hyperion.UI.DataChart.DataChartSeriesLine
+ * @memberof Autodesk.DataVisualization.UI.DataChart
+ * @alias Autodesk.DataVisualization.UI.DataChart.DataChartSeriesLine
  */
 export class DataChartSeriesLine extends DataChartSeriesBase {
     /**
@@ -148,8 +148,8 @@ export class DataChartSeriesLine extends DataChartSeriesBase {
     /**
      * Generates the options object representing the Echarts configurations.
      *
-     * @memberof Autodesk.Hyperion.UI.DataChart
-     * @alias Autodesk.Hyperion.UI.DataChart.DataChartSeriesLine#generateOptions
+     * @memberof Autodesk.DataVisualization.UI.DataChart
+     * @alias Autodesk.DataVisualization.UI.DataChart.DataChartSeriesLine#generateOptions
      */
     generateOptions() {
         const options = super.generateOptions();

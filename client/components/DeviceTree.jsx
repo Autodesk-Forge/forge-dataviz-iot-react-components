@@ -13,14 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-import React, { useState, useEffect, memo } from "react";
+import React, { useState, memo } from "react";
 import BasicTree from "./BasicTree.jsx";
 import DeviceStats from "./DeviceStats.jsx";
 import Avatar from "@material-ui/core/Avatar";
-import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import EventTypes from "./EventTypes.js";
 // eslint-disable-next-line no-unused-vars
 
 const useStyles = makeStyles((theme) => ({
@@ -93,27 +92,35 @@ const MemoizedDeviceStats = memo(DeviceStats);
  *
  * @param {Object} props
  * @param {DeviceTreeNode[]} props.devices Array of device {@link DeviceTreeNode} in the scene
- * @param {string} props.selectedNodeId Identifier of the device {@link DeviceTreeNode} currently
- * &nbsp;selected; undefined otherwise.
  * @param {Function} props.onNodeSelected A callback function invoked
  * &nbsp;when a device {@link DeviceTreeNode} is selected
  * @param {Function} props.onNavigateBack A callback function invoked when "Back
  * &nbsp;to devices" button is clicked.
  * @param {Object} props.selectedFloorNode Represents the floor that is currently selected in the scene
  * @param {Function} props.updateSelectedFloor - A callback function to update the floor visible in the scene 
- * &nbsp;when a user expands a different grouping of devices in the {@link Autodesk.Hyperion.UI.DeviceTree} object.
+ * &nbsp;when a user expands a different grouping of devices in the {@link Autodesk.DataVisualization.UI.DeviceTree} object.
  * @param {CurrentDeviceData} props.currentDeviceData Data containing the estimated propertyValue for each property
- * &nbsp;associated with props.selectedNodeId.
- * @param {Object} props.propertyIconMap - A mapping of property names to image paths used for each {@link Autodesk.Hyperion.UI.DeviceStats} object.
+ * &nbsp;associated with the selected device.
+ * @param {Object} props.propertyIconMap - A mapping of property names to image paths used for each {@link Autodesk.DataVisualization.UI.DeviceStats} object.
  *
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.DeviceTree
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.DeviceTree
  */
 function DeviceTree(props) {
-    const [expandedNodePath, setExpandedNodePath] = useState(props.selectedFloorNode ? [props.selectedFloorNode.name] : [""]);
     const [selectedNodeId, setSelectedNodeId] = useState("");
 
     const styles = useStyles();
+
+    const eventBus = props.eventBus;
+
+    function dispatchEvent(event) {
+        if (eventBus) {
+            eventBus.dispatchEvent(event);
+        } else {
+            console.warn("Please add eventBus to sendEvent out");
+        }
+    }
+
 
     function getNumDescendants(struct) {
         if (struct.children.length === 0) {
@@ -128,49 +135,25 @@ function DeviceTree(props) {
     }
 
     /**
-     * Finds a path from the root of the tree to the target {@link DeviceTreeNode}.
-     * 
-     * @param {DeviceTreeNode[]} tree Tree of device {@link DeviceTreeNode} in the scene.
-     * @param {string} goal Id of {@link DeviceTreeNode}
-     * @returns {String[]} An array containing the path. [] if a path to the 
-     * &nbsp;{@link DeviceTreeNode} cannot be found.
-     * @private
-     */
-    function getPath(tree, goal) {
-        for (let node of tree) {
-            if (node.id === goal) {
-                return [node.id];
-            }
-            for (let child of node.children) {
-                if (child.id === goal) {
-                    return [node.id, child.id];
-                }
-            }
-        }
-        return [];
-    }
-
-    /**
      * Called when a user selects the arrow icon in the device tree to expand or close a group of devices.
      * 
-     * @param {MouseEvent} event Event indicating a user has expanded or closed a row in the {@link Autodesk.Hyperion.UI.DeviceTree}.
+     * @param {MouseEvent} event Event indicating a user has expanded or closed a row in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
      * @param {DeviceTreeNode} node Node corresponding to the grouping of devices expanded/closed by the user.
      * @private
      */
     function onIconClick(event, node) {
-        if (expandedNodePath[0] == node.id) {
-            setExpandedNodePath([]);
-        } else {
-            setExpandedNodePath([node.id]);
-            props.updateSelectedFloor({ index: props.devices.findIndex(floor => floor.id == node.id), name: node.id });
-        }
+        dispatchEvent({
+            type: EventTypes.DEVICE_TREE_EXPAND_EVENT,
+            originalEvent: event,
+            data: node
+        })
     }
 
 
     /**
-     * Called when a user selects a row in the {@link Autodesk.Hyperion.UI.DeviceTree}.
+     * Called when a user selects a row in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
      * 
-     * @param {MouseEvent} event Click event indicating a user has selected a row in the {@link Autodesk.Hyperion.UI.DeviceTree}.
+     * @param {MouseEvent} event Click event indicating a user has selected a row in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
      * @param {DeviceTreeNode} node Node corresponding to the row selected by the user.
      * @private
      */
@@ -181,17 +164,18 @@ function DeviceTree(props) {
     /**
      * Creates a label to be displayed for the given node. If node refers to a grouping of devices, the <React.Fragment> 
      * &nbsp;contains the group name and the number of devices in the group. If node refers to an
-     * &nbsp;individual device, the <React.Fragment> contains the device name and a {@link Autodesk.Hyperion.UI.DeviceStats} 
+     * &nbsp;individual device, the <React.Fragment> contains the device name and a {@link Autodesk.DataVisualization.UI.DeviceStats} 
      * &nbsp;for each device property.
      * 
      * @param {DeviceTreeNode} node Represents a device.
-     * @returns a <React.Fragment> that represents a row in the {@link Autodesk.Hyperion.UI.DeviceTree}.
+     * @returns a <React.Fragment> that represents a row in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
      * @private
      */
     function createLabel(node) {
 
         const data = props.currentDeviceData[node.id];
         const properties = data ? Object.keys(data) : [];
+        const propertyIconMap = props.propertyIconMap || {};
 
         return node.children.length > 0 ? (
             <React.Fragment>
@@ -207,33 +191,20 @@ function DeviceTree(props) {
                             {node.name}
                         </Typography>
                     </div>
-                    <IconButton className={styles.iconButton}>
-                        <KeyboardArrowRightIcon id="goToSensorButton" />
-                    </IconButton>
                     {properties.map(property =>
                         <MemoizedDeviceStats
                             key={`${node.id}-${property}`}
                             deviceId={node.id}
-                            propertyIcon={props.propertyIconMap[property]}
+                            propertyIcon={propertyIconMap[property]}
                             propertyValue={data[property]}
                         />)}
                 </React.Fragment>
             );
     }
 
-    useEffect(() => {
-        if (props.selectedFloorNode) {
-            let path = getPath(props.devices, props.selectedFloorNode.name);
-            (path.length > 0) ? setExpandedNodePath(path) : setExpandedNodePath([]);
-        }
-        else {
-            setExpandedNodePath([])
-        }
-    }, [props.selectedFloorNode]);
-
     return (
         <BasicTree
-            expanded={expandedNodePath}
+            expanded={props.selectedGroupNode ? props.selectedGroupNode.id : ""}
             selectedNodeId={selectedNodeId}
             onLabelRequest={createLabel}
             data={props.devices}

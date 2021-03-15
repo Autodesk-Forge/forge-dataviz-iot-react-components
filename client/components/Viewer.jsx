@@ -21,12 +21,13 @@ import React, { useEffect, useRef } from "react";
  * Component for rendering LMV
  * @param {Object} props
  * @param {("AutodeskProduction"|"AutodeskStaging")} env Forge API environment
- * @param {string} token Forge API token to access LMV
+ * @param {Function} getToken Returns the Forge API token to access LMV
+ * @param {string} api Defines the derivative API used. Default = "derivativeV2"
  * @param {string} docUrn Document URN of model
  * @param {Function} onModelLoaded Callback function invoked when the model has loaded
  * @param {Function} onViewerInitialized Callback function invoked when LMV has been intialized
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.Viewer
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.Viewer
  */
 function Viewer(props) {
     const viewerRef = useRef(null);
@@ -46,8 +47,8 @@ function Viewer(props) {
     /**
      * Initializes LMV.
      *
-     * @memberof Autodesk.Hyperion.UI
-     * @alias Autodesk.Hyperion.UI.Viewer#initializeViewer
+     * @memberof Autodesk.DataVisualization.UI
+     * @alias Autodesk.DataVisualization.UI.Viewer#initializeViewer
      */
     function initializeViewer() {
         var options = {
@@ -85,8 +86,8 @@ function Viewer(props) {
      *
      * @param {Object} viewer Initialized LMV object
      * @param {string} documentId Document URN of the model to be loaded
-     * @memberof Autodesk.Hyperion.UI
-     * @alias Autodesk.Hyperion.UI.Viewer#loadModel
+     * @memberof Autodesk.DataVisualization.UI
+     * @alias Autodesk.DataVisualization.UI.Viewer#loadModel
      */
     function loadModel(viewer, documentId) {
         function onDocumentLoadSuccess(viewerDocument) {

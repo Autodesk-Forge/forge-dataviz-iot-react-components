@@ -29,6 +29,7 @@ import LayersIcon from "@material-ui/icons/Layers";
 import React, { useState, useEffect } from "react";
 import LevelsTree from "./LevelsTree.jsx";
 import SvgIcon from "@material-ui/core/SvgIcon";
+import EventTypes from "./EventTypes.js";
 
 const useStyles = makeStyles(() => ({
     typography: {
@@ -105,47 +106,54 @@ function SensorOptionIcon() {
  * @component
  * 
  * @param {Object} props
- * @param {Function} props.updateSelectedFloor A callback function to update the floor visible in the scene 
- * &nbsp;when a user expands a different grouping of devices in the {@link Autodesk.Hyperion.UI.DeviceTree} object.
+ * @param {Object} props.dataVizExt Represents the Forge Viewer Data Visualization extension
+ * @param {Object} props.viewer Represents the viewer object in scene.
+ * @param {boolean} props.structureToolOnly Flag that renders only the LevelsTree option when true.
+ * @param {Function} props.updateSelectedFloor A callback function to update the floor visible in the scene
+ * &nbsp;when a user expands a different grouping of devices in the {@link Autodesk.DataVisualization.UI.DeviceTree} object.
  * @param {string} props.selectedFloorIndex Index of the selected floor in the scene. "" if no floor is selected.
  * 
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.HyperionToolContainer
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.HyperionToolContainer
  */
 function HyperionToolContainer(props) {
     const [levelsButtonAnchor, setLevelsButtonAnchor] = useState(null);
     const [deviceButtonAnchor, setDeviceButtonAnchor] = useState(null);
     const [expandNodeId, setExpandNodeId] = useState(["data"]);
     const [selectedNodeId, setSelectedNodeId] = useState("");
-    const [prevSelectedNodeId, setPrevSelectedNodeId] = useState("");
     const [showLevels, setShowLevels] = useState(false);
+    const [fromDeviceTree, setFromDeviceTree] = useState(false);
+    const [canClose, setCanClose] = useState(false);
 
-    const [settings, setSettings] = useState({
-        showSensors: true,
+    const settings = props.renderSettings || {
+        showViewables: true,
+        occlusion: false,
         showTextures: true,
-        occlusion: "hideOcclusion",
-    });
+    };
 
-    const levels = getBuildingLayout();
+    const levels = props.data;
+    const eventBus = props.eventBus;
 
-    // Used to set the default floor once the levels data has been loaded.
-    useEffect(() => {
-        if (levels.length > 0) {
-            props.updateSelectedFloor(levels.filter(level => level.index == 0)[0])
-            setShowLevels(true);
+    function dispatchEvent(event) {
+        if (eventBus) {
+            eventBus.dispatchEvent(event);
+        } else {
+            console.warn("Please add eventBus to sendEvent out");
         }
-        setSelectedNodeId("0")
-        setPrevSelectedNodeId("0")
-    }, [levels.length])
+    }
 
     // Used to open the levels icon by default if level data is found.
     useEffect(() => {
-        if (levels.length > 0) setShowLevels(true)
-        setSelectedNodeId(props.selectedFloorNodeIndex);
-        if (!showLevels) {
-            setPrevSelectedNodeId(props.selectedFloorNodeIndex);
+        if (props.selectedGroupNode && props.selectedGroupNode.id != selectedNodeId) { // Change originating from deviceTree.
+            setCanClose(!showLevels);
+            setFromDeviceTree(true);
+        } else {
+            setFromDeviceTree(false); // Change originating from levelTree
         }
-    }, [props.selectedFloorNodeIndex])
+
+        if (levels.length > 0) setShowLevels(true);
+        if (props.selectedGroupNode) setSelectedNodeId(props.selectedGroupNode.id);
+    }, [props.selectedGroupNode])
 
     const [arrowRef, setArrowRef] = useState(null);
 
@@ -178,69 +186,19 @@ function HyperionToolContainer(props) {
      * &nbsp;configuration in the device settings menu,
      */
     const handleSettingsChange = (event) => {
-        const newSettings = Object.assign({}, settings);
+        let newSettings = Object.assign({}, settings);
         if (event.target.type === "radio") {
-            newSettings[event.target.name] = event.target.value;
+            newSettings[event.target.name] = event.target.value == "true" ? true : false;
         } else {
             newSettings[event.target.name] = event.target.checked;
         }
 
-        const dataVizExtn = props.dataVizExtn;
-        if (/(showSensors|occlusion)/gi.test(event.target.name)) {
-            const occlution = newSettings["occlusion"] == "showOcclusion";
-            dataVizExtn.showHideViewables(newSettings["showSensors"], occlution);
-        } else if (/(showTextures)/gi.test(event.target.name)) {
-            if (event.target.checked) {
-                dataVizExtn.showTextures();
-            } else {
-                dataVizExtn.hideTextures();
-            }
-        }
-
-        setSettings(newSettings);
+        dispatchEvent({
+            type: EventTypes.DEVICE_SETTINGS_CHANGED,
+            data: newSettings
+        })
     };
 
-    /**
-     * Returns an array of objects containing the level information present in the model.
-     * 
-     * @returns {Object[]} A list of floor information in a tree-hierarchical format.
-     * @memberof Autodesk.Hyperion.UI
-     * @alias Autodesk.Hyperion.UI.HyperionToolContainer#getBuildingLayout
-     * @private
-     */
-    function getBuildingLayout() {
-        let floors = [];
-        let id = 0;
-        if (props.levelsExt) {
-            const floorSelector = props.levelsExt.floorSelector;
-            floorSelector.floorData.forEach((floor) => {
-                let floorObj = Object.assign({}, floor);
-                floorObj.children = [];
-                floorObj.id = id++;
-                floorObj.isFloor = true;
-
-                /** NOTE: If you want to view the rooms in each floor as part of the LevelsButton, please uncomment the following lines.
-                let surfaceShadingData = props.buildingInfo.children.filter((ssg) => ssg.id == floor.name);
-                if (surfaceShadingData.length > 0) {
-                    surfaceShadingData.map((ssg) =>
-                        ssg.children.map((ssn) => {
-                            floorObj.children.push({
-                                id: id++,
-                                roomId: ssn.dbIds[0],
-                                name: ssn.id,
-                                children: [],
-                                isRoom: true,
-                            });
-                        })
-                    );
-                } */
-                floors.push(floorObj);
-            });
-        }
-
-        floors.reverse();
-        return floors;
-    }
 
     const classes = useStyles();
 
@@ -251,15 +209,12 @@ function HyperionToolContainer(props) {
      * @param {Object} node Represents the floor that a user has hovered over.
      */
     function onMouseOver(event, node) {
-        if (props.levelsExt) {
-            if (node.isFloor) {
-                props.levelsExt.floorSelector.rollOverFloor(node.index);
-            }
-        }
-        if (node.isRoom) {
-            // rollOver on the room object
-            props.viewer.impl.highlightObjectNode(props.viewer.model, node.roomId, true);
-        }
+        dispatchEvent({
+            type: EventTypes.LEVELS_TREE_MOUSE_OVER,
+            originalEvent: event,
+            data: node,
+        });
+
         event.stopPropagation();
     }
 
@@ -270,12 +225,12 @@ function HyperionToolContainer(props) {
      * @param {Object} node Represents the floor that a user has hovered over.
      */
     function onMouseOut(event, node) {
-        if (node.isFloor) {
-            props.levelsExt.floorSelector.rollOverFloor();
-            props.viewer.impl.invalidate(false, false, true);
-        } else if (node.isRoom) {
-            props.viewer.impl.highlightObjectNode(props.viewer.model, node.roomId, false);
-        }
+        dispatchEvent({
+            type: EventTypes.LEVELS_TREE_MOUSE_OUT,
+            originalEvent: event,
+            data: node,
+        });
+        event.stopPropagation();
     }
 
     /**
@@ -285,23 +240,12 @@ function HyperionToolContainer(props) {
      * @param {Object} node Represents the level that the user has selected.
      */
     function onLabelClick(event, node) {
-        if (node.children) {
-            if (node.isFloor) {
-                const floorSelector = props.levelsExt.floorSelector;
-                if (floorSelector.currentFloor == node.index) {
-                    props.updateSelectedFloor(null);
-                    setSelectedNodeId("");
-                } else {
-                    setSelectedNodeId(node.id.toString());
-                    props.updateSelectedFloor(node);
-                }
-            } else if (node.isRoom) {
-                console.log("Change the camera can look at that room.");
-            }
-        } else if (node.isRoom) {
-            setSelectedNodeId(node.id.toString());
-            // rollOver on the room object
-        }
+        dispatchEvent({
+            type: EventTypes.LEVELS_TREE_MOUSE_CLICK,
+            originalEvent: event,
+            data: node,
+        });
+
         event.stopPropagation();
     }
 
@@ -312,11 +256,18 @@ function HyperionToolContainer(props) {
      * @param {Object} node Node that user has selected to expand/close.
      */
     function onIconClick(event, node) {
+        dispatchEvent({
+            type: EventTypes.LEVELS_TREE_MOUSE_OUT,
+            originalEvent: event,
+            data: node
+        })
+
         if (expandNodeId[0] == node.id.toString()) {
             setExpandNodeId(["data"]);
         } else {
             setExpandNodeId([node.id.toString()]);
         }
+
         event.stopPropagation();
     }
 
@@ -327,11 +278,19 @@ function HyperionToolContainer(props) {
      * @private
      */
     const handleClickAway = (event) => {
-        if (selectedNodeId != prevSelectedNodeId) {
-            setShowLevels(true);
-            setPrevSelectedNodeId(selectedNodeId);
-        } else {
+        if (fromDeviceTree) {
+            setFromDeviceTree(false);
+            if (canClose) {
+                setShowLevels(false);
+                setCanClose(false);
+            }
+            else {
+                setShowLevels(true);
+            }
+        }
+        else {
             setShowLevels(false);
+            setFromDeviceTree(false);
         }
     };
 
@@ -377,7 +336,6 @@ function HyperionToolContainer(props) {
                             <Typography className={classes.typography} component="div">
                                 {levels.length > 0 ? <LevelsTree
                                     data={levels}
-                                    levelsExt={props.levelsExt}
                                     onMouseOver={onMouseOver}
                                     onMouseOut={onMouseOut}
                                     onLabelClick={onLabelClick}
@@ -424,10 +382,10 @@ function HyperionToolContainer(props) {
                                             <FormControlLabel
                                                 control={
                                                     <Checkbox
-                                                        checked={settings.showSensors}
+                                                        checked={settings.showViewables}
                                                         onChange={handleSettingsChange}
                                                         style={{ color: "white", padding: "6px" }}
-                                                        name="showSensors"
+                                                        name="showViewables"
                                                         size="small"
                                                     />
                                                 }
@@ -441,7 +399,7 @@ function HyperionToolContainer(props) {
                                                 onChange={handleSettingsChange}
                                             >
                                                 <FormControlLabel
-                                                    value="showOcclusion"
+                                                    value={true}
                                                     control={
                                                         <Radio
                                                             className={classes.radioButtons}
@@ -453,7 +411,7 @@ function HyperionToolContainer(props) {
                                                 />
 
                                                 <FormControlLabel
-                                                    value="hideOcclusion"
+                                                    value={false}
                                                     control={<Radio size="small" style={{ color: "white", padding: "6px" }} />}
                                                     label="Display all in front"
                                                 />

@@ -66,6 +66,16 @@ var config = [
                         },
                     ],
                 },
+                {
+                    test: /\.svg$/i,
+                    use: {
+                        loader: "svg-url-loader",
+                        options: {
+                            // loader behaves like url-loader for all svg files
+                            encoding: "base64",
+                        }
+                    }
+                }
             ],
         },
     },

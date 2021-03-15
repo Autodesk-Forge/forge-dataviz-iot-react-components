@@ -142,12 +142,12 @@ const ResolutionCustomForm = withStyles({
  * @param {string} props.resolutionValue Data resolution vaue. Ex. PT1H, PT15M etc.
  * @param {string} props.selectedPropertyId String identifer of selected property.
  * @param {boolean} props.showHeatMap Flag that shows heatmap when true and hides heatmap when false.
- * @param {Map.<string,DeviceProperty>} props.deviceModelProperties Map of all the properties across all devicesModels in a {@link Autodesk.Hyperion.Data.DataStore} object.
+ * @param {Map.<string,DeviceProperty>} props.deviceModelProperties Map of all the properties across all devicesModels in a {@link Autodesk.DataVisualization.Data.DataStore} object.
  * @param {Function} props.onHeatmapOptionChange A callback function invoked when any combination of
  * &nbsp;resolutionValue, selectedPropertyId, and showHeatMap are changed.
  *
- * @memberof Autodesk.Hyperion.UI.SurfaceShader
- * @alias Autodesk.Hyperion.UI.SurfaceShader.ShaderOptionsMenu
+ * @memberof Autodesk.DataVisualization.UI.SurfaceShader
+ * @alias Autodesk.DataVisualization.UI.SurfaceShader.ShaderOptionsMenu
  */
 function ShaderOptionsMenu(props) {
     const resolutionValue = props.resolutionValue;
@@ -287,8 +287,8 @@ function ShaderOptionsMenu(props) {
  * @param {Function} props.getPropertyRanges The function to get the selected property's range and dataUnit
  * @param {number} props.totalMarkers The total number of slider marks to display on the slider.
  *
- * @memberof Autodesk.Hyperion.UI.SurfaceShader
- * @alias Autodesk.Hyperion.UI.SurfaceShader.ShaderSlider
+ * @memberof Autodesk.DataVisualization.UI.SurfaceShader
+ * @alias Autodesk.DataVisualization.UI.SurfaceShader.ShaderSlider
  */
 function ShaderSlider(props) {
     const [sliderMarks, setSliderMarks] = useState([
@@ -357,10 +357,10 @@ function ShaderSlider(props) {
  * @param {boolean} props.showHeatMap The flag to show/hide heatmap
  * @param {Function} props.onHeatMapOptionChange A callback function invoked when any combination of
  * &nbsp;resolutionValue, selectedPropertyId, and showHeatMap are changed.
- * @param {Map.<string, DeviceProperty>} props.deviceModelProperties  Map of all the properties across all devicesModels in a {@link Autodesk.Hyperion.Data.DataStore} object.
+ * @param {Map.<string, DeviceProperty>} props.deviceModelProperties  Map of all the properties across all devicesModels in a {@link Autodesk.DataVisualization.Data.DataStore} object.
  *
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.SurfaceShader
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.SurfaceShader
  */
 function HeatmapOptions(props) {
     const classes = useStyles();

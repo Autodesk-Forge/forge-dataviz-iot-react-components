@@ -16,22 +16,24 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as darkGrayHighDensityTheme from "@hig/theme-data/build/esm/darkGrayHighDensityTheme";
 import { timeEqual } from "../../shared/Utility";
-import {TimeSlider} from "chronos-etu";
+import { TimeSlider } from "chronos-etu";
 
 /**
  * The time slider component
  * @component
  * @param {Object} props
- * @param {Date} props.rangeStart The start date for the slider
- * @param {Date} props.rangeEnd The end date for the slider
+ * @param {Date} props.startTime The start time for the time range selected in the slider.
+ * @param {Date} props.endTime The end time for the time range selected in the slider.
+ * @param {String} props.rangeStart The start date (in ISO string format) for the slider.
+ * @param {String} props.rangeEnd The end date (in ISO string format) for the slider.
  * @param {HandleTimeRangeUpdated} props.onTimeRangeUpdated A callback
  * &nbsp;function to be invoked when the time selection is updated
  * @param {HandleCurrTimeUpdated} props.onCurrTimeUpdated A callback
  * &nbsp;handler invoked when the current time marker is updated without
  * &nbsp;changing the time selection.
  *
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.ChronosTimeSlider
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.ChronosTimeSlider
  */
 function ChronosTimeSlider(props) {
     /** @type {TimeSlider} */
@@ -111,9 +113,9 @@ function ChronosTimeSlider(props) {
         const sliderHeight = cntrStyle.height.replace("px", "");
         const theme = getCurrentTheme();
 
-        let timeSliderControl = new TimeSlider(sliderWidth,sliderHeight,
-            props.rangeStart,props.rangeEnd,theme);
-        
+        let timeSliderControl = new TimeSlider(sliderWidth, sliderHeight,
+            props.rangeStart, props.rangeEnd, theme);
+
         timeSliderControl._timeFormat = "dddd, MMMM Do YYYY, HH:mm:ss";
         timeSliderControl._userDefinedTimeFormat = true;
 

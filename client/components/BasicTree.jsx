@@ -35,8 +35,8 @@ import TreeItem from "@material-ui/lab/TreeItem";
  * @param {Object} props.classes Styles to be applied to a {@link TreeNode}. See
  * &nbsp;{@link https://material-ui.com/api/tree-item/#css } for structure.
  *
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.BasicTree
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.BasicTree
  */
 function BasicTree(props) {
     function onEvent(handlerName, data) {
@@ -62,6 +62,37 @@ function BasicTree(props) {
 
         return [];
     }
+
+
+    /**
+     * Finds a path from the root of the tree to the target {@link reeNode}.
+     * 
+     * @param {DeviceTreeNode[]} tree Tree of device {@link TreeNode} in the scene.
+     * @param {string} goal Id of {@link TreeNode}
+     * @returns {String[]} An array containing the path. [] if a path to the 
+     * &nbsp;{@link TreeNode} cannot be found.
+     * @private
+     */
+    function getPath(tree, goal) {
+        function helper(tree, goal) {
+            if (tree.id == goal) return [tree.id];
+
+            for (let i = 0; i < tree.children.length; i++) {
+                let subpath = helper(tree.children[i], goal)
+                if (subpath) {
+                    return [tree.id].concat(subpath);
+                }
+            }
+        }
+
+        for (let index = 0; index < tree.length; index++) {
+            const path = helper(tree[index], goal)
+            if (path) return path;
+        }
+
+        return [];
+    }
+
 
     /**
      * Renders a row for the given node and its children, if any.
@@ -97,7 +128,7 @@ function BasicTree(props) {
         <TreeView
             defaultCollapseIcon={<ArrowDropDownIcon />}
             defaultExpandIcon={<ArrowRightIcon />}
-            expanded={props.expanded}
+            expanded={getPath(props.data, props.expanded)}
             selected={props.selectedNodeId}
         >
             {props.data.map((device) => renderTree(device))}

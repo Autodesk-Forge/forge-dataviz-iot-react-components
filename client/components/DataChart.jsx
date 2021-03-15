@@ -34,10 +34,10 @@ import { DataChartSeriesLine } from "./DataChartSeries";
  * @param {string} props.deviceProperty String identifier for property displayed in chart.
  * @param {ChartDataProperty} props.chartData Data used to generate charts for (props.deviceId, props.deviceProperty)
  * @param {boolean} props.tooltip An optional flag when true indicates embeds the chart in a
- * &nbsp;{@link Autodesk.Hyperion.UI.CustomToolTip} object.
+ * &nbsp;{@link Autodesk.DataVisualization.UI.CustomToolTip} object.
  *
- * @memberof Autodesk.Hyperion.UI
- * @alias Autodesk.Hyperion.UI.DataChart
+ * @memberof Autodesk.DataVisualization.UI
+ * @alias Autodesk.DataVisualization.UI.DataChart
  */
 function DataChart(props) {
     const { dataUnit, seriesData, yAxis } = props.chartData;
@@ -48,8 +48,8 @@ function DataChart(props) {
      * @param {Object} params
      * @param {number} params.value An integer timestamp value that represents the number of milliseconds since January 1, 1970
      * @returns {string} Formatted pointer value
-     * @memberof Autodesk.Hyperion.UI
-     * @alias Autodesk.Hyperion.UI.DataChart#xAxisPointerFormatter
+     * @memberof Autodesk.DataVisualization.UI
+     * @alias Autodesk.DataVisualization.UI.DataChart#xAxisPointerFormatter
      */
     function xAxisPointerFormatter(params) {
         const date = new Date(params.value);
@@ -63,8 +63,8 @@ function DataChart(props) {
      * @param {number} value chart value of the property
      * @param {number} index index of the axis label
      * @returns {string} Formatted label value
-     * @memberof Autodesk.Hyperion.UI
-     * @alias Autodesk.Hyperion.UI.DataChart#yAxisLabelFormatter
+     * @memberof Autodesk.DataVisualization.UI
+     * @alias Autodesk.DataVisualization.UI.DataChart#yAxisLabelFormatter
      */
     function yAxisLabelFormatter(value, index) {
         return value ? value.toFixed(2) : "0.00";
@@ -76,8 +76,8 @@ function DataChart(props) {
      * @param {Object} params
      * @param {number} params.value chart value of the property
      * @returns {string} Formatted pointer value
-     * @memberof Autodesk.Hyperion.UI
-     * @alias Autodesk.Hyperion.UI.DataChart#yAxisPointerFormatter
+     * @memberof Autodesk.DataVisualization.UI
+     * @alias Autodesk.DataVisualization.UI.DataChart#yAxisPointerFormatter
      */
     function yAxisPointerFormatter(params) {
         const v = params.value ? params.value.toFixed(2) : "0.00";
@@ -90,8 +90,8 @@ function DataChart(props) {
      * @param {Object} params
      * @param {number} params.value chart value of the property
      * @returns {string} Formatted tool tip value
-     * @memberof Autodesk.Hyperion.UI
-     * @alias Autodesk.Hyperion.UI.DataChart#toolTipFormatter
+     * @memberof Autodesk.DataVisualization.UI
+     * @alias Autodesk.DataVisualization.UI.DataChart#toolTipFormatter
      */
     function toolTipFormatter(params) {
         const v = params.value ? params.value.toFixed(2) : "0.00";
@@ -101,9 +101,9 @@ function DataChart(props) {
     /**
      * Creates basic chart options for the given Device.
      * 
-     * @returns {DataChartOptions} A configured {@link Autodesk.Hyperion.UI.DataChart.DataChartOptions} object.
-     * @memberof Autodesk.Hyperion.UI
-     * @alias Autodesk.Hyperion.UI.DataChart#createBasicChartOptions
+     * @returns {DataChartOptions} A configured {@link Autodesk.DataVisualization.UI.DataChart.DataChartOptions} object.
+     * @memberof Autodesk.DataVisualization.UI
+     * @alias Autodesk.DataVisualization.UI.DataChart#createBasicChartOptions
      */
     function createBasicChartOptions() {
         const caption = `${props.deviceProperty} (${dataUnit})`;
@@ -131,8 +131,8 @@ function DataChart(props) {
      * 
      * @param {string} propertyId The id of the property
      * @returns {string} Color to use for the specified property. #ffffff if propertyId isn't found.
-     * @memberof Autodesk.Hyperion.UI
-     * @alias Autodesk.Hyperion.UI.DataChart#getColorForProperty
+     * @memberof Autodesk.DataVisualization.UI
+     * @alias Autodesk.DataVisualization.UI.DataChart#getColorForProperty
      */
     function getColorForProperty(propertyId) {
         const colors = {
@@ -150,8 +150,8 @@ function DataChart(props) {
      * @param {ChartSeriesData} values Data values to be used for the chart line.
      * @param {string} colorValue Color value obtained from getColorForProperty method
      * @returns {DataChartSeriesLine} Series line with the specified values and color
-     * @memberof Autodesk.Hyperion.UI
-     * @alias Autodesk.Hyperion.UI.DataChart#createSeriesForValues
+     * @memberof Autodesk.DataVisualization.UI
+     * @alias Autodesk.DataVisualization.UI.DataChart#createSeriesForValues
      */
     function createSeriesForValues(values, colorValue) {
         const mainSeries = new DataChartSeriesLine(values);
