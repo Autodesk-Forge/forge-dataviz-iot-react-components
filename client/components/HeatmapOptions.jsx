@@ -143,7 +143,7 @@ const ResolutionCustomForm = withStyles({
  * @param {string} props.selectedPropertyId String identifer of selected property.
  * @param {boolean} props.showHeatMap Flag that shows heatmap when true and hides heatmap when false.
  * @param {Map.<string,DeviceProperty>} props.deviceModelProperties Map of all the properties across all devicesModels in a {@link Autodesk.DataVisualization.Data.DataStore} object.
- * @param {Function} props.onHeatmapOptionChange A callback function invoked when any combination of
+ * @param {OnHeatMapOptionChange} props.onHeatmapOptionChange A callback function invoked when any combination of
  * &nbsp;resolutionValue, selectedPropertyId, and showHeatMap are changed.
  *
  * @memberof Autodesk.DataVisualization.UI.SurfaceShader
@@ -284,7 +284,7 @@ function ShaderOptionsMenu(props) {
  * @param {string} props.selectedPropertyId The property ID, if any is selected.
  * @param {Object.<string, number[]>} props.propIdGradientMap The mapping of property
  * IDs to their corresponding gradient color values.
- * @param {Function} props.getPropertyRanges The function to get the selected property's range and dataUnit
+ * @param {GetPropertyRanges} props.getPropertyRanges The function to get the selected property's range and dataUnit
  * @param {number} props.totalMarkers The total number of slider marks to display on the slider.
  *
  * @memberof Autodesk.DataVisualization.UI.SurfaceShader
@@ -298,6 +298,14 @@ function ShaderSlider(props) {
         { value: 80, label: "4" },
     ]);
 
+    /**
+     * 
+     * @param {Object.<string, number[]>} propIdGradientMap A mapping of property IDs to their corresponding gradient color values.
+     * @param {string} propertyId string identifier of selected property.
+     * 
+     * @returns {string} String representation of the background gradient image used for the slider.
+     * @private
+     */
     function generateGradientStyle(propIdGradientMap, propertyId) {
         let colorStops = propIdGradientMap[propertyId];
         colorStops = colorStops ? colorStops : [0xf9d423, 0xff4e50]; // Default colors.
@@ -310,6 +318,7 @@ function ShaderSlider(props) {
      * Get the HeatMap Slider markers based on the selected SensorType
      *
      * @param {string} propertyId Selected sensor type
+     * @private
      */
     function generateMarks(propertyId) {
         let localMarks = [];
@@ -344,18 +353,18 @@ function ShaderSlider(props) {
 }
 
 /**
- * The surface shader component with linear gradient and menu
+ * The surface shader component with a linear gradient and options menu.
  * @component
  *
  * @param props
- * @param {string} props.selectedPropertyId The property ID, if any is selected
+ * @param {string} props.selectedPropertyId The property id, if any is selected
  * @param {Object.<string, number[]>} props.propIdGradientMap The mapping of property
  * IDs to their corresponding gradient color values.
- * @param {Function} props.getPropertyRanges The function to get the selected property's range and dataUnit
+ * @param {GetPropertyRanges} props.getPropertyRanges The function to get the selected property's range and dataUnit
  * @param {number} props.totalMarkers The total number of slider markers
- * @param {Resolution} props.resolutionValue The value for resolution. Ex. 1hr, 15mins.
- * @param {boolean} props.showHeatMap The flag to show/hide heatmap
- * @param {Function} props.onHeatMapOptionChange A callback function invoked when any combination of
+ * @param {string} props.resolutionValue The value for resolution. Ex. PT1H, PT15M etc.
+ * @param {boolean} props.showHeatMap Flag to show/hide heatmap
+ * @param {OnHeatMapOptionChange} props.onHeatMapOptionChange A callback function invoked when any combination of
  * &nbsp;resolutionValue, selectedPropertyId, and showHeatMap are changed.
  * @param {Map.<string, DeviceProperty>} props.deviceModelProperties  Map of all the properties across all devicesModels in a {@link Autodesk.DataVisualization.Data.DataStore} object.
  *

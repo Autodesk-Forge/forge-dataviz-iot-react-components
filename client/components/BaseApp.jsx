@@ -113,28 +113,48 @@ const startDate = new Date(currDate.getTime() - 14 * 24 * 60 * 60 * 1000);
 startDate.setUTCHours(0, 0, 0, 0);
 
 /**
- * Main Reference App component
+ * Main Base App component.
  * 
  * @component
  * @param {Object} props
- * @param {Object} props.appData Data passed to the Reference App.
+ * @param {Object} props.appData Data passed to the BaseApp.
  * @param {("AutodeskStaging"|"AutodeskProduction")} props.appData.env Forge API environment
  * @param {string} props.appData.docUrn Document URN of model
  * @param {string} props.appData.adapterType Corresponds to Data Adapter used to query data. i.e - synthetic, azure etc.
+ * @param {"derivativeV2"|"derivativeV2_EU"|"modelDerivativeV2"|"fluent"|"D3S"|"D3S_EU"} [props.appData.api] Please refer to LMV documentation for more information.
+ * @param {string} [props.appData.dataStart] Start date for provided CSV data in ISO string format.
+ * @param {string} [props.appData.dataEnd] End date for provided CSV data in ISO string format.
+ * @param {EventBus} props.eventBus Used to dispatch mouse events when a user interacts with a {@link TreeNode}
+ * @param {Object} [props.appContext] Contains base urls used to query assets, LMV, data etc.
+ * @param {string} [props.appContext.fargateUrl] The base url used to configure a specific {@link Autodesk.DataVisualization.Data.DataAdapter}
+ * @param {Object} props.data
+ * @param {Autodesk.DataVisualization.Core.SurfaceShadingData} props.data.shadingData {@link Autodesk.DataVisualization.Core.SurfaceShadingData} associated with the model.
+ * @param {TreeNode[]} props.data.devicePanelData Represents array of device {@link TreeNode} in the scene.
+ * @param {Object} [props.renderSettings]
+ * @param {boolean} [props.renderSettings.showViewables] Defines whether {@link Autodesk.DataVisualization.Core.SpriteViewable} are visible in the scene.
+ * @param {boolean} [props.renderSettings.occlusion] Defines whether the {@link Autodesk.DataVisualization.Core.SpriteViewable} are occluded.
+ * @param {boolean} [props.renderSettings.showTextures] Defines whether textures are shown.
+ * @param {Object} [props.surfaceShadingConfig]
+ * @param {number} [props.surfaceShadingConfig.spriteSize] Defines the size of a {@link Autodesk.DataVisualization.Core.SpriteViewable}
+ * @param {Object.<string, Object>} [props.surfaceShadingConfig.deviceStyles] Represents different style definitions for a {@link Autodesk.DataVisualization.Core.SpriteViewable}
+ * @param {Object.<string, number[]>} [props.surfaceShadingConfig.gradientSetting] Mapping of proerties to corresponding gradient bar color stop values.
+ * @param {Object} [props.propertyIconMap]  A mapping of property names to image paths used for
+ * &nbsp;each {@link Autodesk.DataVisualization.UI.DeviceStats} object.
  * @memberof Autodesk.DataVisualization.UI
- * @alias Autodesk.DataVisualization.UI.ReferenceApp
+ * @alias Autodesk.DataVisualization.UI.BaseApp
  */
 function BaseApp(props) {
     /**
      * Most import variables that will define the behavior of this APP.
      * env: String -- AutodeskProduction/AutodeskStaging
-     * api: "derivativeV2"|"derivativeV2_EU"|"modelDerivativeV2"|"fluent"|"D3S"|"D3S_EU" -- Please refer LMV documentation
+     * api: "derivativeV2"|"derivativeV2_EU"|"modelDerivativeV2"|"fluent"|"D3S"|"D3S_EU" -- Please refer to LMV documentation
      * docUrn: String -- the document user want to load
      */
     const { env, docUrn, adapterType, api } = props.appData;
 
     /**
      * Function to get the access token used to load the model into {@link Autodesk.DataVisualization.UI.Viewer}
+     * @private
      */
     async function getToken() {
         return fetch("/api/token")
@@ -244,6 +264,7 @@ function BaseApp(props) {
      * @param {Date} endTime The end time of the time window
      * @param {DataView} dataView The DataView object whose time
      * window is to be adjusted.
+     * @private
      */
     function setTimeWindow(startTime, endTime, dataView, resolution = timeOptionRef.current.resolution) {
         const startSecond = getTimeInEpochSeconds(startTime);
@@ -261,11 +282,12 @@ function BaseApp(props) {
 
     /**
      * Initializes a {@link DataStore} to generate a corresponding {@link DataView}.
-     * @alias Autodesk.DataVisualization.UI.ReferenceApp#initializeDataStore
+     * @alias Autodesk.DataVisualization.UI.BaseApp#initializeDataStore
+     * @private
      */
     async function initializeDataStore() {
         // Create a data adapter to pull in data from server.
-        const adapter = new DataAdapter(adapterType, props.appContext.fargateUrl);
+        const adapter = new DataAdapter(adapterType, props.appContext.dataUrl);
 
         // Register the adapter and pull in all device models.
         const session = new Session();
@@ -302,15 +324,21 @@ function BaseApp(props) {
      * @callback
      */
     async function onModelLoaded(viewer, data) {
-        const [session, masterDataView] = await initializeDataStore();
+        let session, masterDataView, dataVizExtn;
 
-        const dataVizExtn = await viewer.loadExtension("Autodesk.DataVisualization", { useInternal: true });
+        await Promise.all([
+            initializeDataStore(),
+            viewer.loadExtension("Autodesk.DataVisualization", { useInternal: true }),
+        ]).then((results) => {
+            [session, masterDataView] = results[0];
+            dataVizExtn = results[1];
+        });
 
         //Optional: load the ZoomWindow and MinimapExtention
         viewer.loadExtension("Autodesk.Viewing.ZoomWindow");
         // viewer.loadExtension('Autodesk.AEC.Minimap3DExtension')
 
-        props.eventBus.addEventListener(EventTypes.DEVICE_SETTINGS_CHANGED, event => {
+        props.eventBus.addEventListener(EventTypes.RENDER_SETTINGS_CHANGED, (event) => {
             if (!event.hasStopped) {
                 let newSettings = event.data;
                 let { occlusion, showViewables, showTextures } = newSettings;
@@ -323,7 +351,7 @@ function BaseApp(props) {
                     dataVizExtn.hideTextures();
                 }
             }
-        })
+        });
 
         dispatchEventToHandler({
             type: EventTypes.MODEL_LOAD_COMPLETED,
@@ -331,15 +359,15 @@ function BaseApp(props) {
                 viewer,
                 data,
                 session,
-            }
-        })
+            },
+        });
 
         setAppState({
             viewer: viewer,
             session: session,
             masterDataView: masterDataView,
             model: data.model,
-            dataVizExtn
+            dataVizExtn,
         });
     }
 
@@ -361,8 +389,10 @@ function BaseApp(props) {
                 selectedGroupNodeRef.current = null;
             } else {
                 let selectedNode = shadingData.getNodeById(event.data.id);
-                setSelectedGroupNode(selectedNode);
-                selectedGroupNodeRef.current = selectedNode;
+                if (selectedNode) {
+                    setSelectedGroupNode(selectedNode);
+                    selectedGroupNodeRef.current = selectedNode;
+                }
             }
         }
 
@@ -423,7 +453,8 @@ function BaseApp(props) {
          * &nbsp;where all of the loaded devices from service providers are stored.
          * @param {DataView} masterDataView The master view of device data
          * &nbsp;stored inside session data store.
-         * @alias Autodesk.DataVisualization.UI.ReferenceApp#generateViewables
+         * @alias Autodesk.DataVisualization.UI.BaseApp#generateViewables
+         * @private
          */
         async function generateViewables(shadingData) {
             let dbId = 1;
@@ -472,8 +503,8 @@ function BaseApp(props) {
                 dbId2DeviceIdMap: dbId2DeviceIdMap,
                 propertyMap: propertyMap,
                 shadingData: shadingData,
-                model
-            })
+                model,
+            });
 
             setAppState(state);
         }
@@ -533,8 +564,7 @@ function BaseApp(props) {
         }
 
         // Need to convert the deviceList to viewable data
-        await dataVizExtn.setupSurfaceShading(model, shadingData);
-        await generateViewables(shadingData);
+        await Promise.all([dataVizExtn.setupSurfaceShading(model, shadingData), generateViewables(shadingData)]);
         const completeDeviceTree = devicePanelData;
         setDeviceTree(completeDeviceTree);
 
@@ -550,7 +580,7 @@ function BaseApp(props) {
         /**
          * 
          * @param {Session} session {@link Session} object 
-         * initialized from the {@link Autodesk.DataVisualization.UI.ReferenceApp#initializeDataStore} 
+         * initialized from the {@link Autodesk.DataVisualization.UI.BaseApp#initializeDataStore} 
          * @private
          */
         async function createWebsocket(session) {
@@ -582,9 +612,9 @@ function BaseApp(props) {
             type: "VIEWER_DATA_READY",
             data: {
                 dataVizExtn,
-                DataVizCore
-            }
-        })
+                DataVizCore,
+            },
+        });
     }
 
     /**
@@ -624,7 +654,6 @@ function BaseApp(props) {
         return updateTimeOptions;
     })();
 
-
     /**
      * Handles changes on the time slider. The start date and/or end date can
      * be modified by user inputs interactively. This function will be called
@@ -632,7 +661,7 @@ function BaseApp(props) {
      * @param {Date} startTime The start time for device data fetch call
      * @param {Date} endTime The end time for device data fetch call
      * @param {Date} currentTime The current time at which the TimeMarker is
-     * @alias Autodesk.DataVisualization.UI.ReferenceApp.#handleTimeRangeUpdated
+     * @alias Autodesk.DataVisualization.UI.BaseApp.#handleTimeRangeUpdated
      */
     function handleTimeRangeUpdated(startTime, endTime, currentTime) {
         const currAppState = appStateRef.current;
@@ -654,7 +683,7 @@ function BaseApp(props) {
      * changed interactively by the user when it is dragged within the time window,
      * or during a playback mode of the time slider.
      * @param {Date} currentTime The current time at which the time marker is.
-     * @alias Autodesk.DataVisualization.UI.ReferenceApp.#handleCurrTimeUpdated
+     * @alias Autodesk.DataVisualization.UI.BaseApp.#handleCurrTimeUpdated
      */
     function handleCurrTimeUpdated(currentTime) {
         const options = Object.assign({}, timeOptionRef.current);
@@ -668,6 +697,7 @@ function BaseApp(props) {
      * 
      * @param {MouseEvent} event Click event indicating that a row in {@link Autodesk.DataVisualization.UI.DeviceTree} has been selected.
      * @param {string} node Device identifier
+     * @private
      */
     async function onNodeSelected(event, node) {
         /** @type {string} */
@@ -684,6 +714,7 @@ function BaseApp(props) {
 
     /**
      * Clears selected device from the scene and from the {@link Autodesk.DataVisualization.UI.DevicePanel}.
+     * @private
      */
     function navigateBackToDevices() {
         setSelectedDevice("");
@@ -700,7 +731,8 @@ function BaseApp(props) {
      * &nbsp;property value is to be retrieved.
      * @returns {number} The property value of the device at the time given in
      * &nbsp;timeOptions.currentTime field.
-     * @alias Autodesk.DataVisualization.UI.ReferenceApp#getSensorValue
+     * @alias Autodesk.DataVisualization.UI.BaseApp#getSensorValue
+     * @private
      */
     function getSensorValue(surfaceShadingPoint, sensorType) {
         const currAppState = appStateRef.current;
@@ -741,6 +773,7 @@ function BaseApp(props) {
      * Uses the application based on user changes to the {@link Autodesk.DataVisualization.UI.SurfaceShader} component.
      * 
      * @param {Object} options Settings defined in the {@link Autodesk.DataVisualization.UI.SurfaceShader}.
+     * @private
      */
     function onHeatmapOptionChange(options) {
         setHeatmapOptions(options);
@@ -772,10 +805,10 @@ function BaseApp(props) {
     }
 
     /**
-     * Called when a user has changed the floor in the scene using the {@link Autodesk.DataVisualization.UI.HyperionToolContainer} 
+     * Called when a user has changed the selected group in the scene using the {@link Autodesk.DataVisualization.UI.HyperionToolContainer} 
      * or the {@link Autodesk.DataVisualization.UI.DeviceTree}
      * 
-     * @param {Object} node Represents floor object to show in scene
+     * @private
      */
     function checkGroupChange() {
         const currAppState = appStateRef.current;
@@ -830,6 +863,7 @@ function BaseApp(props) {
      * 
      * @param {string} propertyId String identifier of a device property.
      * @returns {Object} The rangeMin, rangeMax and dataUnit for the selected propertyId
+     * @private
      */
     function getPropertyRanges(propertyId) {
         const currAppState = appStateRef.current;
@@ -880,10 +914,11 @@ function BaseApp(props) {
     }
 
     /**
-     * Returns all devices given the name of a floor. [] if no devices found.
+     * Returns all devices given the name of a group. [] if no devices found.
      * 
-     * @param {string} selectedNode floor name
-     * @returns {Array.<DeviceTreeNode>} All devices (if any) on selectedFloor.
+     * @param {string} selectedNode group name
+     * @returns {Array.<TreeNode>} All devices (if any) on selectedNode.
+     * @private
      */
     function getDevicesInGroup(selectedNode) {
         function findGroup() {
@@ -920,7 +955,8 @@ function BaseApp(props) {
     /**
      * Given a list of deviceToQuery, checks masterDataView for relevant data. If not found, triggers a fetch and updates currentDeviceData when complete.
      * 
-     * @param {*} devicesToQuery List of {@link DeviceTreeNode} to fetch device data for.
+     * @param {*} devicesToQuery List of {@link TreeNode} to fetch device data for.
+     * @private
      */
     function getDeviceData(devicesToQuery) {
         let currAppState = appStateRef.current;
@@ -952,7 +988,8 @@ function BaseApp(props) {
     /**
      * Fetches and populates chartData for all devices in devicesToQuery that haven't already been fetched.
      * 
-     * @param {Array.<DeviceTreeNode>} devicesToQuery List of {@link DeviceTreeNode} to retrieve chart data for.
+     * @param {Array.<TreeNode>} devicesToQuery List of {@link TreeNode} to retrieve chart data for.
+     * @private
      */
     function getChartData(devicesToQuery) {
         let currAppState = appStateRef.current;
@@ -1004,8 +1041,8 @@ function BaseApp(props) {
     }
     else if (selectedGroupNode === null && deviceTree) { // Viewing entire building, need to query all devices.
         let devicesToQuery = [];
-        deviceTree.forEach(floor => {
-            devicesToQuery.push.apply(devicesToQuery, floor.children);
+        deviceTree.forEach(group => {
+            devicesToQuery.push.apply(devicesToQuery, group.children);
         })
         getChartData(devicesToQuery);
         getDeviceData(devicesToQuery);
@@ -1015,9 +1052,10 @@ function BaseApp(props) {
     * Handle QueryCompleted event originating from the DataView object. Informs this component about the completion of a particular data fetch.
     * 
     * @param {QueryCompletedEventArgs} eventArgs The arguments for which the {@link DataView} was queried.
+    * @private
     */
     function handleQueryCompleted(eventArgs) {
-        // The following hook causes ReferenceApp to repaint every time a device
+        // The following hook causes BaseApp to repaint every time a device
         // fetch is completed. E.g. if the time slider is adjusted, and 10 devices
         // are being queried for their data (in bulk), then the following will 
         // trigger 10 renders. This should not be a concern as React will only ever
@@ -1047,7 +1085,10 @@ function BaseApp(props) {
                     onTimeRangeUpdated={handleTimeRangeUpdated}
                     onCurrTimeUpdated={handleCurrTimeUpdated}
                 />
-                <BasicDatePicker {...timeOptions} onRangeChange={handleTimeRangeUpdated} />
+                <BasicDatePicker
+                    {...timeOptions}
+                    onRangeChange={handleTimeRangeUpdated}
+                />
             </div>
             <CustomToolTip
                 hoveredDeviceInfo={hoveredDeviceInfo}
@@ -1076,8 +1117,7 @@ function BaseApp(props) {
             {selectedGroupNode && (
                 <HeatmapOptions
                     {...heatmapOptions}
-                    propIdGradientMap={PropIdGradientMap}
-                    sensorValueHandler={getSensorValue}
+                    propIdGradientMap={props.surfaceShadingConfig ? props.surfaceShadingConfig.gradientSetting : PropIdGradientMap}
                     onHeatmapOptionChange={onHeatmapOptionChange}
                     getPropertyRanges={getPropertyRanges}
                     deviceModelProperties={appStateRef.current.propertyMap}

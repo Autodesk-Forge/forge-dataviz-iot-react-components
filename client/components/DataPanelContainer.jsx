@@ -25,13 +25,14 @@ import Dashboard from "./Dashboard.jsx";
  * @component
  *
  * @param {Object} props
+ * @param {EventBus} eventBus Used to dispatch mouse events when a user interacts with a {@link TreeNode}
  * @param {string} props.selectedDevice An optional value that represents the
  * &nbsp;identifier of the current selected device. Empty string if no
  * &nbsp;device is selected.
  * @param {Function} props.onNavigateBack A callback function invoked when "Back
  * &nbsp;to devices" button is clicked.
- * @param {DeviceTreeNode[]} props.devices Array of device {@link DeviceTreeNode} in the scene
- * @param {Function} props.onNodeSelected A callback function that is invoked
+ * @param {TreeNode[]} props.devices Array of device {@link TreeNode} in the scene
+ * @param {OnNodeSelected} props.onNodeSelected A callback function that is invoked
  * &nbsp;when a tree node is selected
  * @param {Map<Number,String>} props.deviceId2DbIdMap A mapping of device identifiers
  * &nbsp;to the dbId corresponding to its visual representation in the viewer.
@@ -41,9 +42,8 @@ import Dashboard from "./Dashboard.jsx";
  * &nbsp;associated with props.selectedDevice
  * @param {Object} props.propertyIconMap  A mapping of property names to image paths used for
  * &nbsp;each {@link Autodesk.DataVisualization.UI.DeviceStats} object.
- * @param {Object} props.selectedFloorNode Represents the floor that is currently selected in the scene.
- * @param {Function} props.updateSelectedFloor A callback function to update the floor visible in the scene
- * &nbsp;when a user expands a different grouping of devices in the {@link Autodesk.DataVisualization.UI.DeviceTree} object.
+ * @param {(Autodesk.DataVisualization.Core.SurfaceShadingGroup|Autodesk.DataVisualization.Core.SurfaceShadingNode)} props.selectedGroupNode Represents the
+ * &nbsp;group node that is currently selected in the scene.
  *
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.DataPanelContainer
@@ -69,6 +69,7 @@ function DataPanelContainer(props) {
      * @returns {JSX.Element} The contents to be rendered in place of the panel.
      * @memberof Autodesk.DataVisualization.UI
      * @alias Autodesk.DataVisualization.UI.DataPanelContainer#generatePanelContents
+     * @private
      */
     function generatePanelContents() {
         if (props.selectedDevice) {
@@ -84,12 +85,9 @@ function DataPanelContainer(props) {
                 <DevicePanel
                     devices={props.devices}
                     onNodeSelected={props.onNodeSelected}
-                    selectedDeviceId={props.selectedDevice}
                     onNavigateBack={props.onNavigateBack}
                     propertyIconMap={props.propertyIconMap}
-                    selectedFloorNode={props.selectedFloorNode}
                     currentDeviceData={props.currentDeviceData}
-                    updateSelectedFloor={props.updateSelectedFloor}
                     selectedGroupNode={props.selectedGroupNode}
                     eventBus={props.eventBus}
                 />

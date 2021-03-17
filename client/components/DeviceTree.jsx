@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-import React, { useState, memo } from "react";
+import React, { memo } from "react";
 import BasicTree from "./BasicTree.jsx";
 import DeviceStats from "./DeviceStats.jsx";
 import Avatar from "@material-ui/core/Avatar";
@@ -91,43 +91,50 @@ const MemoizedDeviceStats = memo(DeviceStats);
  * @component
  *
  * @param {Object} props
- * @param {DeviceTreeNode[]} props.devices Array of device {@link DeviceTreeNode} in the scene
- * @param {Function} props.onNodeSelected A callback function invoked
- * &nbsp;when a device {@link DeviceTreeNode} is selected
- * @param {Function} props.onNavigateBack A callback function invoked when "Back
- * &nbsp;to devices" button is clicked.
- * @param {Object} props.selectedFloorNode Represents the floor that is currently selected in the scene
- * @param {Function} props.updateSelectedFloor - A callback function to update the floor visible in the scene 
- * &nbsp;when a user expands a different grouping of devices in the {@link Autodesk.DataVisualization.UI.DeviceTree} object.
+ * @param {EventBus} props.eventBus Used to dispatch mouse events when a user interacts with a {@link TreeNode}
+ * @param {TreeNode[]} props.devices Array of device {@link TreeNode} in the scene
+ * @param {OnNodeSelected} props.onNodeSelected A callback function invoked
+ * &nbsp;when a device {@link TreeNode} is selected
+ * @param {(Autodesk.DataVisualization.Core.SurfaceShadingGroup|Autodesk.DataVisualization.Core.SurfaceShadingNode)} props.selectedGroupNode Represents the
+ * &nbsp;group node that is currently selected in the scene.
  * @param {CurrentDeviceData} props.currentDeviceData Data containing the estimated propertyValue for each property
  * &nbsp;associated with the selected device.
- * @param {Object} props.propertyIconMap - A mapping of property names to image paths used for each {@link Autodesk.DataVisualization.UI.DeviceStats} object.
+ * @param {Object} props.propertyIconMap A mapping of property names to image paths used for each {@link Autodesk.DataVisualization.UI.DeviceStats} object.
  *
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.DeviceTree
  */
 function DeviceTree(props) {
-    const [selectedNodeId, setSelectedNodeId] = useState("");
-
     const styles = useStyles();
 
     const eventBus = props.eventBus;
 
+    /**
+     * Dispatches the event if an eventBus is found.
+     *
+     * @param {MouseEvent} event MouseEvent that needs to be dispatched.
+     * @private
+     */
     function dispatchEvent(event) {
         if (eventBus) {
             eventBus.dispatchEvent(event);
         } else {
-            console.warn("Please add eventBus to sendEvent out");
+            console.warn("Please add an eventBus to dispatch events");
         }
     }
 
-
-    function getNumDescendants(struct) {
-        if (struct.children.length === 0) {
+    /**
+     *
+     * @param {TreeNode} node {@link TreeNode}
+     * @returns {number} The total number of descendants that a struct has.
+     * @private
+     */
+    function getNumDescendants(node) {
+        if (node.children.length === 0) {
             return 1;
         } else {
             let count = 0;
-            struct.children.forEach((child) => {
+            node.children.forEach((child) => {
                 count += getNumDescendants(child);
             });
             return count;
@@ -136,25 +143,24 @@ function DeviceTree(props) {
 
     /**
      * Called when a user selects the arrow icon in the device tree to expand or close a group of devices.
-     * 
+     *
      * @param {MouseEvent} event Event indicating a user has expanded or closed a row in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
-     * @param {DeviceTreeNode} node Node corresponding to the grouping of devices expanded/closed by the user.
+     * @param {TreeNode} node Node corresponding to the grouping of devices expanded/closed by the user.
      * @private
      */
     function onIconClick(event, node) {
         dispatchEvent({
             type: EventTypes.DEVICE_TREE_EXPAND_EVENT,
             originalEvent: event,
-            data: node
-        })
+            data: node,
+        });
     }
-
 
     /**
      * Called when a user selects a row in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
-     * 
+     *
      * @param {MouseEvent} event Click event indicating a user has selected a row in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
-     * @param {DeviceTreeNode} node Node corresponding to the row selected by the user.
+     * @param {TreeNode} node Node corresponding to the row selected by the user.
      * @private
      */
     function onLabelClick(event, node) {
@@ -162,17 +168,16 @@ function DeviceTree(props) {
     }
 
     /**
-     * Creates a label to be displayed for the given node. If node refers to a grouping of devices, the <React.Fragment> 
+     * Creates a label to be displayed for the given node. If node refers to a grouping of devices, the <React.Fragment>
      * &nbsp;contains the group name and the number of devices in the group. If node refers to an
-     * &nbsp;individual device, the <React.Fragment> contains the device name and a {@link Autodesk.DataVisualization.UI.DeviceStats} 
+     * &nbsp;individual device, the <React.Fragment> contains the device name and a {@link Autodesk.DataVisualization.UI.DeviceStats}
      * &nbsp;for each device property.
-     * 
-     * @param {DeviceTreeNode} node Represents a device.
+     *
+     * @param {TreeNode} node Represents a device.
      * @returns a <React.Fragment> that represents a row in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
      * @private
      */
     function createLabel(node) {
-
         const data = props.currentDeviceData[node.id];
         const properties = data ? Object.keys(data) : [];
         const propertyIconMap = props.propertyIconMap || {};
@@ -185,33 +190,32 @@ function DeviceTree(props) {
                 <Avatar className={styles.avatar}>{getNumDescendants(node)}</Avatar>
             </React.Fragment>
         ) : (
-                <React.Fragment>
-                    <div id="deviceName">
-                        <Typography className={styles.typography} noWrap={true}>
-                            {node.name}
-                        </Typography>
-                    </div>
-                    {properties.map(property =>
-                        <MemoizedDeviceStats
-                            key={`${node.id}-${property}`}
-                            deviceId={node.id}
-                            propertyIcon={propertyIconMap[property]}
-                            propertyValue={data[property]}
-                        />)}
-                </React.Fragment>
-            );
+            <React.Fragment>
+                <div id="deviceName">
+                    <Typography className={styles.typography} noWrap={true}>
+                        {node.name}
+                    </Typography>
+                </div>
+                {properties.map((property) => (
+                    <MemoizedDeviceStats
+                        key={`${node.id}-${property}`}
+                        deviceId={node.id}
+                        propertyIcon={propertyIconMap[property]}
+                        propertyValue={data[property]}
+                    />
+                ))}
+            </React.Fragment>
+        );
     }
 
     return (
         <BasicTree
             expanded={props.selectedGroupNode ? props.selectedGroupNode.id : ""}
-            selectedNodeId={selectedNodeId}
             onLabelRequest={createLabel}
             data={props.devices}
             onIconClick={onIconClick}
             onLabelClick={onLabelClick}
             onMouseOver={onLabelClick}
-            onMouseOut={props.onNavigateBack}
             classes={styles}
         />
     );

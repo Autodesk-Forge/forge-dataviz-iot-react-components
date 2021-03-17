@@ -19,13 +19,13 @@ import { timeEqual } from "../../shared/Utility";
 import { TimeSlider } from "chronos-etu";
 
 /**
- * The time slider component
+ * The time slider component based off https://www.npmjs.com/package/chronos-etu.
  * @component
  * @param {Object} props
  * @param {Date} props.startTime The start time for the time range selected in the slider.
  * @param {Date} props.endTime The end time for the time range selected in the slider.
- * @param {String} props.rangeStart The start date (in ISO string format) for the slider.
- * @param {String} props.rangeEnd The end date (in ISO string format) for the slider.
+ * @param {String} props.rangeStart The earliest start date (in ISO string format) for the slider.
+ * @param {String} props.rangeEnd The latest end date (in ISO string format) for the slider.
  * @param {HandleTimeRangeUpdated} props.onTimeRangeUpdated A callback
  * &nbsp;function to be invoked when the time selection is updated
  * @param {HandleCurrTimeUpdated} props.onCurrTimeUpdated A callback
@@ -53,6 +53,7 @@ function ChronosTimeSlider(props) {
      *
      * @param {Date} start Start date of the Date range.
      * @param {Date} end End date of the Date range.
+     * @private
      */
     function createTimeSelection(start, end) {
         //Also zoom the slider to 5 days before and after the selection.
@@ -76,6 +77,7 @@ function ChronosTimeSlider(props) {
      * Removes the time selection from the timeSliderControl.
      *
      * @param {string} tsId The id of the last timeSelection
+     * @private
      */
     function removeTimeSelection(tsId) {
         timeSliderControl.removeTimeSelection(tsId);
@@ -107,6 +109,7 @@ function ChronosTimeSlider(props) {
     /**
      * Function to initialize the Timeslider
      * @property {TimeSlider} timeSliderControl
+     * @private
      */
     function createTimeSlider() {
         const sliderWidth = containerRef.current.clientWidth;
@@ -170,6 +173,7 @@ function ChronosTimeSlider(props) {
 
     /**
      * Updates the time selection if the start or end times change.
+     * @private
      */
     function updateSelection() {
         if (

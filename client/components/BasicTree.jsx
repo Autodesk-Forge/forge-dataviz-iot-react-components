@@ -24,14 +24,14 @@ import TreeItem from "@material-ui/lab/TreeItem";
  * @component
  *
  * @param {Object} props
- * @param {string[]} props.expanded Array of expanded nodes
+ * @param {string} props.expanded String identifier of node to be expanded
  * @param {string} props.selectedNodeId ID of the currently selected node
- * @param {Function} props.onLabelRequest Function to generate a label given a {@link TreeNode}
+ * @param {OnLabelRequest} props.onLabelRequest Function to generate a label given a {@link TreeNode}
  * @param {Array.<TreeNode>} props.data Represents an array of hierarchical {@link TreeNode} to be rendered.
- * @param {Function} props.onIconClick Function to be invoked when the arrow icon is clicked
- * @param {Function} props.onLabelClick Function to be invoked when a label is clicked
- * @param {Function} props.onMouseOver Function to be invoked on the mouseover of a {@link TreeNode}
- * @param {Function} props.onMouseOut Function to be invoked when the mouse hovers off a {@link TreeNode}.
+ * @param {OnMouseEvent} props.onIconClick Function to be invoked when the arrow icon is clicked
+ * @param {OnMouseEvent} props.onLabelClick Function to be invoked when a label is clicked
+ * @param {OnMouseEvent} props.onMouseOver Function to be invoked on the mouseover of a {@link TreeNode}
+ * @param {OnMouseEvent} props.onMouseOut Function to be invoked when the mouse hovers off a {@link TreeNode}.
  * @param {Object} props.classes Styles to be applied to a {@link TreeNode}. See
  * &nbsp;{@link https://material-ui.com/api/tree-item/#css } for structure.
  *
@@ -39,6 +39,13 @@ import TreeItem from "@material-ui/lab/TreeItem";
  * @alias Autodesk.DataVisualization.UI.BasicTree
  */
 function BasicTree(props) {
+    /**
+     * Calls the corresponding handler with data if found.
+     * 
+     * @param {string} handlerName Name of event handler.
+     * @param {TreeNode} data Node that triggered event.
+     * @private
+     */
     function onEvent(handlerName, data) {
         return (event) => {
             if (props[handlerName]) {
@@ -65,11 +72,11 @@ function BasicTree(props) {
 
 
     /**
-     * Finds a path from the root of the tree to the target {@link reeNode}.
+     * Finds a path from the root of the tree to the target {@link TreeNode}.
      * 
-     * @param {DeviceTreeNode[]} tree Tree of device {@link TreeNode} in the scene.
+     * @param {TreeNode[]} tree Tree of device {@link TreeNode} in the scene.
      * @param {string} goal Id of {@link TreeNode}
-     * @returns {String[]} An array containing the path. [] if a path to the 
+     * @returns {string[]} An array of node identifiers representing the path from root to goal. Returns [] if a path to the 
      * &nbsp;{@link TreeNode} cannot be found.
      * @private
      */
@@ -98,6 +105,7 @@ function BasicTree(props) {
      * Renders a row for the given node and its children, if any.
      *
      * @param {TreeNode} node Represents a node in props.data
+     * @private
      */
     const renderTree = (node) => (
         <TreeItem

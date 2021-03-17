@@ -44,6 +44,7 @@ function BasicDatePicker(props) {
      * Called when a date change occurs in the picker.
      * @param {moment.Moment} start Start moment of date picked
      * @param {moment.Moment} end End moment of date picked
+     * @private
      */
     function handleDateChange(start, end) {
         start = start ? moment.utc(start).toDate() : props.startTime;

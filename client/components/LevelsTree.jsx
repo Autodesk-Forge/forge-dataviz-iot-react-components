@@ -19,6 +19,11 @@ import Typography from "@material-ui/core/Typography";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const useStyles = makeStyles(() => ({
+    root: {
+        "&.Mui-selected > .MuiTreeItem-content": {
+            color: "#00bfff"
+        }
+    },
     itemLabel: {
         "&:hover": {
             backgroundColor: "#808080",
@@ -28,13 +33,6 @@ const useStyles = makeStyles(() => ({
         "&:hover": {
             backgroundColor: "#808080",
         },
-    },
-    selected: {
-        color: "#00bfff",
-    },
-    group: {
-        padding: 0,
-        margin: 0,
     },
     iconContainer: {
         marginLeft: "10px",
@@ -48,12 +46,12 @@ const useStyles = makeStyles(() => ({
  * @component
  * @param {Object} props
  * @param {TreeNode[]} props.data Array of {@link TreeNode} representing levels in the model.
- * @param {Function} props.onMouseOver Called when a user hovers over a level.
- * @param {Function} props.onMouseOut Called when a user removes the cursor from a level.
- * @param {Function} props.onLabelClick Called when a user selects a level.
- * @param {Function} props.onIconClick Called when a user expands/closes a grouping.
- * @param {string[]} props.expandedNodeId Identifier of currently expanded node
- * @param {string} props.selectedNode Identifier of currently selected node
+ * @param {OnMouseEvent} props.onMouseOver Called when a user hovers over a level.
+ * @param {OnMouseEvent} props.onMouseOut Called when a user removes the cursor from a level.
+ * @param {OnMouseEvent} props.onLabelClick Called when a user selects a level.
+ * @param {OnMouseEvent} props.onIconClick Called when a user expands/closes a grouping.
+ * @param {string} props.expandedNodeId Identifier of node to be expanded.
+ * @param {string} props.selectedNode Identifier of selected node
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.LevelsTree
  */

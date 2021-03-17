@@ -49,19 +49,14 @@ const useStyles = makeStyles(() => ({
  * A panel component that displays all of devices in the scene, grouped by the levels they're associated with.
  * @component
  * @param {Object} props
- * @param {DeviceTreeNode[]} props.devices Array of device {@link DeviceTreeNode} in the scene
- * @param {Function} props.onNodeSelected A callback function invoked
- * &nbsp;when a device {@link DeviceTreeNode} is selected
- * @param {string} props.selectedDeviceId Identifier of the device currently
- * &nbsp;selected; undefined otherwise.
- * @param {Function} props.onNavigateBack A callback function invoked when "Back
- * &nbsp;to devices" button is clicked.
+ * @param {EventBus} props.eventBus Used to dispatch mouse events when a user interacts with a {@link TreeNode}
+ * @param {TreeNode[]} props.devices Array of device {@link TreeNode} in the scene
+ * @param {OnNodeSelected} props.onNodeSelected A callback function invoked
+ * &nbsp;when a device {@link TreeNode} is selected
  * @param {Object} props.propertyIconMap A mapping of property names to image paths used for each {@link Autodesk.DataVisualization.UI.DeviceStats} in the {@link Autodesk.DataVisualization.UI.DeviceTree} .
- * @param {Object} props.selectedFloorNode Represents the floor that is currently selected in the scene.
+ * @param {(Autodesk.DataVisualization.Core.SurfaceShadingGroup|Autodesk.DataVisualization.Core.SurfaceShadingNode)} props.selectedGroupNode Represents the
+ * &nbsp;group node that is currently selected in the scene.
  * @param {CurrentDeviceData} props.currentDeviceData Data containing the estimated propertyValue for each property
- * &nbsp;associated with props.selectedDeviceId.
- * @param {Function} props.updateSelectedFloor A callback function to update the floor visible in the scene
- * &nbsp;when a user expands a different grouping of devices in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
  *
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.DevicePanel
@@ -78,8 +73,8 @@ function DevicePanel(props) {
     function getDeviceLabels() {
         let deviceLabels = [];
 
-        for (let floor of props.devices) {
-            for (let device of floor.children) {
+        for (let group of props.devices) {
+            for (let device of group.children) {
                 if (props.currentDeviceData[device.id]) {
                     deviceLabels.push({ id: device.id, name: device.name });
                 }
@@ -151,13 +146,9 @@ function DevicePanel(props) {
             <div id="treeView">
                 <DeviceTree
                     devices={props.devices}
-                    selectedNodeId={props.selectedDeviceId}
                     onNodeSelected={props.onNodeSelected}
-                    onNavigateBack={props.onNavigateBack}
                     propertyIconMap={props.propertyIconMap}
-                    selectedFloorNode={props.selectedFloorNode}
                     currentDeviceData={props.currentDeviceData}
-                    updateSelectedFloor={props.updateSelectedFloor}
                     selectedGroupNode={props.selectedGroupNode}
                     eventBus={props.eventBus}
                 />

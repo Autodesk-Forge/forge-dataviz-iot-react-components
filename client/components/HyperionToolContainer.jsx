@@ -101,17 +101,19 @@ function SensorOptionIcon() {
 }
 
 /**
- * Component responsible for displaying the levels present in the model (via the AECLevelsExtension) and a menu to configure device settings.
- * Automatically displays the 1st floor of the model (if level information is available) when the application loads.
+ * Component responsible for displaying the grouping information as defined by the parent component and a menu to configure device render settings.
  * @component
  * 
  * @param {Object} props
- * @param {Object} props.dataVizExt Represents the Forge Viewer Data Visualization extension
- * @param {Object} props.viewer Represents the viewer object in scene.
- * @param {boolean} props.structureToolOnly Flag that renders only the LevelsTree option when true.
- * @param {Function} props.updateSelectedFloor A callback function to update the floor visible in the scene
- * &nbsp;when a user expands a different grouping of devices in the {@link Autodesk.DataVisualization.UI.DeviceTree} object.
- * @param {string} props.selectedFloorIndex Index of the selected floor in the scene. "" if no floor is selected.
+ * @param {TreeNode[]} props.data Array of device {@link TreeNode} in the scene
+ * @param {EventBus} props.eventBus Used to dispatch mouse events when a user interacts with a {@link TreeNode}
+ * @param {boolean} [props.structureToolOnly] Flag that renders only the LevelsTree option when true.
+ * @param {(Autodesk.DataVisualization.Core.SurfaceShadingGroup|Autodesk.DataVisualization.Core.SurfaceShadingNode)} props.selectedGroupNode Represents the 
+ * &nbsp;group node that is currently selected in the scene.
+ * @param {{Object}} props.renderSettings Defines settings that are configured via the DataViz extension.
+ * @param {boolean} props.renderSettings.showViewables Defines whether sprite viewables are visible in the scene.
+ * @param {boolean} props.renderSettings.occlusion Defines whether the sprite viewables are occluded.
+ * @param {boolean} props.renderSettings.showTextures Defines whether textures are shown.
  * 
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.HyperionToolContainer
@@ -119,7 +121,7 @@ function SensorOptionIcon() {
 function HyperionToolContainer(props) {
     const [levelsButtonAnchor, setLevelsButtonAnchor] = useState(null);
     const [deviceButtonAnchor, setDeviceButtonAnchor] = useState(null);
-    const [expandNodeId, setExpandNodeId] = useState(["data"]);
+    const [expandNodeId, setExpandNodeId] = useState("");
     const [selectedNodeId, setSelectedNodeId] = useState("");
     const [showLevels, setShowLevels] = useState(false);
     const [fromDeviceTree, setFromDeviceTree] = useState(false);
@@ -134,11 +136,17 @@ function HyperionToolContainer(props) {
     const levels = props.data;
     const eventBus = props.eventBus;
 
+    /**
+     * Dispatches the event if an eventBus is found.
+     * 
+     * @param {MouseEvent} event MouseEvent that needs to be dispatched.
+     * @private
+     */
     function dispatchEvent(event) {
         if (eventBus) {
             eventBus.dispatchEvent(event);
         } else {
-            console.warn("Please add eventBus to sendEvent out");
+            console.warn("Please add an eventBus to dispatch events");
         }
     }
 
@@ -161,6 +169,7 @@ function HyperionToolContainer(props) {
      * Opens the levels menu to reveal level data loaded using the AECLevelsExtension.
      * 
      * @param {MouseEvent} event Click event indicating that the levels button has been selected.
+     * @private
      */
     const handleLevelsButtonClick = (event) => {
         setLevelsButtonAnchor(event.currentTarget);
@@ -172,6 +181,7 @@ function HyperionToolContainer(props) {
      * Opens the device settings menu.
      * 
      * @param {MouseEvent} event Click event indicating that the device button has been selected.
+     * @private
      */
     const handleDeviceButtonClick = (event) => {
         setShowLevels(false);
@@ -184,6 +194,7 @@ function HyperionToolContainer(props) {
      * 
      * @param {MouseEvent} event Click event indicating that the user has modified the 
      * &nbsp;configuration in the device settings menu,
+     * @private
      */
     const handleSettingsChange = (event) => {
         let newSettings = Object.assign({}, settings);
@@ -194,7 +205,7 @@ function HyperionToolContainer(props) {
         }
 
         dispatchEvent({
-            type: EventTypes.DEVICE_SETTINGS_CHANGED,
+            type: EventTypes.RENDER_SETTINGS_CHANGED,
             data: newSettings
         })
     };
@@ -205,8 +216,9 @@ function HyperionToolContainer(props) {
     /**
      * Highlights the node in the forge viewer canvas.
      * 
-     * @param {MouseEvent} event MouseOver event indicating that a user has hovered over a floor name,
-     * @param {Object} node Represents the floor that a user has hovered over.
+     * @param {MouseEvent} event MouseOver event indicating that a user has hovered over a group name.
+     * @param {TreeNode} node Represents the group that a user has hovered over.
+     * @private
      */
     function onMouseOver(event, node) {
         dispatchEvent({
@@ -221,8 +233,9 @@ function HyperionToolContainer(props) {
     /**
      * Removes node highlight shown in the forge viewer canvas.
      * 
-     * @param {MouseEvent} event MouseOver event indicating that a user has hovered over a floor name,
-     * @param {Object} node Represents the floor that a user has hovered over.
+     * @param {MouseEvent} event MouseOver event indicating that a user has hovered over a group name.
+     * @param {TreeNode} node Represents the group that a user has hovered over.
+     * @private
      */
     function onMouseOut(event, node) {
         dispatchEvent({
@@ -237,7 +250,8 @@ function HyperionToolContainer(props) {
      * Updates the scene to show the selected level.
      * 
      * @param {MouseEvent} event Click event indicating that a user has selected a level.
-     * @param {Object} node Represents the level that the user has selected.
+     * @param {TreeNode} node Represents the level that the user has selected.
+     * @private
      */
     function onLabelClick(event, node) {
         dispatchEvent({
@@ -253,7 +267,8 @@ function HyperionToolContainer(props) {
      * Called when a user selects the arrow icon in the levels menu to expand or close a group.
      * 
      * @param {MouseEvent} event Click event indicating that a user has expanded/closed a grouping in the levels menu.
-     * @param {Object} node Node that user has selected to expand/close.
+     * @param {TreeNode} node Node that user has selected to expand/close.
+     * @private
      */
     function onIconClick(event, node) {
         dispatchEvent({
@@ -263,9 +278,9 @@ function HyperionToolContainer(props) {
         })
 
         if (expandNodeId[0] == node.id.toString()) {
-            setExpandNodeId(["data"]);
+            setExpandNodeId("");
         } else {
-            setExpandNodeId([node.id.toString()]);
+            setExpandNodeId(node.id.toString());
         }
 
         event.stopPropagation();
