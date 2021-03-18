@@ -206,10 +206,9 @@ function HyperionToolContainer(props) {
 
         dispatchEvent({
             type: EventTypes.RENDER_SETTINGS_CHANGED,
-            data: newSettings
-        })
+            data: newSettings,
+        });
     };
-
 
     const classes = useStyles();
 
@@ -274,10 +273,10 @@ function HyperionToolContainer(props) {
         dispatchEvent({
             type: EventTypes.LEVELS_TREE_MOUSE_OUT,
             originalEvent: event,
-            data: node
-        })
+            data: node,
+        });
 
-        if (expandNodeId[0] == node.id.toString()) {
+        if (expandNodeId === node.id.toString()) {
             setExpandNodeId("");
         } else {
             setExpandNodeId(node.id.toString());
@@ -298,12 +297,10 @@ function HyperionToolContainer(props) {
             if (canClose) {
                 setShowLevels(false);
                 setCanClose(false);
-            }
-            else {
+            } else {
                 setShowLevels(true);
             }
-        }
-        else {
+        } else {
             setShowLevels(false);
             setFromDeviceTree(false);
         }
@@ -322,7 +319,12 @@ function HyperionToolContainer(props) {
     return (
         <React.Fragment>
             <div id="hyperionToolContainer">
-                <IconButton id="levelsButton" className={classes.customHoverFocus} onClick={handleLevelsButtonClick} ref={levels.length > 0 ? setLevelsButtonAnchor : null}>
+                <IconButton
+                    id="levelsButton"
+                    className={classes.customHoverFocus}
+                    onClick={handleLevelsButtonClick}
+                    ref={levels.length > 0 ? setLevelsButtonAnchor : null}
+                >
                     <LayersIcon style={{ fill: "inherit" }} />
                 </IconButton>
                 <Popper

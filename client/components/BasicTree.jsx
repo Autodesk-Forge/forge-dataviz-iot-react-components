@@ -70,7 +70,6 @@ function BasicTree(props) {
         return [];
     }
 
-
     /**
      * Finds a path from the root of the tree to the target {@link TreeNode}.
      * 
@@ -85,7 +84,7 @@ function BasicTree(props) {
             if (tree.id == goal) return [tree.id];
 
             for (let i = 0; i < tree.children.length; i++) {
-                let subpath = helper(tree.children[i], goal)
+                let subpath = helper(tree.children[i], goal);
                 if (subpath) {
                     return [tree.id].concat(subpath);
                 }
@@ -93,13 +92,12 @@ function BasicTree(props) {
         }
 
         for (let index = 0; index < tree.length; index++) {
-            const path = helper(tree[index], goal)
+            const path = helper(tree[index], goal);
             if (path) return path;
         }
 
         return [];
     }
-
 
     /**
      * Renders a row for the given node and its children, if any.

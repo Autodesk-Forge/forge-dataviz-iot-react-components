@@ -50,7 +50,7 @@ const useStyles = makeStyles(() => ({
  * @param {OnMouseEvent} props.onMouseOut Called when a user removes the cursor from a level.
  * @param {OnMouseEvent} props.onLabelClick Called when a user selects a level.
  * @param {OnMouseEvent} props.onIconClick Called when a user expands/closes a grouping.
- * @param {string} props.expandedNodeId Identifier of node to be expanded.
+ * @param {string} props.expandNodeId Identifier of node to be expanded.
  * @param {string} props.selectedNode Identifier of selected node
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.LevelsTree
@@ -68,10 +68,10 @@ function LevelsTree(props) {
                         </Typography>
                     </React.Fragment>
                 ) : (
-                        <div id="deviceName">
-                            <Typography noWrap={true}>{node.name}</Typography>
-                        </div>
-                    )}
+                    <div id="deviceName">
+                        <Typography noWrap={true}>{node.name}</Typography>
+                    </div>
+                )}
             </React.Fragment>
         );
     }

@@ -43,9 +43,6 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: "#2A2A2A",
         },
     },
-    selected: {
-        color: "#00bfff",
-    },
     categoryContent: {
         backgroundColor: "#2A2A2A",
         maxWidth: "100%",

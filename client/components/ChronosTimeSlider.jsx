@@ -116,8 +116,7 @@ function ChronosTimeSlider(props) {
         const sliderHeight = cntrStyle.height.replace("px", "");
         const theme = getCurrentTheme();
 
-        let timeSliderControl = new TimeSlider(sliderWidth, sliderHeight,
-            props.rangeStart, props.rangeEnd, theme);
+        let timeSliderControl = new TimeSlider(sliderWidth, sliderHeight, props.rangeStart, props.rangeEnd, theme);
 
         timeSliderControl._timeFormat = "dddd, MMMM Do YYYY, HH:mm:ss";
         timeSliderControl._userDefinedTimeFormat = true;

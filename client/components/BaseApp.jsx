@@ -29,12 +29,7 @@ import { SpriteSize, SensorStyleDefinitions, PropIdGradientMap } from "../config
 import adskLogoSvg from "../../assets/images/autodesk-logo.svg";
 import ChronosTimeSlider from "./ChronosTimeSlider.jsx";
 import BasicDatePicker from "./BasicDatePicker.jsx";
-import {
-    getPaddedRange,
-    getTimeInEpochSeconds,
-    getClosestValue,
-    clamp
-} from "../../shared/Utility";
+import { getPaddedRange, getTimeInEpochSeconds, getClosestValue, clamp } from "../../shared/Utility";
 import HeatmapOptions from "./HeatmapOptions.jsx";
 import EventTypes from "./EventTypes.js";
 import io from "socket.io-client";
@@ -48,9 +43,8 @@ import {
     DataView,
     DateTimeSpan,
     EventType,
-    DeviceProperty
+    DeviceProperty,
 } from "forge-dataviz-iot-data-modules/client";
-
 
 // End Range for timeslider
 const endRange = new Date(new Date().getTime() + 7 * 60 * 60 * 1000 * 24);
@@ -66,7 +60,7 @@ const startRange = new Date("2020-01-01T00:00:00Z");
  * @returns {Object.<string, Autodesk.DataVisualization.Core.ViewableStyle>} The style map
  * that maps a given device model ID to the corresponding viewable style.
  *
- * @memberof Autodesk.DataVisualization.UI
+ * @memberof Autodesk.DataVisualization.UI.BaseApp
  */
 function initialDeviceModelStyleMap(surfaceShadingConfig) {
     let styleMap = {};
@@ -206,11 +200,13 @@ function BaseApp(props) {
     const [deviceTree, setDeviceTree] = useState([]);
     const [selectedDevice, setSelectedDevice] = useState("");
     const [selectedGroupNode, setSelectedGroupNode] = useState();
-    const [renderSettings, setRenderSettings] = useState(props.renderSettings || {
-        showViewables: true,
-        occlusion: false,
-        showTextures: true
-    });
+    const [renderSettings, setRenderSettings] = useState(
+        props.renderSettings || {
+            showViewables: true,
+            occlusion: false,
+            showTextures: true,
+        }
+    );
 
     const currentSurfaceShadingGroupRef = useRef("");
 
@@ -314,7 +310,6 @@ function BaseApp(props) {
         setTimeWindow(timeOptions.startTime, timeOptions.endTime, masterDataView);
         return [session, masterDataView];
     }
-
 
     /**
      * Called by {@link Autodesk.DataVisualization.UI.Viewer} when the model has been loaded.
@@ -515,7 +510,7 @@ function BaseApp(props) {
 
                 if (event.hasStopped) return;
                 callback(event);
-            }
+            };
         }
 
         /**
@@ -745,7 +740,7 @@ function BaseApp(props) {
             const dataView = currAppState.masterDataView;
 
             /** @type {Map.<string, DeviceProperty>} */
-            const properties = currAppState.propertyMap
+            const properties = currAppState.propertyMap;
 
             // Get the aggregated value for the selected property.
             const prop = properties.get(sensorType);
@@ -815,7 +810,12 @@ function BaseApp(props) {
         const { dataVizExtn } = currAppState;
 
         // A different group has been selected.
-        if (selectedGroupNode && selectedGroupNode.id != currentSurfaceShadingGroupRef.current && currAppState && dataVizExtn) {
+        if (
+            selectedGroupNode &&
+            selectedGroupNode.id != currentSurfaceShadingGroupRef.current &&
+            currAppState &&
+            dataVizExtn
+        ) {
             currentSurfaceShadingGroupRef.current = selectedGroupNode.id;
 
             dataVizExtn.removeSurfaceShading();
@@ -851,12 +851,11 @@ function BaseApp(props) {
             if (props.data.shadingData.children.length > 0) {
                 dispatchEventToHandler({
                     type: EventTypes.LEVELS_TREE_MOUSE_CLICK,
-                    data: props.data.shadingData.children[0]
-                })
+                    data: props.data.shadingData.children[0],
+                });
             }
         }
-
-    }, [appStateRef.current.propertyMap])
+    }, [appStateRef.current.propertyMap]);
 
     /**
      * Gets the selected property's range min, max and dataUnit value.
@@ -868,14 +867,13 @@ function BaseApp(props) {
     function getPropertyRanges(propertyId) {
         const currAppState = appStateRef.current;
 
-
         if (propertyId !== "None") {
             let dataUnit = "";
             let rangeMin = Infinity;
             let rangeMax = -Infinity;
 
             /** @type {Map.<string,DeviceProperty>} */
-            const propertyMap = currAppState.propertyMap
+            const propertyMap = currAppState.propertyMap;
 
             //Get the property data from the device model
             let deviceProperty = propertyMap.get(propertyId);
@@ -891,16 +889,13 @@ function BaseApp(props) {
             // Check if the property min and max range is available in the device model, else notify user
             if (isNaN(rangeMin) || isNaN(rangeMax)) {
                 console.warn(
-                    "RangeMin and RangeMax for " +
-                    propertyId +
-                    " not specified. \
-                 Please update these values in the device model"
+                    `RangeMin and RangeMax for ${propertyId} not specified. Please update these values in the device model`
                 );
                 rangeMin = 0;
                 rangeMax = 100;
                 dataUnit = "%";
             }
-            return { rangeMin, rangeMax, dataUnit }
+            return { rangeMin, rangeMax, dataUnit };
         }
     }
 
@@ -961,10 +956,10 @@ function BaseApp(props) {
     function getDeviceData(devicesToQuery) {
         let currAppState = appStateRef.current;
         /** @type {CurrentDeviceData} */
-        let data = {}
-        let propertyMap = currAppState.propertyMap
-        devicesToQuery.forEach(device => {
-            device.propIds.forEach(property => {
+        let data = {};
+        let propertyMap = currAppState.propertyMap;
+        devicesToQuery.forEach((device) => {
+            device.propIds.forEach((property) => {
                 let av = currAppState.masterDataView.getAggregatedValues(device.id, property)
                 if (av) {
                     let options = timeOptionRef.current;
@@ -974,14 +969,14 @@ function BaseApp(props) {
                     Object.assign(data, currentDeviceDataRef.current);
 
                     if (!data[device.id]) {
-                        data[device.id] = {}
+                        data[device.id] = {};
                     }
                     let deviceProperty = propertyMap.get(property);
-                    let dataUnit = deviceProperty ? deviceProperty.dataUnit : '%';
+                    let dataUnit = deviceProperty ? deviceProperty.dataUnit : "%";
                     data[device.id][property] = `${val.toFixed(2)} ${dataUnit}`;
                 }
-            })
-        })
+            });
+        });
         if (Object.keys(data).length) currentDeviceDataRef.current = data;
     }
 
@@ -994,11 +989,11 @@ function BaseApp(props) {
     function getChartData(devicesToQuery) {
         let currAppState = appStateRef.current;
         /**@type {ChartData} */
-        let data = {}
-        let propertyMap = currAppState.propertyMap
+        let data = {};
+        let propertyMap = currAppState.propertyMap;
 
-        devicesToQuery.forEach(device => {
-            device.propIds.forEach(property => {
+        devicesToQuery.forEach((device) => {
+            device.propIds.forEach((property) => {
                 let av = currAppState.masterDataView.getAggregatedValues(device.id, property)
                 if (av) {
                     const { min, max } = getPaddedRange(av.avgValues, 10.0);
@@ -1007,8 +1002,8 @@ function BaseApp(props) {
                     if (!data[device.id]) {
                         data[device.id] = {
                             name: device.name,
-                            properties: {}
-                        }
+                            properties: {},
+                        };
                     }
 
                     const seriesData = [];
@@ -1019,18 +1014,18 @@ function BaseApp(props) {
                         });
                     });
                     let deviceProperty = propertyMap.get(property);
-                    let dataUnit = deviceProperty ? deviceProperty.dataUnit : '%';
+                    let dataUnit = deviceProperty ? deviceProperty.dataUnit : "%";
                     data[device.id]["properties"][property] = {
                         dataUnit: dataUnit,
                         seriesData: seriesData,
                         yAxis: {
                             dataMin: min,
-                            dataMax: max
-                        }
-                    }
+                            dataMax: max,
+                        },
+                    };
                 }
-            })
-        })
+            });
+        });
         if (Object.keys(data).length) chartDataRef.current = data;
     }
 
@@ -1038,12 +1033,11 @@ function BaseApp(props) {
         let devicesToQuery = getDevicesInGroup(selectedGroupNode);
         getDeviceData(devicesToQuery);
         getChartData(devicesToQuery);
-    }
-    else if (selectedGroupNode === null && deviceTree) { // Viewing entire building, need to query all devices.
+    } else if (selectedGroupNode === null && deviceTree) { // Viewing entire building, need to query all devices.
         let devicesToQuery = [];
-        deviceTree.forEach(group => {
+        deviceTree.forEach((group) => {
             devicesToQuery.push.apply(devicesToQuery, group.children);
-        })
+        });
         getChartData(devicesToQuery);
         getDeviceData(devicesToQuery);
     }
@@ -1087,6 +1081,7 @@ function BaseApp(props) {
                 />
                 <BasicDatePicker
                     {...timeOptions}
+                    disabledDate = {endRange}
                     onRangeChange={handleTimeRangeUpdated}
                 />
             </div>
@@ -1117,7 +1112,9 @@ function BaseApp(props) {
             {selectedGroupNode && (
                 <HeatmapOptions
                     {...heatmapOptions}
-                    propIdGradientMap={props.surfaceShadingConfig ? props.surfaceShadingConfig.gradientSetting : PropIdGradientMap}
+                    propIdGradientMap={
+                        props.surfaceShadingConfig ? props.surfaceShadingConfig.gradientSetting : PropIdGradientMap
+                    }
                     onHeatmapOptionChange={onHeatmapOptionChange}
                     getPropertyRanges={getPropertyRanges}
                     deviceModelProperties={appStateRef.current.propertyMap}

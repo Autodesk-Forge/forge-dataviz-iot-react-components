@@ -28,6 +28,7 @@ import { timeEqual } from "../../shared/Utility";
  * @param {Object} props
  * @param {Date} props.startTime The start date for the DatePicker
  * @param {Date} props.endTime The end date for the DatePicker
+ * @param {Date} props.disabledDate The last date the user can select from the DatePicker
  * @param {HandleTimeRangeUpdates} props.onRangeChange A callback
  * &nbsp;invoked when changes are made to the DatePicker.
  *
@@ -38,6 +39,7 @@ import { timeEqual } from "../../shared/Utility";
 function BasicDatePicker(props) {
     const startDate = moment.utc(props.startTime);
     const endDate = moment.utc(props.endTime);
+    const disableDates = moment.utc(props.disabledDate)
     const [focusedInput, setFocusedInput] = useState(null);
 
     /**
@@ -55,6 +57,8 @@ function BasicDatePicker(props) {
         }
     }
 
+    let isOutsideRange = day => day.isAfter(disableDates)
+
     return (
         <div className="date-picker-container">
             <DateRangePicker
@@ -66,7 +70,7 @@ function BasicDatePicker(props) {
                 focusedInput={focusedInput}
                 onFocusChange={(focusedInput) => setFocusedInput(focusedInput)}
                 displayFormat="MMM D,Y"
-                isOutsideRange={() => false}
+                isOutsideRange={isOutsideRange}
                 minimumNights={0}
             />
         </div>
