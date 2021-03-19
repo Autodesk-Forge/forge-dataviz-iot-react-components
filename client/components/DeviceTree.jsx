@@ -97,7 +97,8 @@ const MemoizedDeviceStats = memo(DeviceStats);
  * @param {CurrentDeviceData} props.currentDeviceData Data containing the estimated propertyValue for each property
  * &nbsp;associated with the selected device.
  * @param {Object} props.propertyIconMap A mapping of property names to image paths used for each {@link Autodesk.DataVisualization.UI.DeviceStats} object.
- *
+ * @param {Function} props.onNavigateBack A callback function invoked when "Back to devices" button is clicked.
+ * 
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.DeviceTree
  */
@@ -187,22 +188,22 @@ function DeviceTree(props) {
                 <Avatar className={styles.avatar}>{getNumDescendants(node)}</Avatar>
             </React.Fragment>
         ) : (
-            <React.Fragment>
-                <div id="deviceName">
-                    <Typography className={styles.typography} noWrap={true}>
-                        {node.name}
-                    </Typography>
-                </div>
-                {properties.map((property) => (
-                    <MemoizedDeviceStats
-                        key={`${node.id}-${property}`}
-                        deviceId={node.id}
-                        propertyIcon={propertyIconMap[property]}
-                        propertyValue={data[property]}
-                    />
-                ))}
-            </React.Fragment>
-        );
+                <React.Fragment>
+                    <div id="deviceName">
+                        <Typography className={styles.typography} noWrap={true}>
+                            {node.name}
+                        </Typography>
+                    </div>
+                    {properties.map((property) => (
+                        <MemoizedDeviceStats
+                            key={`${node.id}-${property}`}
+                            deviceId={node.id}
+                            propertyIcon={propertyIconMap[property]}
+                            propertyValue={data[property]}
+                        />
+                    ))}
+                </React.Fragment>
+            );
     }
 
     return (
@@ -213,6 +214,7 @@ function DeviceTree(props) {
             onIconClick={onIconClick}
             onLabelClick={onLabelClick}
             onMouseOver={onLabelClick}
+            onMouseOut={props.onNavigateBack}
             classes={styles}
         />
     );
