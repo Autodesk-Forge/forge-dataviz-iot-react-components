@@ -66,3 +66,6 @@ NOTE: Most of these components have been created using the [Material UI](http://
 -   DataChart - A React Echarts instance representing the chart data for a property of a device.
 
 API documentation for each component can be found [here](https://forge.autodesk.com/en/docs/dataviz/v1/reference/UI/)
+
+### Troubleshooting:
+If styling for BasicDatePicker is missing, add the following line to import react-dates styles - `import "react-dates/lib/css/_datepicker.css";`
