@@ -44,7 +44,7 @@ NOTE: Most of these components have been created using the [Material UI](http://
 
 -   BaseApp - Complete UI encompassing all of the components below.
 
-![Component Mapping Image 1](https://github.com/Autodesk-Forge/forge-dataviz-iot-react-components/blob/main/images/component-mapping-p1.png)
+![Component Mapping Image 1](https://github.com/Autodesk-Forge/forge-dataviz-iot-react-components/raw/main/images/component-mapping-p1.png)
 
 -   BasicDatePicker - A date picker component that enables date selection via calendar input.
 -   ChronosTimeSlider - Interactive timeslider based off the chronos-etu npm package
@@ -59,10 +59,10 @@ NOTE: Most of these components have been created using the [Material UI](http://
 -   BasicTree - Basic hierarchical tree structure used by DeviceTree and LevelsTree.
 -   EventTypes - Defines the events dispatched by the components.
 
-![Component Mapping Image 2](https://github.com/Autodesk-Forge/forge-dataviz-iot-react-components/blob/main/images/component-mapping-p2.png)
+![Component Mapping Image 2](https://github.com/Autodesk-Forge/forge-dataviz-iot-react-components/raw/main/images/component-mapping-p2.png)
 
 -   CustomToolTip - A tooltip component that contains DataCharts for a specific device.
 -   Dashboard - Shows chart data for each property associated with a device.
 -   DataChart - A React Echarts instance representing the chart data for a property of a device.
 
-API documentation for each component can be found [here](https://forge.autodesk.com/en/docs/hyperion/v1/reference/UI/)
+API documentation for each component can be found [here](https://forge.autodesk.com/en/docs/dataviz/v1/reference/UI/)
