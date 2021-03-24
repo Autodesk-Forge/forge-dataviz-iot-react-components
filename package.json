@@ -1,8 +1,8 @@
 {
     "name": "forge-dataviz-iot-react-components",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "A React Component Library used by https://github.com/Autodesk-Forge/forge-dataviz-iot-reference-app",
-    "main": "./dist/bundle.js",
+    "main": "./client/app.js",
     "scripts": {
         "build": "webpack --config webpack.config.js"
     },
