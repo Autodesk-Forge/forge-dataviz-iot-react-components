@@ -39,7 +39,7 @@ import { timeEqual } from "../../shared/Utility";
 function BasicDatePicker(props) {
     const startDate = moment.utc(props.startTime);
     const endDate = moment.utc(props.endTime);
-    const disableDates = moment.utc(props.disabledDate)
+    const disableDates = moment.utc(props.disabledDate);
     const [focusedInput, setFocusedInput] = useState(null);
 
     /**
@@ -57,7 +57,7 @@ function BasicDatePicker(props) {
         }
     }
 
-    let isOutsideRange = day => day.isAfter(disableDates)
+    let isOutsideRange = (day) => day.isAfter(disableDates);
 
     return (
         <div className="date-picker-container">

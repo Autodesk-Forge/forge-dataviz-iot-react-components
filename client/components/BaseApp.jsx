@@ -119,8 +119,8 @@ startDate.setUTCHours(0, 0, 0, 0);
  * @param {string} [props.appData.dataStart] Start date for provided CSV data in ISO string format.
  * @param {string} [props.appData.dataEnd] End date for provided CSV data in ISO string format.
  * @param {EventBus} props.eventBus Used to dispatch mouse events when a user interacts with a {@link TreeNode}
- * @param {Object} [props.appContext] Contains base urls used to query assets, LMV, data etc.
- * @param {string} [props.appContext.fargateUrl] The base url used to configure a specific {@link Autodesk.DataVisualization.Data.DataAdapter}
+ * @param {Object} props.appContext Contains base urls used to query assets, LMV, data etc.
+ * @param {string} [props.appContext.dataUrl] The base url used to configure a specific {@link Autodesk.DataVisualization.Data.DataAdapter}
  * @param {Object} props.data
  * @param {Autodesk.DataVisualization.Core.SurfaceShadingData} props.data.shadingData {@link Autodesk.DataVisualization.Core.SurfaceShadingData} associated with the model.
  * @param {TreeNode[]} props.data.devicePanelData Represents array of device {@link TreeNode} in the scene.
@@ -516,7 +516,7 @@ function BaseApp(props) {
         /**
          * Called when a user selects a device in the scene. The corresponding device is selected in the scene.
          * 
-         * @param {MouseEvent} event 
+         * @param {Event} event 
          * @private
          */
         function onItemClick(event) {
@@ -529,7 +529,7 @@ function BaseApp(props) {
         /**
          * Called when a user hovers over a device in the scene.
          * 
-         * @param {MouseEvent} event 
+         * @param {Event} event 
          * @private
          */
         async function onItemHovering(event) {
@@ -604,7 +604,7 @@ function BaseApp(props) {
         }
         createWebsocket(session);
         props.eventBus.dispatchEvent({
-            type: "VIEWER_DATA_READY",
+            type: EventTypes.VIEWABLES_LOADED,
             data: {
                 dataVizExtn,
                 DataVizCore,
@@ -1090,7 +1090,7 @@ function BaseApp(props) {
                 chartData={chartDataRef.current}
                 currentDeviceData={currentDeviceDataRef.current}
             />
-
+            
             <div className="viewer-container">
                 <Viewer
                     env={env}
