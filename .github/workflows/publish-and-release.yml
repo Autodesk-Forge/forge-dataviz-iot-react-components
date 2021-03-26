@@ -1,7 +1,7 @@
 on: 
   push:
     branches:
-      main
+      githubAction
 
 jobs:
   publish-new-version:
