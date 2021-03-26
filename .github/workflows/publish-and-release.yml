@@ -1,0 +1,61 @@
+on: 
+  push:
+    branches:
+      main
+
+jobs:
+  publish-new-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Step 1 - Get latest registry version
+        uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: echo "registry-version="$(npm view forge-dataviz-iot-react-components dist-tags.latest)"" >> $GITHUB_ENV
+      - run: echo "Latest version in registry - ${{ env.registry-version }}"
+
+      - name: Step 2 - Get version from package.json
+        id: check-for-version-diff
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const version = require(`${process.env.GITHUB_WORKSPACE}/package.json`).version
+            console.log(`package.json version - ${version}`)
+            
+            if (version.replace(/['"]+/g,'') == process.env.REGISTRY_VERSION){
+              console.log("Same version detected. No need to update package.")
+              return false
+            }
+            else {
+              console.log("Different versions found. Need to update package.")
+              return true
+            }
+        env:
+          REGISTRY_VERSION: ${{ env.registry-version }}
+      
+      - name: Step 3 - Compare versions and release new package if necessary
+        if: ${{ steps.check-for-version-diff.outputs.result == 'true' }}
+        run: |
+          echo ${{ steps.check-for-version-diff.outputs.result }}
+          npm install
+          npm run build
+          npm publish
+          echo "PUBLISHED_VERSION=$(npm view forge-dataviz-iot-react-components dist-tags.latest)" >> $GITHUB_ENV
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Step 4 - Create Git release
+        uses: actions/github-script@v3
+        if: ${{env.PUBLISHED_VERSION}}
+        with:
+          script: |
+            const tag = `v${process.env.PUBLISHED_VERSION}`.replace(/['"]+/g,'')
+            const response = await github.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag
+            });  
