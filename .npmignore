@@ -12,3 +12,4 @@ package-lock.json
 *.tgz
 webpack.config.js
 images/component-mapping*.png
+.github/*
