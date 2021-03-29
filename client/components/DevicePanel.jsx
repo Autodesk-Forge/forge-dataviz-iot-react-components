@@ -53,8 +53,8 @@ const useStyles = makeStyles(() => ({
  * @param {TreeNode[]} props.devices Array of device {@link TreeNode} in the scene
  * @param {OnNodeSelected} props.onNodeSelected A callback function invoked
  * &nbsp;when a device {@link TreeNode} is selected
- * @param {Object} props.propertyIconMap A mapping of property names to image paths used for each {@link Autodesk.DataVisualization.UI.DeviceStats} in the {@link Autodesk.DataVisualization.UI.DeviceTree} .
- * @param {(Autodesk.DataVisualization.Core.SurfaceShadingGroup|Autodesk.DataVisualization.Core.SurfaceShadingNode)} props.selectedGroupNode Represents the
+ * @param {Object} props.propertyIconMap A mapping of property names to image paths used for each {@link DeviceStats} in the {@link DeviceTree} .
+ * @param {(SurfaceShadingGroup|SurfaceShadingNode)} props.selectedGroupNode Represents the
  * &nbsp;group node that is currently selected in the scene.
  * @param {CurrentDeviceData} props.currentDeviceData Data containing the estimated propertyValue for each property
  * @param {Function} props.onNavigateBack A callback function invoked when "Back to devices" button is clicked.

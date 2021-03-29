@@ -142,7 +142,7 @@ const ResolutionCustomForm = withStyles({
  * @param {string} props.resolutionValue Data resolution vaue. Ex. PT1H, PT15M etc.
  * @param {string} props.selectedPropertyId String identifer of selected property.
  * @param {boolean} props.showHeatMap Flag that shows heatmap when true and hides heatmap when false.
- * @param {Map.<string,DeviceProperty>} props.deviceModelProperties Map of all the properties across all devicesModels in a {@link Autodesk.DataVisualization.Data.DataStore} object.
+ * @param {Map.<string,DeviceProperty>} props.deviceModelProperties Map of all the properties across all devicesModels in a {@link DataStore} object.
  * @param {OnHeatMapOptionChange} props.onHeatmapOptionChange A callback function invoked when any combination of
  * &nbsp;resolutionValue, selectedPropertyId, and showHeatMap are changed.
  *
@@ -366,7 +366,7 @@ function ShaderSlider(props) {
  * @param {boolean} props.showHeatMap Flag to show/hide heatmap
  * @param {OnHeatMapOptionChange} props.onHeatMapOptionChange A callback function invoked when any combination of
  * &nbsp;resolutionValue, selectedPropertyId, and showHeatMap are changed.
- * @param {Map.<string, DeviceProperty>} props.deviceModelProperties  Map of all the properties across all devicesModels in a {@link Autodesk.DataVisualization.Data.DataStore} object.
+ * @param {Map.<string, DeviceProperty>} props.deviceModelProperties  Map of all the properties across all devicesModels in a {@link DataStore} object.
  *
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.SurfaceShader

@@ -57,8 +57,8 @@ const startRange = new Date("2020-01-01T00:00:00Z");
  * Creates the initial device-id-to-style map for all the device models found
  * defined in the downloaded list.
  *
- * @returns {Object.<string, Autodesk.DataVisualization.Core.ViewableStyle>} The style map
- * that maps a given device model ID to the corresponding viewable style.
+ * @returns {Object.<string, ViewableStyle>} The style map
+ * that maps a given device model ID to the corresponding {@link ViewableStyle}.
  *
  * @memberof Autodesk.DataVisualization.UI.BaseApp
  */
@@ -120,20 +120,20 @@ startDate.setUTCHours(0, 0, 0, 0);
  * @param {string} [props.appData.dataEnd] End date for provided CSV data in ISO string format.
  * @param {EventBus} props.eventBus Used to dispatch mouse events when a user interacts with a {@link TreeNode}
  * @param {Object} props.appContext Contains base urls used to query assets, LMV, data etc.
- * @param {string} [props.appContext.dataUrl] The base url used to configure a specific {@link Autodesk.DataVisualization.Data.DataAdapter}
+ * @param {string} [props.appContext.dataUrl] The base url used to configure a specific {@link DataAdapter}
  * @param {Object} props.data
- * @param {Autodesk.DataVisualization.Core.SurfaceShadingData} props.data.shadingData {@link Autodesk.DataVisualization.Core.SurfaceShadingData} associated with the model.
+ * @param {SurfaceShadingData} props.data.shadingData {@link SurfaceShadingData} associated with the model.
  * @param {TreeNode[]} props.data.devicePanelData Represents array of device {@link TreeNode} in the scene.
  * @param {Object} [props.renderSettings]
- * @param {boolean} [props.renderSettings.showViewables] Defines whether {@link Autodesk.DataVisualization.Core.SpriteViewable} are visible in the scene.
- * @param {boolean} [props.renderSettings.occlusion] Defines whether the {@link Autodesk.DataVisualization.Core.SpriteViewable} are occluded.
+ * @param {boolean} [props.renderSettings.showViewables] Defines whether {@link SpriteViewable} are visible in the scene.
+ * @param {boolean} [props.renderSettings.occlusion] Defines whether {@link SpriteViewable} are occluded.
  * @param {boolean} [props.renderSettings.showTextures] Defines whether textures are shown.
+ * @param {"GeometryHeatmap"|"PlanarHeatmap"} [props.renderSettings.heatmapType] Heatmap type to render in scene.
  * @param {Object} [props.surfaceShadingConfig]
- * @param {number} [props.surfaceShadingConfig.spriteSize] Defines the size of a {@link Autodesk.DataVisualization.Core.SpriteViewable}
- * @param {Object.<string, Object>} [props.surfaceShadingConfig.deviceStyles] Represents different style definitions for a {@link Autodesk.DataVisualization.Core.SpriteViewable}
+ * @param {number} [props.surfaceShadingConfig.spriteSize] Defines the size of a {@link SpriteViewable}
+ * @param {Object.<string, Object>} [props.surfaceShadingConfig.deviceStyles] Represents different style definitions for a {@link SpriteViewable}
  * @param {Object.<string, number[]>} [props.surfaceShadingConfig.gradientSetting] Mapping of proerties to corresponding gradient bar color stop values.
- * @param {Object} [props.propertyIconMap]  A mapping of property names to image paths used for
- * &nbsp;each {@link Autodesk.DataVisualization.UI.DeviceStats} object.
+ * @param {Object} [props.propertyIconMap]  A mapping of property names to image paths used for each {@link DeviceStats} object.
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.BaseApp
  */
@@ -147,7 +147,7 @@ function BaseApp(props) {
     const { env, docUrn, adapterType, api } = props.appData;
 
     /**
-     * Function to get the access token used to load the model into {@link Autodesk.DataVisualization.UI.Viewer}
+     * Function to get the access token used to load the model into {@link Viewer}
      * @private
      */
     async function getToken() {
@@ -205,6 +205,7 @@ function BaseApp(props) {
             showViewables: true,
             occlusion: false,
             showTextures: true,
+            heatmapType: "GeometryHeatmap"
         }
     );
 
@@ -311,8 +312,24 @@ function BaseApp(props) {
         return [session, masterDataView];
     }
 
+
+    // Called when heatmap type has changed.
+    useEffect(() => {
+        async function updateHeatmapType() {
+            const currAppState = appStateRef.current;
+            if (currAppState.dataVizExtn) {
+                await currAppState.dataVizExtn.setupSurfaceShading(currAppState.model, currAppState.shadingData, { type: renderSettings.heatmapType });
+
+                const currentSelectedNode = selectedGroupNodeRef.current;
+                currAppState.dataVizExtn.renderSurfaceShading(currentSelectedNode.id, heatmapOptions.selectedPropertyId, getSensorValue)
+            }
+        }
+        updateHeatmapType();
+
+    }, [renderSettings.heatmapType])
+
     /**
-     * Called by {@link Autodesk.DataVisualization.UI.Viewer} when the model has been loaded.
+     * Called by {@link Viewer} when the model has been loaded.
      * 
      * @param {Autodesk.Viewing.GuiViewer3D} viewer Instance of Forge Viewer
      * @param {*} data 
@@ -333,10 +350,10 @@ function BaseApp(props) {
         viewer.loadExtension("Autodesk.Viewing.ZoomWindow");
         // viewer.loadExtension('Autodesk.AEC.Minimap3DExtension')
 
-        props.eventBus.addEventListener(EventTypes.RENDER_SETTINGS_CHANGED, (event) => {
+        props.eventBus.addEventListener(EventTypes.RENDER_SETTINGS_CHANGED, async (event) => {
             if (!event.hasStopped) {
                 let newSettings = event.data;
-                let { occlusion, showViewables, showTextures } = newSettings;
+                let { occlusion, showViewables, showTextures, heatmapType } = newSettings;
                 setRenderSettings(newSettings);
 
                 dataVizExtn.showHideViewables(showViewables, occlusion);
@@ -432,9 +449,8 @@ function BaseApp(props) {
          *
          * @param {string} styleId Identifier of the device model.
          *
-         * @returns {Autodesk.DataVisualization.Core.ViewableStyle} The corresponding
-         * ViewableStyle object for the given device model, or the default
-         * style if none is found matching.
+         * @returns {ViewableStyle} The corresponding
+         * ViewableStyle object for the given device model, or the default style if none is found matching.
          *
          */
         function getViewableStyle(styleId) {
@@ -559,7 +575,7 @@ function BaseApp(props) {
         }
 
         // Need to convert the deviceList to viewable data
-        await Promise.all([dataVizExtn.setupSurfaceShading(model, shadingData), generateViewables(shadingData)]);
+        await Promise.all([dataVizExtn.setupSurfaceShading(model, shadingData, { type: renderSettings.heatmapType }), generateViewables(shadingData)]);
         const completeDeviceTree = devicePanelData;
         setDeviceTree(completeDeviceTree);
 
@@ -575,7 +591,7 @@ function BaseApp(props) {
         /**
          * 
          * @param {Session} session {@link Session} object 
-         * initialized from the {@link Autodesk.DataVisualization.UI.BaseApp#initializeDataStore} 
+         * initialized from the {@link BaseApp#initializeDataStore} 
          * @private
          */
         async function createWebsocket(session) {
@@ -613,7 +629,7 @@ function BaseApp(props) {
     }
 
     /**
-     * Called when by {@link Autodesk.DataVisualization.UI.Viewer} when Forge Viewer has been initialized.
+     * Called when by {@link Viewer} when Forge Viewer has been initialized.
      * 
      * @param {Autodesk.Viewing.GuiViewer3D} viewer Instance of Forge Viewer
      * @callback
@@ -690,7 +706,7 @@ function BaseApp(props) {
     /**
      * Called when a device has been selected. Uses the Data Visualization Extension to highlight node.
      * 
-     * @param {MouseEvent} event Click event indicating that a row in {@link Autodesk.DataVisualization.UI.DeviceTree} has been selected.
+     * @param {MouseEvent} event Click event indicating that a row in {@link DeviceTree} has been selected.
      * @param {string} node Device identifier
      * @private
      */
@@ -708,7 +724,7 @@ function BaseApp(props) {
     }
 
     /**
-     * Clears selected device from the scene and from the {@link Autodesk.DataVisualization.UI.DevicePanel}.
+     * Clears selected device from the scene and from the {@link DevicePanel}.
      * @private
      */
     function navigateBackToDevices() {
@@ -719,8 +735,8 @@ function BaseApp(props) {
     /**
      * Gets the device property value given the current time marker.
      *
-     * @param {Autodesk.DataVisualization.Core.SurfaceShadingPoint} surfaceShadingPoint A point that
-     * &nbsp;contributes to the heatmap generally generated from a {@link Autodesk.DataVisualization.Core.Device} object.
+     * @param {SurfaceShadingPoint} surfaceShadingPoint A point that
+     * &nbsp;contributes to the heatmap generally generated from a {@link Device} object.
      * &nbsp;This is generally created from a call to {@link ModelSurfaceInfo#generateSurfaceShadingData}
      * @param {string} sensorType The device property for which normalized
      * &nbsp;property value is to be retrieved.
@@ -765,9 +781,9 @@ function BaseApp(props) {
     }
 
     /**
-     * Uses the application based on user changes to the {@link Autodesk.DataVisualization.UI.SurfaceShader} component.
+     * Uses the application based on user changes to the {@link SurfaceShader} component.
      * 
-     * @param {Object} options Settings defined in the {@link Autodesk.DataVisualization.UI.SurfaceShader}.
+     * @param {Object} options Settings defined in the {@link SurfaceShader}.
      * @private
      */
     function onHeatmapOptionChange(options) {
@@ -800,8 +816,8 @@ function BaseApp(props) {
     }
 
     /**
-     * Called when a user has changed the selected group in the scene using the {@link Autodesk.DataVisualization.UI.HyperionToolContainer} 
-     * or the {@link Autodesk.DataVisualization.UI.DeviceTree}
+     * Called when a user has changed the selected group in the scene using the {@link HyperionToolContainer} 
+     * or the {@link DeviceTree}
      * 
      * @private
      */

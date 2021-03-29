@@ -92,11 +92,11 @@ const MemoizedDeviceStats = memo(DeviceStats);
  * @param {TreeNode[]} props.devices Array of device {@link TreeNode} in the scene
  * @param {OnNodeSelected} props.onNodeSelected A callback function invoked
  * &nbsp;when a device {@link TreeNode} is selected
- * @param {(Autodesk.DataVisualization.Core.SurfaceShadingGroup|Autodesk.DataVisualization.Core.SurfaceShadingNode)} props.selectedGroupNode Represents the
+ * @param {(SurfaceShadingGroup|SurfaceShadingNode)} props.selectedGroupNode Represents the
  * &nbsp;group node that is currently selected in the scene.
  * @param {CurrentDeviceData} props.currentDeviceData Data containing the estimated propertyValue for each property
  * &nbsp;associated with the selected device.
- * @param {Object} props.propertyIconMap A mapping of property names to image paths used for each {@link Autodesk.DataVisualization.UI.DeviceStats} object.
+ * @param {Object} props.propertyIconMap A mapping of property names to image paths used for each {@link DeviceStats} object.
  * @param {Function} props.onNavigateBack A callback function invoked when "Back to devices" button is clicked.
  * 
  * @memberof Autodesk.DataVisualization.UI
@@ -142,7 +142,7 @@ function DeviceTree(props) {
     /**
      * Called when a user selects the arrow icon in the device tree to expand or close a group of devices.
      *
-     * @param {MouseEvent} event Event indicating a user has expanded or closed a row in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
+     * @param {MouseEvent} event Event indicating a user has expanded or closed a row in the {@link DeviceTree}.
      * @param {TreeNode} node Node corresponding to the grouping of devices expanded/closed by the user.
      * @private
      */
@@ -155,9 +155,9 @@ function DeviceTree(props) {
     }
 
     /**
-     * Called when a user selects a row in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
+     * Called when a user selects a row in the {@link DeviceTree}.
      *
-     * @param {MouseEvent} event Click event indicating a user has selected a row in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
+     * @param {MouseEvent} event Click event indicating a user has selected a row in the {@link DeviceTree}.
      * @param {TreeNode} node Node corresponding to the row selected by the user.
      * @private
      */
@@ -168,11 +168,11 @@ function DeviceTree(props) {
     /**
      * Creates a label to be displayed for the given node. If node refers to a grouping of devices, the <React.Fragment>
      * &nbsp;contains the group name and the number of devices in the group. If node refers to an
-     * &nbsp;individual device, the <React.Fragment> contains the device name and a {@link Autodesk.DataVisualization.UI.DeviceStats}
+     * &nbsp;individual device, the <React.Fragment> contains the device name and a {@link DeviceStats}
      * &nbsp;for each device property.
      *
      * @param {TreeNode} node Represents a device.
-     * @returns a <React.Fragment> that represents a row in the {@link Autodesk.DataVisualization.UI.DeviceTree}.
+     * @returns a <React.Fragment> that represents a row in the {@link DeviceTree}.
      * @private
      */
     function createLabel(node) {

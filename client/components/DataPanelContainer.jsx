@@ -25,7 +25,7 @@ import Dashboard from "./Dashboard.jsx";
  * @component
  *
  * @param {Object} props
- * @param {EventBus} eventBus Used to dispatch mouse events when a user interacts with a {@link TreeNode}
+ * @param {EventBus} props.eventBus Used to dispatch mouse events when a user interacts with a {@link TreeNode}
  * @param {string} props.selectedDevice An optional value that represents the
  * &nbsp;identifier of the current selected device. Empty string if no
  * &nbsp;device is selected.
@@ -41,8 +41,8 @@ import Dashboard from "./Dashboard.jsx";
  * @param {CurrentDeviceData} props.currentDeviceData Data containing the estimated propertyValue for each property
  * &nbsp;associated with props.selectedDevice
  * @param {Object} props.propertyIconMap  A mapping of property names to image paths used for
- * &nbsp;each {@link Autodesk.DataVisualization.UI.DeviceStats} object.
- * @param {(Autodesk.DataVisualization.Core.SurfaceShadingGroup|Autodesk.DataVisualization.Core.SurfaceShadingNode)} props.selectedGroupNode Represents the
+ * &nbsp;each {@link DeviceStats} object.
+ * @param {(SurfaceShadingGroup|SurfaceShadingNode)} props.selectedGroupNode Represents the
  * &nbsp;group node that is currently selected in the scene.
  *
  * @memberof Autodesk.DataVisualization.UI
@@ -64,7 +64,7 @@ function DataPanelContainer(props) {
 
     /**
      * Generates contents for display on the side of viewer. If a device has been selected, the
-     * {@link Autodesk.DataVisualization.UI.Dashboard} is rendered. Otherwise, {@link Autodesk.DataVisualization.UI.DevicePanel} is rendered.
+     * {@link Dashboard} is rendered. Otherwise, {@link DevicePanel} is rendered.
      *
      * @returns {JSX.Element} The contents to be rendered in place of the panel.
      * @memberof Autodesk.DataVisualization.UI

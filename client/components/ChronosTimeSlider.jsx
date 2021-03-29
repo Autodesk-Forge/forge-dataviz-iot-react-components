@@ -218,7 +218,47 @@ function ChronosTimeSlider(props) {
         updateTimeSliderContainer(containerRef.current);
     }
 
-    return <div id="timeline_header" style={cntrStyle} ref={containerRef} />;
+    /**
+     * The chronos timeslider does not fully support touch event
+     * Simulate the touch event to pointer events
+     * Hack? It is very common strategy when something out of our control
+     */
+    let lastDownEvent;
+    function onTouchStart(event) {
+        event.touches[0].pointerType = "pen";
+        let mouseEvent = new PointerEvent("pointerdown", event.touches[0]);
+        lastDownEvent = event.touches[0];
+        if (timeSliderView) {
+            timeSliderView.dispatchEvent(mouseEvent);
+        }
+    }
+
+    function onTouchMove(event) {
+        event.touches[0].pointerType = "pen";
+        lastDownEvent = event.touches[0];
+        let mouseEvent = new PointerEvent("pointermove", event.touches[0]);
+        if (timeSliderView) {
+            timeSliderView.dispatchEvent(mouseEvent);
+        }
+    }
+
+    function onTouchEnd() {
+        let mouseEvent = new PointerEvent("pointerup", lastDownEvent);
+        if (timeSliderView) {
+            timeSliderView.dispatchEvent(mouseEvent);
+        }
+    }
+
+    return (
+        <div
+            id="timeline_header"
+            style={cntrStyle}
+            ref={containerRef}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+        />
+    );
 }
 
 export default ChronosTimeSlider;

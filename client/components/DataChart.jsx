@@ -34,7 +34,7 @@ import { DataChartSeriesLine } from "./DataChartSeries";
  * @param {string} props.deviceProperty String identifier for property displayed in chart.
  * @param {ChartDataProperty} props.chartData Data used to generate charts for (props.deviceId, props.deviceProperty)
  * @param {boolean} props.tooltip An optional flag when true indicates embeds the chart in a
- * &nbsp;{@link Autodesk.DataVisualization.UI.CustomToolTip} object.
+ * &nbsp;{@link CustomToolTip} object.
  *
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.DataChart
@@ -101,7 +101,7 @@ function DataChart(props) {
     /**
      * Creates basic chart options for the given Device.
      * 
-     * @returns {DataChartOptions} A configured {@link Autodesk.DataVisualization.UI.DataChart.DataChartOptions} object.
+     * @returns {DataChartOptions} A configured {@link DataChart.DataChartOptions} object.
      * @memberof Autodesk.DataVisualization.UI
      * @alias Autodesk.DataVisualization.UI.DataChart#createBasicChartOptions
      */

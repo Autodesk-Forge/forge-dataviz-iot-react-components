@@ -36,7 +36,7 @@ const HtmlTooltip = withStyles(() => ({
 }))(Tooltip);
 
 /**
- * A custom tool-tip that is displayed over Forge Viewer canvas when a user hovers over a device. Contains a {@link Autodesk.DataVisualization.UI.DataChart} for each property along with the estimated current property value.
+ * A custom tool-tip that is displayed over Forge Viewer canvas when a user hovers over a device. Contains a {@link DataChart} for each property along with the estimated current property value.
  * @component
  *
  * @param {Object} props

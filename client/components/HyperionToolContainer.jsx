@@ -18,6 +18,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import Divider from "@material-ui/core/Divider";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormLabel from "@material-ui/core/FormLabel";
 import FormGroup from "@material-ui/core/FormGroup";
 import IconButton from "@material-ui/core/IconButton";
 import Popper from "@material-ui/core/Popper";
@@ -79,6 +80,20 @@ const useStyles = makeStyles(() => ({
     formGroupRoot: {
         marginLeft: "20px",
     },
+    divider: {
+        backgroundColor: "#555555",
+        margin: "6px"
+    },
+    formLabel: {
+        color: "white",
+        padding: "2px",
+        marginTop: "8px",
+        marginBottom: "3px",
+        marginLeft: "-6px"
+    },
+    heatmapTypeRadioGroup: {
+        marginTop: "1px"
+    }
 }));
 
 /**
@@ -108,12 +123,13 @@ function SensorOptionIcon() {
  * @param {TreeNode[]} props.data Array of device {@link TreeNode} in the scene
  * @param {EventBus} props.eventBus Used to dispatch mouse events when a user interacts with a {@link TreeNode}
  * @param {boolean} [props.structureToolOnly] Flag that renders only the LevelsTree option when true.
- * @param {(Autodesk.DataVisualization.Core.SurfaceShadingGroup|Autodesk.DataVisualization.Core.SurfaceShadingNode)} props.selectedGroupNode Represents the 
+ * @param {(SurfaceShadingGroup|SurfaceShadingNode)} props.selectedGroupNode Represents the 
  * &nbsp;group node that is currently selected in the scene.
  * @param {{Object}} props.renderSettings Defines settings that are configured via the DataViz extension.
  * @param {boolean} props.renderSettings.showViewables Defines whether sprite viewables are visible in the scene.
  * @param {boolean} props.renderSettings.occlusion Defines whether the sprite viewables are occluded.
  * @param {boolean} props.renderSettings.showTextures Defines whether textures are shown.
+ * @param {"GeometryHeatmap"|"PlanarHeatmap"} props.renderSettings.heatmapType Heatmap type to render in scene.
  * 
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.HyperionToolContainer
@@ -199,7 +215,12 @@ function HyperionToolContainer(props) {
     const handleSettingsChange = (event) => {
         let newSettings = Object.assign({}, settings);
         if (event.target.type === "radio") {
-            newSettings[event.target.name] = event.target.value == "true" ? true : false;
+            if (event.target.name === "heatmapType") {
+                newSettings[event.target.name] = event.target.value;
+            }
+            else {
+                newSettings[event.target.name] = event.target.value === "true";
+            }
         } else {
             newSettings[event.target.name] = event.target.checked;
         }
@@ -447,6 +468,27 @@ function HyperionToolContainer(props) {
                                                 }
                                                 label="Textures"
                                             />
+                                        </FormGroup>
+                                        <Divider variant="middle" className={classes.divider} />
+                                        <FormGroup className={classes.formGroupRoot}>
+                                            <FormLabel component="legend" className={classes.formLabel}>Heatmap Types</FormLabel>
+                                            <RadioGroup className={classes.heatmapTypeRadioGroup}
+                                                name="heatmapType"
+                                                value={settings.heatmapType}
+                                                onChange={handleSettingsChange}
+                                            >
+                                                <FormControlLabel
+                                                    value="GeometryHeatmap"
+                                                    control={<Radio size="small" style={{ color: "white", padding: "6px" }} />}
+                                                    label="Geometry"
+                                                />
+
+                                                <FormControlLabel
+                                                    value="PlanarHeatmap"
+                                                    control={<Radio size="small" style={{ color: "white", padding: "6px" }} />}
+                                                    label="Planar"
+                                                />
+                                            </RadioGroup>
                                         </FormGroup>
                                     </Typography>
                                 </ClickAwayListener>

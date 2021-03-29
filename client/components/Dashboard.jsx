@@ -70,9 +70,9 @@ function Dashboard(props) {
     }
 
     /**
-     * Creates a {@link Autodesk.DataVisualization.UI.DataChart} for each property associated with props.selectedDeviceId.
+     * Creates a {@link DataChart} for each property associated with props.selectedDeviceId.
      *
-     * @returns {JSX.Element[]} An array of {@link Autodesk.DataVisualization.UI.DataChart} objects.
+     * @returns {JSX.Element[]} An array of {@link DataChart} objects.
      * @memberof Autodesk.DataVisualization.UI
      * @alias Autodesk.DataVisualization.UI.Dashboard#generateChartElements
      */
