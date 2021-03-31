@@ -32,25 +32,24 @@ jobs:
             }
             else {
               console.log("Different versions found. Need to update package.")
-              return true
+              return version
             }
         env:
           REGISTRY_VERSION: ${{ env.registry-version }}
       
       - name: Step 3 - Compare versions and release new package if necessary
-        if: ${{ steps.check-for-version-diff.outputs.result == 'true' }}
+        if: ${{ steps.check-for-version-diff.outputs.result != 'false' }}
         run: |
           echo ${{ steps.check-for-version-diff.outputs.result }}
           npm install
           npm run build
           npm publish
-          echo "PUBLISHED_VERSION=$(npm view forge-dataviz-iot-react-components dist-tags.latest)" >> $GITHUB_ENV
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
       - name: Step 4 - Create Git release
         uses: actions/github-script@v3
-        if: ${{env.PUBLISHED_VERSION}}
+        if: ${{ env.PUBLISHED_VERSION != 'false' }}
         with:
           script: |
             const tag = `v${process.env.PUBLISHED_VERSION}`.replace(/['"]+/g,'')
@@ -58,4 +57,6 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: tag
-            });  
+            });
+        env:
+          PUBLISHED_VERSION: ${{ steps.check-for-version-diff.outputs.result }}
