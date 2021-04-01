@@ -72,4 +72,8 @@ NOTE: Most of these components were created using the [Material UI](http://mater
 For the API documentation for each component, see the Data Visualization (Beta) [API Reference](https://forge.autodesk.com/en/docs/dataviz/v1/reference/UI/)
 
 ## Troubleshooting:
-If the styling for {{BasicDatePicker}} is missing, add the following line to import react-dates styles - `import "react-dates/lib/css/_datepicker.css";`
+If the styling for **BasicDatePicker** is missing, add the following line to import react-dates styles:
+
+```javascript
+import "react-dates/lib/css/_datepicker.css";
+```
