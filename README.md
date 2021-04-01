@@ -7,13 +7,17 @@
 
 Re-usable React components used by the [Forge Dataviz IoT Reference App](https://github.com/Autodesk-Forge/forge-dataviz-iot-reference-app).
 
-## Installation
+## Installing and Using the Modules
+
+For full instructions for installing and running the Data Visualization Extension (Beta) Reference Application and supporting modules, see the [Data Visualization Extension (Beta) QuickStart](https://forge.autodesk.com/en/docs/dataviz/v1/developers_guide/quickstart/).
+
+To install only this module:
 
 ```bash
 npm install forge-dataviz-iot-react-components
 ```
 
-## Example Usage
+To import the components:
 
 ```javascript
 // To import the Viewer component
@@ -36,13 +40,13 @@ module.export = SampleApp;
 
 ## Contents
 
-This package contains all of the React components used in [Forge Dataviz IoT Reference App](https://github.com/Autodesk-Forge/forge-dataviz-iot-reference-app). To interact with these components - check out https://hyperion.autodesk.io/.
+This package contains all of the React components used in the [Data Visualization Reference Application](https://github.com/Autodesk-Forge/forge-dataviz-iot-reference-app). 
 
-NOTE: Most of these components have been created using the [Material UI](http://material-ui.com/) framework.
+NOTE: Most of these components were created using the [Material UI](http://material-ui.com/) framework.
 
-### Components:
+### Components
 
--   BaseApp - Complete UI encompassing all of the components below.
+-   BaseApp - Complete UI encompassing all of the following components:
 
 ![Component Mapping Image 1](https://github.com/Autodesk-Forge/forge-dataviz-iot-react-components/raw/main/images/component-mapping-p1.png)
 
@@ -65,7 +69,7 @@ NOTE: Most of these components have been created using the [Material UI](http://
 -   Dashboard - Shows chart data for each property associated with a device.
 -   DataChart - A React Echarts instance representing the chart data for a property of a device.
 
-API documentation for each component can be found [here](https://forge.autodesk.com/en/docs/dataviz/v1/reference/UI/)
+For the API documentation for each component, see the Data Visualization (Beta) [API Reference](https://forge.autodesk.com/en/docs/dataviz/v1/reference/UI/)
 
-### Troubleshooting:
-If styling for BasicDatePicker is missing, add the following line to import react-dates styles - `import "react-dates/lib/css/_datepicker.css";`
+## Troubleshooting:
+If the styling for {{BasicDatePicker}} is missing, add the following line to import react-dates styles - `import "react-dates/lib/css/_datepicker.css";`
