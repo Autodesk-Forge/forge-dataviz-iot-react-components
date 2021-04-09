@@ -142,4 +142,4 @@ function DataPanelContainer(props) {
     );
 }
 
-module.exports = DataPanelContainer;
+export default DataPanelContainer;

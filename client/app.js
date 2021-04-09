@@ -11,8 +11,7 @@ import DeviceStats from "./components/DeviceStats.jsx";
 import DeviceTree from "./components/DeviceTree.jsx";
 import HeatmapOptions from "./components/HeatmapOptions.jsx";
 import HyperionToolContainer from "./components/HyperionToolContainer.jsx";
-import LevelsTree from "./components/LevelsTree.jsx";
 import Viewer from "./components/Viewer.jsx";
 import EventTypes from "./components/EventTypes.js";
 
-module.exports = { BaseApp, BasicDatePicker, BasicTree, ChronosTimeSlider, CustomToolTip, Dashboard, DataChart, DataPanelContainer, DevicePanel, DeviceStats, DeviceTree, HeatmapOptions, HyperionToolContainer, LevelsTree, Viewer, EventTypes }
+export { BaseApp, BasicDatePicker, BasicTree, ChronosTimeSlider, CustomToolTip, Dashboard, DataChart, DataPanelContainer, DevicePanel, DeviceStats, DeviceTree, HeatmapOptions, HyperionToolContainer, Viewer, EventTypes }

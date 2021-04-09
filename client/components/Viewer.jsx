@@ -29,7 +29,8 @@ import React, { useEffect, useRef } from "react";
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.Viewer
  */
-function Viewer(props) {
+
+ export default function Viewer(props) {
     const viewerRef = useRef(null);
     const viewerDomRef = useRef(null);
 
@@ -52,7 +53,9 @@ function Viewer(props) {
      * @private
      */
     function initializeViewer() {
-        var options = {
+        let viewerOptions = props.viewerOptions;
+
+        var options = Object.assign({}, viewerOptions, {
             env: props.env,
             api: props.api || "derivativeV2", // for models uploaded to EMEA change this option to 'derivativeV2_EU'
             getAccessToken: async function (onTokenReady) {
@@ -60,7 +63,7 @@ function Viewer(props) {
                 var timeInSeconds = 3600; // Use value provided by Forge Authentication (OAuth) API
                 onTokenReady(token, timeInSeconds);
             },
-        };
+        });
 
         Autodesk.Viewing.Initializer(options, async function () {
             const viewer = new Autodesk.Viewing.GuiViewer3D(viewerDomRef.current);
@@ -108,6 +111,8 @@ function Viewer(props) {
 
         if (documentId) {
             Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
+        } else {
+            props.eventBus.dispatchEvent({type: "VIEWER_READY", data: {viewer}})
         }
     }
 
@@ -124,5 +129,4 @@ function Viewer(props) {
     return <div id="forgeViewer" ref={viewerDomRef}></div>;
 }
 
-module.exports = Viewer;
 Viewer.displayName = "Viewer";

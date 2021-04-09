@@ -382,4 +382,4 @@ function HeatmapOptions(props) {
     );
 }
 
-module.exports = HeatmapOptions;
+export default HeatmapOptions;

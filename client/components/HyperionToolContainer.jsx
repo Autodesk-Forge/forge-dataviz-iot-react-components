@@ -28,11 +28,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import LayersIcon from "@material-ui/icons/Layers";
 import React, { useState, useEffect } from "react";
-import LevelsTree from "./LevelsTree.jsx";
+import BasicTree from "./BasicTree.jsx";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import EventTypes from "./EventTypes.js";
 
-const useStyles = makeStyles(() => ({
+const htcStyles = makeStyles(() => ({
     typography: {
         padding: "16px",
         backgroundColor: "#373737",
@@ -96,6 +96,28 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
+const treeStyles = makeStyles(() => ({
+    root: {
+        "&.Mui-selected > .MuiTreeItem-content": {
+            color: "#00bfff"
+        }
+    },
+    itemLabel: {
+        "&:hover": {
+            backgroundColor: "#808080",
+        },
+    },
+    categoryLabel: {
+        "&:hover": {
+            backgroundColor: "#808080",
+        },
+    },
+    iconContainer: {
+        marginLeft: "10px",
+        marginRight: "0px",
+    }
+}));
+
 /**
  * @returns {React.ReactFragment} The SvgIcon used to for the deviceButton.
  * @private
@@ -122,7 +144,7 @@ function SensorOptionIcon() {
  * @param {Object} props
  * @param {TreeNode[]} props.data Array of device {@link TreeNode} in the scene
  * @param {EventBus} props.eventBus Used to dispatch mouse events when a user interacts with a {@link TreeNode}
- * @param {boolean} [props.structureToolOnly] Flag that renders only the LevelsTree option when true.
+ * @param {boolean} [props.structureToolOnly] Flag that renders only the BasicTree option when true.
  * @param {(SurfaceShadingGroup|SurfaceShadingNode)} props.selectedGroupNode Represents the 
  * &nbsp;group node that is currently selected in the scene.
  * @param {{Object}} props.renderSettings Defines settings that are configured via the DataViz extension.
@@ -135,11 +157,11 @@ function SensorOptionIcon() {
  * @alias Autodesk.DataVisualization.UI.HyperionToolContainer
  */
 function HyperionToolContainer(props) {
-    const [levelsButtonAnchor, setLevelsButtonAnchor] = useState(null);
+    const [ssdButtonAnchor, setSSDButtonAnchor] = useState(null); //SSD = SurfaceShadingData
     const [deviceButtonAnchor, setDeviceButtonAnchor] = useState(null);
     const [expandNodeId, setExpandNodeId] = useState("");
     const [selectedNodeId, setSelectedNodeId] = useState("");
-    const [showLevels, setShowLevels] = useState(false);
+    const [showSSD, setShowSSD] = useState(false); // SSD = SurfaceShadingData
     const [fromDeviceTree, setFromDeviceTree] = useState(false);
     const [canClose, setCanClose] = useState(false);
 
@@ -149,7 +171,6 @@ function HyperionToolContainer(props) {
         showTextures: true,
     };
 
-    const levels = props.data;
     const eventBus = props.eventBus;
 
     /**
@@ -166,30 +187,30 @@ function HyperionToolContainer(props) {
         }
     }
 
-    // Used to open the levels icon by default if level data is found.
+    // Used to open the SurfaceShadingData icon by default.
     useEffect(() => {
         if (props.selectedGroupNode && props.selectedGroupNode.id != selectedNodeId) { // Change originating from deviceTree.
-            setCanClose(!showLevels);
+            setCanClose(!showSSD);
             setFromDeviceTree(true);
         } else {
-            setFromDeviceTree(false); // Change originating from levelTree
+            setFromDeviceTree(false); // Change didn't originate from DeviceTree
         }
 
-        if (levels.length > 0) setShowLevels(true);
+        if (props.data.length > 0) setShowSSD(true);
         if (props.selectedGroupNode) setSelectedNodeId(props.selectedGroupNode.id);
     }, [props.selectedGroupNode])
 
     const [arrowRef, setArrowRef] = useState(null);
 
     /**
-     * Opens the levels menu to reveal level data loaded using the AECLevelsExtension.
+     * Opens a menu to reveal {@link SurfaceShadingData}
      * 
-     * @param {MouseEvent} event Click event indicating that the levels button has been selected.
+     * @param {MouseEvent} event Click event indicating that the first button has been selected.
      * @private
      */
-    const handleLevelsButtonClick = (event) => {
-        setLevelsButtonAnchor(event.currentTarget);
-        setShowLevels(true);
+    const handleSSDButtonClick = (event) => {
+        setSSDButtonAnchor(event.currentTarget);
+        setShowSSD(true);
         setDeviceButtonAnchor(null)
     };
 
@@ -200,8 +221,8 @@ function HyperionToolContainer(props) {
      * @private
      */
     const handleDeviceButtonClick = (event) => {
-        setShowLevels(false);
-        setLevelsButtonAnchor(null);
+        setShowSSD(false);
+        setSSDButtonAnchor(null);
         setDeviceButtonAnchor(event.currentTarget);
     };
 
@@ -231,7 +252,8 @@ function HyperionToolContainer(props) {
         });
     };
 
-    const classes = useStyles();
+    const classes = htcStyles();
+    const treeClasses = treeStyles();
 
     /**
      * Highlights the node in the forge viewer canvas.
@@ -242,7 +264,7 @@ function HyperionToolContainer(props) {
      */
     function onMouseOver(event, node) {
         dispatchEvent({
-            type: EventTypes.LEVELS_TREE_MOUSE_OVER,
+            type: EventTypes.GROUP_SELECTION_MOUSE_OVER,
             originalEvent: event,
             data: node,
         });
@@ -259,7 +281,7 @@ function HyperionToolContainer(props) {
      */
     function onMouseOut(event, node) {
         dispatchEvent({
-            type: EventTypes.LEVELS_TREE_MOUSE_OUT,
+            type: EventTypes.GROUP_SELECTION_MOUSE_OUT,
             originalEvent: event,
             data: node,
         });
@@ -267,15 +289,15 @@ function HyperionToolContainer(props) {
     }
 
     /**
-     * Updates the scene to show the selected level.
+     * Updates the scene to show the selected group.
      * 
-     * @param {MouseEvent} event Click event indicating that a user has selected a level.
-     * @param {TreeNode} node Represents the level that the user has selected.
+     * @param {MouseEvent} event Click event indicating that a user has selected a group.
+     * @param {TreeNode} node Represents the group that the user has selected.
      * @private
      */
     function onLabelClick(event, node) {
         dispatchEvent({
-            type: EventTypes.LEVELS_TREE_MOUSE_CLICK,
+            type: EventTypes.GROUP_SELECTION_MOUSE_CLICK,
             originalEvent: event,
             data: node,
         });
@@ -284,15 +306,15 @@ function HyperionToolContainer(props) {
     }
 
     /**
-     * Called when a user selects the arrow icon in the levels menu to expand or close a group.
+     * Called when a user selects the arrow icon in the groups menu to expand or close a group.
      * 
-     * @param {MouseEvent} event Click event indicating that a user has expanded/closed a grouping in the levels menu.
+     * @param {MouseEvent} event Click event indicating that a user has expanded/closed a grouping in the groups menu.
      * @param {TreeNode} node Node that user has selected to expand/close.
      * @private
      */
     function onIconClick(event, node) {
         dispatchEvent({
-            type: EventTypes.LEVELS_TREE_MOUSE_OUT,
+            type: EventTypes.GROUP_SELECTION_MOUSE_OUT,
             originalEvent: event,
             data: node,
         });
@@ -307,7 +329,7 @@ function HyperionToolContainer(props) {
     }
 
     /**
-     * Closes the levels menu.
+     * Closes the surface shading data menu.
      * 
      * @param {MouseEvent} event Click event indicating that the user has clicked elsewhere in the scene.
      * @private
@@ -316,13 +338,13 @@ function HyperionToolContainer(props) {
         if (fromDeviceTree) {
             setFromDeviceTree(false);
             if (canClose) {
-                setShowLevels(false);
+                setShowSSD(false);
                 setCanClose(false);
             } else {
-                setShowLevels(true);
+                setShowSSD(true);
             }
         } else {
-            setShowLevels(false);
+            setShowSSD(false);
             setFromDeviceTree(false);
         }
     };
@@ -337,21 +359,46 @@ function HyperionToolContainer(props) {
         setDeviceButtonAnchor(null);
     };
 
+    /**
+     * Creates a label to be displayed for the given node.
+     *
+     * @param {TreeNode} node
+     * @returns a <React.Fragment> that represents a row in the {@link BasicTree}.
+     * @private
+     */
+    function createLabel(node) {
+        return (
+            <React.Fragment>
+                {node.children.length > 0 ? (
+                    <React.Fragment>
+                        <Typography component={"div"} noWrap={true}>
+                            {node.name}
+                        </Typography>
+                    </React.Fragment>
+                ) : (
+                        <div id="deviceName">
+                            <Typography noWrap={true}>{node.name}</Typography>
+                        </div>
+                    )}
+            </React.Fragment>
+        );
+    }
+
     return (
         <React.Fragment>
             <div id="hyperionToolContainer">
                 <IconButton
-                    id="levelsButton"
+                    id="ssdButton"
                     className={classes.customHoverFocus}
-                    onClick={handleLevelsButtonClick}
-                    ref={levels.length > 0 ? setLevelsButtonAnchor : null}
+                    onClick={handleSSDButtonClick}
+                    ref={props.data.length > 0 ? setSSDButtonAnchor : null}
                 >
                     <LayersIcon style={{ fill: "inherit" }} />
                 </IconButton>
                 <Popper
                     className={classes.popper}
-                    open={showLevels}
-                    anchorEl={levelsButtonAnchor}
+                    open={showSSD}
+                    anchorEl={ssdButtonAnchor}
                     placement="left-start"
                     disablePortal={false}
                     modifiers={{
@@ -372,15 +419,22 @@ function HyperionToolContainer(props) {
                         <span className={classes.arrow} ref={setArrowRef} />
                         <ClickAwayListener onClickAway={handleClickAway}>
                             <Typography className={classes.typography} component="div">
-                                {levels.length > 0 ? <LevelsTree
-                                    data={levels}
+                                {props.data.length > 0 ? <BasicTree
+                                    data={props.data}
                                     onMouseOver={onMouseOver}
                                     onMouseOut={onMouseOut}
                                     onLabelClick={onLabelClick}
                                     onIconClick={onIconClick}
-                                    expandNodeId={expandNodeId}
-                                    selectedNode={selectedNodeId}
-                                /> : <span>No level data found in the model.</span>}
+                                    expanded={expandNodeId}
+                                    selectedNodeId={selectedNodeId}
+                                    onLabelRequest={createLabel}
+                                    classes={{
+                                        root: treeClasses.root,
+                                        itemLabel: treeClasses.itemLabel,
+                                        categoryLabel: treeClasses.categoryLabel,
+                                        iconContainer: treeClasses.iconContainer
+                                    }}
+                                /> : <span>No data found in the model.</span>}
                             </Typography>
                         </ClickAwayListener>
                     </React.Fragment>
@@ -499,4 +553,4 @@ function HyperionToolContainer(props) {
     );
 }
 
-module.exports = HyperionToolContainer;
+export default HyperionToolContainer;

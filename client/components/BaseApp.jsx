@@ -137,7 +137,7 @@ startDate.setUTCHours(0, 0, 0, 0);
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.BaseApp
  */
-function BaseApp(props) {
+export default function BaseApp(props) {
     /**
      * Most import variables that will define the behavior of this APP.
      * env: String -- AutodeskProduction/AutodeskStaging
@@ -200,20 +200,17 @@ function BaseApp(props) {
     const [deviceTree, setDeviceTree] = useState([]);
     const [selectedDevice, setSelectedDevice] = useState("");
     const [selectedGroupNode, setSelectedGroupNode] = useState();
-    const [renderSettings, setRenderSettings] = useState(
-        props.renderSettings || {
-            showViewables: true,
-            occlusion: false,
-            showTextures: true,
-            heatmapType: "GeometryHeatmap"
-        }
-    );
+    const [renderSettings, setRenderSettings] = useState(Object.assign({}, {
+        showViewables: true,
+        occlusion: false,
+        showTextures: true,
+        heatmapType: "GeometryHeatmap"
+    }, props.renderSettings));
 
     const currentSurfaceShadingGroupRef = useRef("");
 
     const [heatmapOptions, setHeatmapOptions] = useState({
         resolutionValue: "PT1H",
-        selectedPropertyId: "Temperature", // Defaults to temperature sensor type
         showHeatMap: true,
     });
 
@@ -409,7 +406,7 @@ function BaseApp(props) {
         }
 
         props.eventBus.addEventListener(EventTypes.DEVICE_TREE_EXPAND_EVENT, handleTreeNodeClick);
-        props.eventBus.addEventListener(EventTypes.LEVELS_TREE_MOUSE_CLICK, handleTreeNodeClick);
+        props.eventBus.addEventListener(EventTypes.GROUP_SELECTION_MOUSE_CLICK, handleTreeNodeClick);
 
         function highlightOnMouseOver(event, isHighlight) {
             let node = shadingData.getNodeById(event.data.id);
@@ -436,11 +433,11 @@ function BaseApp(props) {
             event.originalEvent.stopPropagation();
         }
 
-        props.eventBus.addEventListener(EventTypes.LEVELS_TREE_MOUSE_OUT, (event) => {
+        props.eventBus.addEventListener(EventTypes.GROUP_SELECTION_MOUSE_OUT, (event) => {
             highlightOnMouseOver(event, false);
         });
 
-        props.eventBus.addEventListener(EventTypes.LEVELS_TREE_MOUSE_OVER, (event) => {
+        props.eventBus.addEventListener(EventTypes.GROUP_SELECTION_MOUSE_OVER, (event) => {
             highlightOnMouseOver(event, true);
         });
 
@@ -495,8 +492,15 @@ function BaseApp(props) {
 
             await viewableData.finish();
             dataVizExtn.addViewables(viewableData);
+            dataVizExtn.showHideViewables(renderSettings.showViewables, renderSettings.occlusion);
+
+            if (!renderSettings.showTextures) {
+                dataVizExtn.hideTextures();
+            }
 
             const propertyMap = session.dataStore.getPropertiesFromDataStore()
+            const defaultHeatmapOptions = Object.assign({}, heatmapOptions, { selectedPropertyId: Array.from(propertyMap.keys())[0] || "" });
+            setHeatmapOptions(defaultHeatmapOptions);
 
             if (props.surfaceShadingConfig && props.surfaceShadingConfig.gradientSetting) {
                 let gradientSettings = props.surfaceShadingConfig.gradientSetting;
@@ -866,7 +870,7 @@ function BaseApp(props) {
         if (!selectedGroupNode && appStateRef.current.propertyMap && props.data.shadingData) {
             if (props.data.shadingData.children.length > 0) {
                 dispatchEventToHandler({
-                    type: EventTypes.LEVELS_TREE_MOUSE_CLICK,
+                    type: EventTypes.GROUP_SELECTION_MOUSE_CLICK,
                     data: props.data.shadingData.children[0],
                 });
             }
@@ -1161,4 +1165,3 @@ function BaseApp(props) {
     );
 }
 
-module.exports = BaseApp;

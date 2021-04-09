@@ -1,4 +1,4 @@
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const Path = require("path");
 
 var env = process.env.ENV || "local";
@@ -35,9 +35,9 @@ var config = [
                     test: /.jsx?$/,
                     loader: "babel-loader",
                     exclude: Path.resolve(__dirname, "node_modules"),
-                    query: {
-                        presets: ["react", "es2015"],
-                        plugins: ["transform-object-rest-spread"],
+                    options: {
+                        presets: ["@babel/react", ["@babel/env", { "targets": "defaults" }]],
+                        plugins: ["@babel/plugin-transform-spread"]
                     },
                 },
                 {
@@ -65,43 +65,20 @@ var config = [
         },
     },
     {
-        entry: ["./scss/components.scss"],
+        entry: ["./scss/components.scss", "./node_modules/react-dates/lib/css/_datepicker.css"],
         output: {
-            filename: "[name].bundle.css",
             path: __dirname + "/dist",
             libraryTarget: "umd",
             library: "hyperion",
             globalObject: "this",
         },
         mode: "development",
-
-        externals: {
-            three: "THREE",
-            react: {
-                commonjs: "react",
-                commonjs2: "react",
-                amd: "React",
-                root: "React",
-            },
-            "react-dom": {
-                commonjs: "react-dom",
-                commonjs2: "react-dom",
-                amd: "ReactDOM",
-                root: "ReactDOM",
-            },
-        },
-        resolve: {
-            alias: {
-                react: Path.resolve(__dirname, "./node_modules/react"),
-                "react-dom": Path.resolve(__dirname, "./node_modules/react-dom"),
-            },
-        },
         module: {
             rules: [
                 {
                     test: /\.(css|sass|scss)$/,
-                    use: ExtractTextPlugin.extract({
                         use: [
+                            MiniCssExtractPlugin.loader,
                             {
                                 loader: "css-loader",
                             },
@@ -109,14 +86,12 @@ var config = [
                                 loader: "sass-loader",
                             },
                         ],
-                    }),
                 },
             ],
         },
         plugins: [
-            new ExtractTextPlugin({
-                filename: "[name].bundle.css",
-                allChunks: true,
+            new MiniCssExtractPlugin({
+                filename: "[name].bundle.css"
             }),
         ],
     },

@@ -220,4 +220,4 @@ function DeviceTree(props) {
     );
 }
 
-module.exports = DeviceTree;
+export default DeviceTree;

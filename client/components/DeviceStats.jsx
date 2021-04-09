@@ -57,4 +57,4 @@ function DeviceStats(props) {
     );
 }
 
-module.exports = DeviceStats;
+export default DeviceStats;

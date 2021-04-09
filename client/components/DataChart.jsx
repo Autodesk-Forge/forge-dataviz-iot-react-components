@@ -206,4 +206,4 @@ function DataChart(props) {
     );
 }
 
-module.exports = DataChart;
+export default DataChart;

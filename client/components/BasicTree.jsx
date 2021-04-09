@@ -32,13 +32,20 @@ import TreeItem from "@material-ui/lab/TreeItem";
  * @param {OnMouseEvent} props.onLabelClick Function to be invoked when a label is clicked
  * @param {OnMouseEvent} props.onMouseOver Function to be invoked on the mouseover of a {@link TreeNode}
  * @param {OnMouseEvent} props.onMouseOut Function to be invoked when the mouse hovers off a {@link TreeNode}.
- * @param {Object} props.classes Styles to be applied to a {@link TreeNode}. See
- * &nbsp;{@link https://material-ui.com/api/tree-item/#css } for structure.
+ * @param {Object} props.classes Material UI Styles object applied to a {@link TreeNode}. See {@link https://material-ui.com/api/tree-item/#css} for structure.
+ * @param {Object} [props.classes.root] 
+ * @param {Object} [props.classes.selected]
+ * @param {Object} [props.classes.group]
+ * @param {Object} [props.classes.categoryContent] Content styles applied applied to a {@link TreeNode} with children.
+ * @param {Object} [props.classes.itemContent] Content styles applied to a {@link TreeNode} without children.
+ * @param {Object} [props.classes.categoryLabel] Label styles applied to a {@link TreeNode} with children.
+ * @param {Object} [props.classes.itemLabel] Label styles applied to a {@link TreeNode} without children.
+ * @param {Object} [props.classes.iconContainer]
  *
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.BasicTree
  */
-function BasicTree(props) {
+export default function BasicTree(props) {
     /**
      * Calls the corresponding handler with data if found.
      * 
@@ -142,4 +149,3 @@ function BasicTree(props) {
     );
 }
 
-module.exports = BasicTree;

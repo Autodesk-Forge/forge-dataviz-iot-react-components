@@ -46,7 +46,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 /**
- * A panel component that displays all of devices in the scene, grouped by the levels they're associated with.
+ * A panel component that displays all of devices in the scene.
  * @component
  * @param {Object} props
  * @param {EventBus} props.eventBus Used to dispatch mouse events when a user interacts with a {@link TreeNode}
@@ -159,4 +159,4 @@ function DevicePanel(props) {
     );
 }
 
-module.exports = DevicePanel;
+export default DevicePanel;

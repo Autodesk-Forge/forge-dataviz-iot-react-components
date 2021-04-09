@@ -19,6 +19,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
+import CircularProgress from "@material-ui/core/CircularProgress";
 // eslint-disable-next-line no-unused-vars
 
 const useStyles = makeStyles({
@@ -44,6 +45,11 @@ const useStyles = makeStyles({
         flexGrow: 1,
         position: "relative",
     },
+    loadingIcon: {
+        display: "block",
+        margin: "auto",
+        marginTop: "30px"
+    }
 });
 
 /**
@@ -89,7 +95,7 @@ function Dashboard(props) {
             />
         ));
 
-        return chartElements;
+        return chartElements.length ? chartElements : <CircularProgress size={50} color="secondary" classes={{ root: classes.loadingIcon }} />;
     }
 
     return (
@@ -111,4 +117,4 @@ function Dashboard(props) {
     );
 }
 
-module.exports = Dashboard;
+export default Dashboard;

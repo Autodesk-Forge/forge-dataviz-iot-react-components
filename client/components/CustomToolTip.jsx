@@ -15,8 +15,9 @@
 //
 import React from "react";
 import Tooltip from "@material-ui/core/Tooltip";
+import CircularProgress from '@material-ui/core/CircularProgress';
 import DataChart from "../components/DataChart.jsx";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
 // eslint-disable-next-line no-unused-vars
 
 const HtmlTooltip = withStyles(() => ({
@@ -35,6 +36,14 @@ const HtmlTooltip = withStyles(() => ({
     },
 }))(Tooltip);
 
+const loadingIconStyles = makeStyles({
+    loadingIcon: {
+        display: "block",
+        margin: "auto",
+        padding: "5px"
+    }
+});
+
 /**
  * A custom tool-tip that is displayed over Forge Viewer canvas when a user hovers over a device. Contains a {@link DataChart} for each property along with the estimated current property value.
  * @component
@@ -50,9 +59,11 @@ const HtmlTooltip = withStyles(() => ({
  * @alias Autodesk.DataVisualization.UI.CustomToolTip
  */
 function CustomToolTip(props) {
+    const classes = loadingIconStyles();
+
     if (props.hoveredDeviceInfo.id) {
         const chartData = props.chartData[props.hoveredDeviceInfo.id];
-        const deviceName = chartData ? chartData.name : "LOADING...";
+        const deviceName = chartData ? chartData.name : <CircularProgress color="secondary" size={30} classes={{ root: classes.loadingIcon }} />;
         const properties = chartData ? Object.keys(chartData["properties"]) : [];
 
         const currentDeviceData = props.currentDeviceData[props.hoveredDeviceInfo.id];
@@ -116,4 +127,4 @@ function CustomToolTip(props) {
     return null;
 }
 
-module.exports = CustomToolTip;
+export default CustomToolTip;
