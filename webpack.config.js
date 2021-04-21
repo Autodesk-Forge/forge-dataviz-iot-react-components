@@ -3,7 +3,7 @@ const Path = require("path");
 
 var env = process.env.ENV || "local";
 const isDevEnv = /^(local|dev|develop)$/gi.test(env);
-const sourceMapOptions = isDevEnv ? "eval-cheap-module-source-map" : "none";
+const sourceMapOptions = isDevEnv ? "eval-cheap-module-source-map" : false;
 
 var config = [
     {
@@ -58,9 +58,9 @@ var config = [
                         options: {
                             // loader behaves like url-loader for all svg files
                             encoding: "base64",
-                        }
-                    }
-                }
+                        },
+                    },
+                },
             ],
         },
     },

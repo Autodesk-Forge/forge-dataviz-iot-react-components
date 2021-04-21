@@ -1,6 +1,6 @@
 {
     "name": "forge-dataviz-iot-react-components",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "A React Component Library used by https://github.com/Autodesk-Forge/forge-dataviz-iot-reference-app",
     "main": "./client/app.js",
     "scripts": {
@@ -20,7 +20,6 @@
         "chronos-etu": "3.1.0",
         "echarts": "^4.9.0",
         "echarts-for-react": "^2.0.16",
-        "forge-dataviz-iot-data-modules": "0.1.5",
         "lodash": "^4.17.15",
         "moment": "^2.27.0",
         "pixi.js": "^5.3.7",
@@ -30,9 +29,10 @@
         "react-router-dom": "5.2.0",
         "socket.io": "^3.0.4",
         "socket.io-client": "^3.0.4",
-        "uuid": "^8.3.2"
-      },
-      "devDependencies": {
+        "uuid": "^8.3.2",
+        "forge-dataviz-iot-data-modules": "0.1.6"
+    },
+    "devDependencies": {
         "@babel/core": "^7.0.0-beta.41",
         "@babel/plugin-transform-spread": "^7.13.0",
         "@babel/preset-env": "7.12.11",
@@ -52,5 +52,5 @@
         "webpack": "^5.11.0",
         "webpack-cli": "^4.5.0",
         "webpack-node-externals": "^1.7.2"
-      }
+    }
 }
