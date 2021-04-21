@@ -20,17 +20,26 @@ import React, { useEffect, useRef } from "react";
  * @component
  * Component for rendering LMV
  * @param {Object} props
- * @param {("AutodeskProduction"|"AutodeskStaging")} env Forge API environment
- * @param {Function} getToken Returns the Forge API token to access LMV
- * @param {"derivativeV2"|"derivativeV2_EU"|"modelDerivativeV2"|"fluent"|"D3S"|"D3S_EU"} api Default = "derivativeV2". Please refer to LMV documentation for more information.
- * @param {string} docUrn Document URN of model
- * @param {OnModelLoaded} onModelLoaded Callback function invoked when the model has loaded
- * @param {OnViewerInitialized} onViewerInitialized Callback function invoked when LMV has been intialized
+ * @param {("AutodeskProduction"|"AutodeskStaging"|"MD20ProdUS"|"MD20ProdEU")} props.env Forge API environment
+ * @param {Function} props.getToken Returns the Forge API token to access LMV
+ * @param {"derivativeV2"|"derivativeV2_EU"|"modelDerivativeV2"|"fluent"|"D3S"|"D3S_EU"} props.api Default = "derivativeV2". Please refer to LMV documentation for more information.
+ * @param {string} props.docUrn Document URN of model
+ * @param {OnModelLoaded} props.onModelLoaded Callback function invoked when the model has loaded
+ * @param {OnViewerInitialized} props.onViewerInitialized Callback function invoked when LMV has been intialized
+ * @param {string[]} [props.extensions] List of extension ids forwarded to viewer config to load.
+ * @param {Object.<string, Object>} [props.disabledExtensions] Default extensions to prevent being loaded.
+ * @param {string} [props.phaseName] phaseName of view to load in scene.
+ * @param {string} [props.guid] guid of BubbleNode to load in scene.
+ * @param {string} [props.viewableID] viewableID of BubbleNode to load in scene.
+ * @param {number} [props.geomIndex] Index of geometry to load in scene.
+ * @param {Boolean} props.skipHiddenFragments Boolean to specify if hidden fragments should be skipped (Default: false,
+ * Hidden fragments are required for heatmaps in rooms, only applicable to SVF2)
+ * @param {Object} props.viewerOptions Options object to forward to Autodesk.Viewing.Initializer
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.Viewer
  */
 
- export default function Viewer(props) {
+export default function Viewer(props) {
     const viewerRef = useRef(null);
     const viewerDomRef = useRef(null);
 
@@ -66,7 +75,30 @@ import React, { useEffect, useRef } from "react";
         });
 
         Autodesk.Viewing.Initializer(options, async function () {
-            const viewer = new Autodesk.Viewing.GuiViewer3D(viewerDomRef.current);
+
+            const extensionsToLoad = props.extensions;
+
+            const extensionsWithConfig = [];
+            const extensionsWithoutConfig = [];
+            
+            for (let key in extensionsToLoad) {
+                const config = extensionsToLoad[key];
+                if (Object.keys(config).length === 0) {
+                    extensionsWithoutConfig.push(key);
+                } else {
+                    extensionsWithConfig.push(key);
+                }
+            }
+
+            const viewer = new Autodesk.Viewing.GuiViewer3D(viewerDomRef.current, {
+                extensions: extensionsWithoutConfig,
+                disabledExtensions: props.disabledExtensions || {},
+            });
+
+            extensionsWithConfig.forEach((ext) => {
+                viewer.loadExtension(ext, extensionsToLoad[ext])
+            })
+
             viewerRef.current = viewer;
 
             const startedCode = viewer.start(undefined, undefined, undefined, undefined, options);
@@ -97,8 +129,36 @@ import React, { useEffect, useRef } from "react";
     function loadModel(viewer, documentId) {
         function onDocumentLoadSuccess(viewerDocument) {
             // viewerDocument is an instance of Autodesk.Viewing.Document
-            const defaultModel = viewerDocument.getRoot().getDefaultGeometry(true);
-            viewer.loadDocumentNode(viewerDocument, defaultModel, { keepCurrentModels: true });
+            const bubbleNode = viewerDocument.getRoot();
+            let defaultModel;
+
+            if (props.phaseName) {
+                defaultModel = bubbleNode.getMasterView(props.phaseName);
+            } else if (props.guid) {
+                defaultModel = bubbleNode.findByGuid(props.guid);
+            } else if (props.viewableID) {
+                const results = bubbleNode.search({ viewableID: props.viewableID });
+                if (results && results.length) {
+                    defaultModel = results[0];
+                }
+            }
+            else if (props.geomIndex) {
+                const geoms = bubbleNode.search({ 'type': 'geometry' })
+                if (geoms.length) {
+                    if (props.geomIndex < 0 || props.geomIndex >= geoms.length) {
+                        console.warn("GeometryIndex Error: Invalid geometry index.")
+                    }
+                    const index = Math.min(Math.max(props.geomIndex, 0), geoms.length - 1) // Ensure index is valid.
+                    defaultModel = geoms[index];
+                }
+            }
+
+            if (!defaultModel) defaultModel = bubbleNode.getDefaultGeometry(true);
+            const skipHiddenFragments = props.skipHiddenFragments || false;
+            viewer.loadDocumentNode(viewerDocument, defaultModel, {
+                keepCurrentModels: true,
+                skipHiddenFragments: skipHiddenFragments,
+            });
 
             // modify the preference settings, since ghosting is causing heavy z-fighting with the room geometry
             // it would be good we turn it off
@@ -112,7 +172,7 @@ import React, { useEffect, useRef } from "react";
         if (documentId) {
             Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
         } else {
-            props.eventBus.dispatchEvent({type: "VIEWER_READY", data: {viewer}})
+            props.eventBus.dispatchEvent({ type: "VIEWER_READY", data: { viewer } });
         }
     }
 

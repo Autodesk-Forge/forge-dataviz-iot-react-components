@@ -134,6 +134,7 @@ startDate.setUTCHours(0, 0, 0, 0);
  * @param {Object.<string, Object>} [props.surfaceShadingConfig.deviceStyles] Represents different style definitions for a {@link SpriteViewable}
  * @param {Object.<string, number[]>} [props.surfaceShadingConfig.gradientSetting] Mapping of proerties to corresponding gradient bar color stop values.
  * @param {Object} [props.propertyIconMap]  A mapping of property names to image paths used for each {@link DeviceStats} object.
+ * @param {number} [props.geomIndex] Index of geometry to load in scene.
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.BaseApp
  */
@@ -333,18 +334,10 @@ export default function BaseApp(props) {
      * @callback
      */
     async function onModelLoaded(viewer, data) {
-        let session, masterDataView, dataVizExtn;
+        const [session, masterDataView] = await initializeDataStore();
+        const dataVizExtn = viewer.getExtension("Autodesk.DataVisualization")
 
-        await Promise.all([
-            initializeDataStore(),
-            viewer.loadExtension("Autodesk.DataVisualization", { useInternal: true }),
-        ]).then((results) => {
-            [session, masterDataView] = results[0];
-            dataVizExtn = results[1];
-        });
-
-        //Optional: load the ZoomWindow and MinimapExtention
-        viewer.loadExtension("Autodesk.Viewing.ZoomWindow");
+        // Optional: load the MinimapExtension
         // viewer.loadExtension('Autodesk.AEC.Minimap3DExtension')
 
         props.eventBus.addEventListener(EventTypes.RENDER_SETTINGS_CHANGED, async (event) => {
@@ -1119,6 +1112,8 @@ export default function BaseApp(props) {
                     onViewerInitialized={onViewerInitialized}
                     onModelLoaded={onModelLoaded}
                     getToken={getToken}
+                    extensions={{ "Autodesk.Viewing.ZoomWindow": {}, "Autodesk.DataVisualization": { useInternal: true } }}
+                    geomIndex={props.geomIndex}
                 />
             </div>
             {props.data && props.data.devicePanelData && (

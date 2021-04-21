@@ -58,9 +58,8 @@ NOTE: Most of these components were created using the [Material UI](http://mater
 -   DeviceTree - Hierarchical arrangement of devices
 -   HeatmapOptions - Gradient slider and associated heatmap property and resolution selection options.
 -   HyperionToolContainer - 2-button menu to show the Levels Tree and a panel containing device setting options.
--   LevelsTree - Hierarchical arrangment of level/group information.
 -   Viewer - React component wrapper for Autodesk Forge Viewer.
--   BasicTree - Basic hierarchical tree structure used by DeviceTree and LevelsTree.
+-   BasicTree - Basic hierarchical tree structure used by DeviceTree and HyperionToolContainer.
 -   EventTypes - Defines the events dispatched by the components.
 
 ![Component Mapping Image 2](https://github.com/Autodesk-Forge/forge-dataviz-iot-react-components/raw/main/images/component-mapping-p2.png)
