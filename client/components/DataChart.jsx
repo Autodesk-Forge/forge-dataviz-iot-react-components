@@ -101,7 +101,7 @@ function DataChart(props) {
     /**
      * Creates basic chart options for the given Device.
      * 
-     * @returns {DataChartOptions} A configured {@link DataChart.DataChartOptions} object.
+     * @returns {DataChartOptions} A configured {@link DataChartOptions} object.
      * @memberof Autodesk.DataVisualization.UI
      * @alias Autodesk.DataVisualization.UI.DataChart#createBasicChartOptions
      */

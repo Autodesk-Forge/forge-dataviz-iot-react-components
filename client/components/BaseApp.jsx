@@ -25,7 +25,7 @@ import Viewer from "./Viewer.jsx";
 import CustomToolTip from "./CustomToolTip.jsx";
 import DataPanelContainer from "./DataPanelContainer.jsx";
 import HyperionToolContainer from "./HyperionToolContainer.jsx";
-import { SpriteSize, SensorStyleDefinitions, PropIdGradientMap } from "../config/SensorStyles.js";
+import { SpriteSize, SensorStyleDefinitions, PropIdGradientMap, PropertyIconMap } from "../config/SensorStyles.js";
 import adskLogoSvg from "../../assets/images/autodesk-logo.svg";
 import ChronosTimeSlider from "./ChronosTimeSlider.jsx";
 import BasicDatePicker from "./BasicDatePicker.jsx";
@@ -778,9 +778,9 @@ export default function BaseApp(props) {
     }
 
     /**
-     * Uses the application based on user changes to the {@link SurfaceShader} component.
+     * Uses the application based on user changes to the {@link HeatmapOptions} component.
      * 
-     * @param {Object} options Settings defined in the {@link SurfaceShader}.
+     * @param {Object} options Settings defined in the {@link HeatmapOptions}.
      * @private
      */
     function onHeatmapOptionChange(options) {
@@ -1084,7 +1084,7 @@ export default function BaseApp(props) {
 
     return (
         <React.Fragment>
-            <div id="main_header" style={{ display: "flex", backgroundColor: "#474747" }}>
+            <div id="main_header">
                 <ChronosTimeSlider
                     rangeStart={startRange.toISOString()}
                     rangeEnd={endRange.toISOString()}
@@ -1112,7 +1112,7 @@ export default function BaseApp(props) {
                     onViewerInitialized={onViewerInitialized}
                     onModelLoaded={onModelLoaded}
                     getToken={getToken}
-                    extensions={{ "Autodesk.Viewing.ZoomWindow": {}, "Autodesk.DataVisualization": { useInternal: true } }}
+                    extensions={{ "Autodesk.Viewing.ZoomWindow": {}, "Autodesk.DataVisualization":{}}}
                     geomIndex={props.geomIndex}
                 />
             </div>
@@ -1144,18 +1144,14 @@ export default function BaseApp(props) {
                     devices={props.data.devicePanelData}
                     onNodeSelected={onNodeSelected}
                     onNavigateBack={navigateBackToDevices}
-                    propertyIconMap={props.propertyIconMap}
+                    propertyIconMap={props.propertyIconMap ? props.propertyIconMap : PropertyIconMap}
                     selectedGroupNode={selectedGroupNode}
                     currentDeviceData={currentDeviceDataRef.current}
                     chartData={chartDataRef.current}
                     eventBus={props.eventBus}
                 />
             )}
-            <img
-                className="logo"
-                src={adskLogoSvg}
-                style={{ width: "9%", bottom: "22px", position: "absolute", zIndex: 2, left: "15px", opacity: 0.85 }}
-            ></img>
+            <img className="logo" src={adskLogoSvg} alt="Autodesk Logo" />
         </React.Fragment>
     );
 }

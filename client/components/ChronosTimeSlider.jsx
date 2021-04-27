@@ -31,6 +31,7 @@ import { TimeSlider } from "chronos-etu";
  * @param {HandleCurrTimeUpdated} props.onCurrTimeUpdated A callback
  * &nbsp;handler invoked when the current time marker is updated without
  * &nbsp;changing the time selection.
+ * @param {Object} [props.styles] Styles to apply to TimeSlider container.
  *
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.ChronosTimeSlider
@@ -42,11 +43,10 @@ function ChronosTimeSlider(props) {
     const [timeSelectionId, setTimeselectionId] = useState(null);
     const containerRef = useRef();
 
-    const cntrStyle = {
+    const cntrStyle = Object.assign({}, {
         height: "120px",
-        backgroundColor: "gray",
         width: "75%",
-    };
+    }, props.styles);
 
     /**
      * Creates a timeline selection for the provided Date range.

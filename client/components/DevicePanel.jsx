@@ -23,7 +23,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 // eslint-disable-next-line no-unused-vars
 
-const useStyles = makeStyles(() => ({
+const defaultAutocompleteStyles = {
     root: {
         marginBottom: "30px",
         display: "inline-flex",
@@ -38,12 +38,28 @@ const useStyles = makeStyles(() => ({
     input: {
         color: "#D0D0D0",
         fontSize: "13px",
+    }
+}
+
+const CustomTextField = withStyles({
+    root: {
+        "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+                borderColor: "#999999",
+            },
+            "&:hover fieldset": {
+                borderColor: "#999999",
+            },
+            "&.Mui-focused fieldset": {
+                borderColor: "#6facfc",
+            },
+        },
+        "& .MuiSvgIcon-root": {
+            fill: "#999999",
+        },
     },
-    icon: {
-        fill: "#999999",
-        float: "right",
-    },
-}));
+})(TextField);
+
 
 /**
  * A panel component that displays all of devices in the scene.
@@ -58,11 +74,23 @@ const useStyles = makeStyles(() => ({
  * &nbsp;group node that is currently selected in the scene.
  * @param {CurrentDeviceData} props.currentDeviceData Data containing the estimated propertyValue for each property
  * @param {Function} props.onNavigateBack A callback function invoked when "Back to devices" button is clicked.
- *
+ * @param {Object} [props.styles]
+ * @param {Object} [props.styles.autocomplete] Material-UI styles to apply to the Autocomplete component. See https://material-ui.com/api/autocomplete/#css
+ * @param {Object} [props.styles.treeNode] Material UI styles to apply to {@link TreeNode} with children. See https://material-ui.com/api/tree-item/#css  
+ * @param {Object} [props.styles.leafNode] Material UI styles to apply to {@link TreeNode} without children. See https://material-ui.com/api/tree-item/#css
+ * @param {Object} [props.styles.deviceStats] Material UI styles to apply to each Chip component. See https://material-ui.com/api/chip/#css
+ * 
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.DevicePanel
  */
 function DevicePanel(props) {
+    const useStyles = makeStyles(() => {
+        if (props.styles) {
+            return _.merge(defaultAutocompleteStyles, props.styles.autocomplete);
+        }
+        return defaultAutocompleteStyles;
+    });
+
     /**
      * Generates the labels used for searching for each device that data has been fetched for.
      *
@@ -87,31 +115,12 @@ function DevicePanel(props) {
 
     const classes = useStyles();
 
-    const CustomTextField = withStyles({
-        root: {
-            "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                    borderColor: "#999999",
-                },
-                "&:hover fieldset": {
-                    borderColor: "#999999",
-                },
-                "&.Mui-focused fieldset": {
-                    borderColor: "#6facfc",
-                },
-            },
-            "& .MuiSvgIcon-root": {
-                fill: "#999999",
-            },
-        },
-    })(TextField);
-
     return (
         <React.Fragment>
             <div id="title">Sensor List</div>
             <div id="searchBarDiv">
                 <Autocomplete
-                    classes={{ root: classes.root, input: classes.input, inputRoot: classes.inputRoot }}
+                    classes={classes}
                     autoComplete={true}
                     autoHighlight={true}
                     autoSelect={true}
@@ -153,6 +162,7 @@ function DevicePanel(props) {
                     selectedGroupNode={props.selectedGroupNode}
                     eventBus={props.eventBus}
                     onNavigateBack={props.onNavigateBack}
+                    styles={props.styles}
                 />
             </div>
         </React.Fragment>

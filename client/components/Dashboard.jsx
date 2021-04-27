@@ -15,42 +15,11 @@
 //
 import React from "react";
 import DataChart from "./DataChart.jsx";
-import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import CircularProgress from "@material-ui/core/CircularProgress";
 // eslint-disable-next-line no-unused-vars
-
-const useStyles = makeStyles({
-    dashboardRoot: {
-        paddingRight: "2px",
-    },
-    headerBar: {
-        display: "flex",
-        alignItems: "center",
-        fontWeight: "bold",
-        backgroundColor: "#2a2a2a",
-        padding: "15px 5px 15px 5px",
-    },
-    backButton: {
-        color: "#ffffff",
-        position: "absolute",
-        zIndex: "2",
-    },
-    typographyBody1: {
-        color: "#ffffff",
-        fontSize: "18px",
-        fontWeight: "bold",
-        flexGrow: 1,
-        position: "relative",
-    },
-    loadingIcon: {
-        display: "block",
-        margin: "auto",
-        marginTop: "30px"
-    }
-});
 
 /**
  * A dashboard component that hosts one or more charts for the selected device
@@ -67,8 +36,6 @@ const useStyles = makeStyles({
  * @alias Autodesk.DataVisualization.UI.Dashboard
  */
 function Dashboard(props) {
-    const classes = useStyles();
-
     function onBackButtonClicked() {
         if (props.onNavigateBack) {
             props.onNavigateBack();
@@ -95,20 +62,24 @@ function Dashboard(props) {
             />
         ));
 
-        return chartElements.length ? chartElements : <CircularProgress size={50} color="secondary" classes={{ root: classes.loadingIcon }} />;
+        return chartElements.length ? (
+            chartElements
+        ) : (
+            <CircularProgress id="dashboard-loading-icon" size={50} color="secondary" />
+        );
     }
 
     return (
-        <div className={classes.dashboardRoot}>
-            <div className={classes.headerBar}>
+        <div className="dashboard">
+            <div className="dashboard-header">
                 <IconButton
-                    className={classes.backButton}
+                    id="dashboard-back-arrow"
                     onClick={onBackButtonClicked}
                     aria-label="navigate back to devices"
                 >
                     <ArrowBackIosIcon />
                 </IconButton>
-                <Typography className={classes.typographyBody1} align="center" noWrap={true}>
+                <Typography className="dashboard-device-name" align="center" noWrap={true} variant="inherit">
                     {props.chartData[props.selectedDeviceId] ? props.chartData[props.selectedDeviceId].name : ""}
                 </Typography>
             </div>
