@@ -44,6 +44,7 @@ import {
     DateTimeSpan,
     EventType,
     DeviceProperty,
+    DeviceModel
 } from "forge-dataviz-iot-data-modules/client";
 
 // End Range for timeslider
@@ -571,8 +572,44 @@ export default function BaseApp(props) {
             }
         }
 
+        /**
+         * When we work with client provided shading data, in order to get the internal device model working,
+         * we have to provide a way to populate the shading data in the devices model.
+         * @param {DataAdapter} adapter 
+         */
+        function updateDataStore(adapter) {
+            const dataStore = session.dataStore;
+            adapter = adapter || dataStore.adapters[0];
+
+            let nodes = [];
+            shadingData.getChildLeafs(nodes);
+
+            let model = new DeviceModel("synthetic_device_model_" + new Date().getTime(), adapter.id);
+            let hasData = false;
+
+            for (let node of nodes) {
+                for (let sp of node.shadingPoints) {
+                    let dm = dataStore.getDeviceModelFromDeviceId(sp.id);
+                    if (!dm) {
+                        let deviceObj = model.addDevice(sp.id);
+                        deviceObj.name = sp.name;
+                        deviceObj.deviceModel = model;
+                        deviceObj.sensorTypes = sp.types;
+                        deviceObj.position = sp.position;
+                        hasData = true;
+                    }
+                }
+            }
+
+            if (hasData) {
+                dataStore.addDeviceModel(model);
+            }
+        }
+
         // Need to convert the deviceList to viewable data
         await Promise.all([dataVizExtn.setupSurfaceShading(model, shadingData, { type: renderSettings.heatmapType }), generateViewables(shadingData)]);
+
+        updateDataStore();
         const completeDeviceTree = devicePanelData;
         setDeviceTree(completeDeviceTree);
 
@@ -922,25 +959,31 @@ export default function BaseApp(props) {
     }
 
     /**
+     * Returns the {@link TreeNode} in deviceTree that matches the given id.
+     * 
+     * @param {string} selectedNodeId group name
+     * @private
+     */
+    function findNode(selectedNodeId) {
+        let stack = deviceTree.slice();
+
+        while (stack.length) {
+            let item = stack.shift()
+            if (item.id == selectedNodeId) return item;
+
+            stack = stack.concat(item.children)
+        }
+    }
+
+    /**
      * Returns all devices given the name of a group. [] if no devices found.
      * 
-     * @param {string} selectedNode group name
+     * @param {Object} selectedNode Group object
      * @returns {Array.<TreeNode>} All devices (if any) on selectedNode.
      * @private
      */
     function getDevicesInGroup(selectedNode) {
-        function findGroup() {
-            let stack = deviceTree.slice();
-
-            while (stack.length) {
-                let item = stack.shift()
-                if (item.id == selectedNode.id) return item;
-
-                stack = stack.concat(item.children)
-            }
-        }
-
-        const deviceTreeFloor = findGroup();
+        const deviceTreeFloor = findNode(selectedNode.id);
 
         function getChildren(accumulator, item) {
             if (!item.children || item.children.length === 0) {
@@ -1042,18 +1085,20 @@ export default function BaseApp(props) {
         if (Object.keys(data).length) chartDataRef.current = data;
     }
 
+    let devicesToQuery = [];
     if (selectedGroupNode && deviceTree.length) {
-        let devicesToQuery = getDevicesInGroup(selectedGroupNode);
-        getDeviceData(devicesToQuery);
-        getChartData(devicesToQuery);
-    } else if (selectedGroupNode === null && deviceTree) { // Viewing entire building, need to query all devices.
-        let devicesToQuery = [];
+        devicesToQuery = getDevicesInGroup(selectedGroupNode);
+    }
+    if (hoveredDeviceInfoRef.current.id && !currentDeviceDataRef.current[hoveredDeviceInfoRef.current.id]) {
+        devicesToQuery.push(findNode(hoveredDeviceInfoRef.current.id));
+    }
+    else if (selectedGroupNode === null && deviceTree) { // Viewing entire model, need to query all devices.
         deviceTree.forEach((group) => {
             devicesToQuery.push.apply(devicesToQuery, group.children);
         });
-        getChartData(devicesToQuery);
-        getDeviceData(devicesToQuery);
     }
+    getDeviceData(devicesToQuery);
+    getChartData(devicesToQuery);
 
     /**
     * Handle QueryCompleted event originating from the DataView object. Informs this component about the completion of a particular data fetch.

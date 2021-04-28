@@ -21,7 +21,7 @@ To import the components:
 
 ```javascript
 // To import the Viewer component
-import { Viewer } from "dataviz-iot-react-components";
+import { Viewer } from "forge-dataviz-iot-react-components";
 
 function SampleApp(props) {
     return (
