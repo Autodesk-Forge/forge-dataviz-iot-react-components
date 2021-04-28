@@ -16,43 +16,14 @@
 import React, { memo } from "react";
 import BasicTree from "./BasicTree.jsx";
 import DeviceStats from "./DeviceStats.jsx";
-import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
-import makeStyles from "@material-ui/core/styles/makeStyles";
 import EventTypes from "./EventTypes.js";
+import * as _ from "lodash";
 // eslint-disable-next-line no-unused-vars
 
-const useStyles = makeStyles((theme) => ({
-    categoryLabel: {
-        backgroundColor: "#2A2A2A",
-        fontSize: "16px",
-        padding: "5px",
-        verticalAlign: "bottom",
-        alignItems: "center",
-        display: "inline-flex",
-        paddingTop: "5px",
-    },
-    itemLabel: {
-        backgroundColor: "#373737",
-        padding: "10px",
-        borderBottom: "1px solid #555555",
-        fontSize: "17px",
-        marginLeft: "0px",
-        marginRight: "0px",
-        "&:hover": {
-            backgroundColor: "#2A2A2A",
-        },
-    },
-    categoryContent: {
-        backgroundColor: "#2A2A2A",
-        maxWidth: "100%",
-        overflowX: "hidden",
-    },
-    itemContent: {
-        backgroundColor: "#373737",
-        display: "contents",
-        border: "1px solid black",
-    },
+const MemoizedDeviceStats = memo(DeviceStats);
+
+const commonNodeStyles = {
     group: {
         padding: 0,
         margin: 0,
@@ -61,27 +32,43 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: "10px",
         marginRight: "0px",
     },
-    avatar: {
-        width: theme.spacing(3),
-        height: theme.spacing(3),
-        marginLeft: theme.spacing(1.5),
-        fontSize: 10,
-        backgroundColor: "#5B5B5B",
+};
+
+let treeNodeStyles = Object.assign({}, commonNodeStyles, {
+    label: {
+        backgroundColor: "#2A2A2A",
+        fontSize: "16px",
+        padding: "5px",
+        verticalAlign: "bottom",
+        alignItems: "center",
         display: "inline-flex",
-    },
-    typography: {
-        fontWeight: "900",
         paddingTop: "5px",
     },
-    iconButton: {
-        display: "inline-block",
-        float: "right",
-        padding: "0px",
-        marginRight: "12px",
+    content: {
+        backgroundColor: "#2A2A2A",
+        maxWidth: "100%",
+        overflowX: "hidden",
     },
-}));
+});
 
-const MemoizedDeviceStats = memo(DeviceStats);
+let leafNodeStyles = Object.assign({}, commonNodeStyles, {
+    content: {
+        backgroundColor: "#373737",
+        display: "contents",
+        border: "1px solid black",
+    },
+    label: {
+        backgroundColor: "#373737",
+        padding: "10px",
+        borderBottom: "1px solid #555555",
+        fontSize: "16px",
+        marginLeft: "0px",
+        marginRight: "0px",
+        "&:hover": {
+            backgroundColor: "#2A2A2A",
+        },
+    },
+});
 
 /**
  * A tree component used to display a list of devices.
@@ -98,12 +85,18 @@ const MemoizedDeviceStats = memo(DeviceStats);
  * &nbsp;associated with the selected device.
  * @param {Object} props.propertyIconMap A mapping of property names to image paths used for each {@link DeviceStats} object.
  * @param {Function} props.onNavigateBack A callback function invoked when "Back to devices" button is clicked.
- * 
+ * @param {Object} [props.styles.treeNode] Material UI styles to apply to {@link TreeNode} with children. See https://material-ui.com/api/tree-item/#css
+ * @param {Object} [props.styles.leafNode] Material UI styles to apply to {@link TreeNode} without children. See https://material-ui.com/api/tree-item/#css
+ * @param {Object} [props.styles.deviceStats] Material UI styles to apply to each Chip component. See https://material-ui.com/api/chip/#css
+ *
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.DeviceTree
  */
 function DeviceTree(props) {
-    const styles = useStyles();
+    if (props.styles) {
+        _.merge(treeNodeStyles, props.styles.treeNode);
+        _.merge(leafNodeStyles, props.styles.leafNode);
+    }
 
     const eventBus = props.eventBus;
 
@@ -180,30 +173,32 @@ function DeviceTree(props) {
         const properties = data ? Object.keys(data) : [];
         const propertyIconMap = props.propertyIconMap || {};
 
-        return node.children.length > 0 ? (
-            <React.Fragment>
-                <Typography component={"div"} noWrap={true}>
+        if (node.children.length > 0) {
+            return <React.Fragment>
+                <Typography component="div" noWrap={true}>
                     {node.name}
                 </Typography>
-                <Avatar className={styles.avatar}>{getNumDescendants(node)}</Avatar>
+                <div className="badge">{getNumDescendants(node)}</div>
             </React.Fragment>
-        ) : (
-                <React.Fragment>
-                    <div id="deviceName">
-                        <Typography className={styles.typography} noWrap={true}>
-                            {node.name}
-                        </Typography>
-                    </div>
-                    {properties.map((property) => (
-                        <MemoizedDeviceStats
-                            key={`${node.id}-${property}`}
-                            deviceId={node.id}
-                            propertyIcon={propertyIconMap[property]}
-                            propertyValue={data[property]}
-                        />
-                    ))}
-                </React.Fragment>
-            );
+        }
+        else {
+            return <React.Fragment>
+                <div className="tree-device-row-heading">
+                    <Typography className="tree-device-name" noWrap={true} variant="inherit" component="p">
+                        {node.name}
+                    </Typography>
+                </div>
+                {properties.map((property) => (
+                    <MemoizedDeviceStats
+                        key={`${node.id}-${property}`}
+                        deviceId={node.id}
+                        propertyIcon={propertyIconMap[property]}
+                        propertyValue={data[property]}
+                        styles={props.styles ? props.styles.deviceStats : {}}
+                    />
+                ))}
+            </React.Fragment>
+        }
     }
 
     return (
@@ -215,7 +210,10 @@ function DeviceTree(props) {
             onLabelClick={onLabelClick}
             onMouseOver={onLabelClick}
             onMouseOut={props.onNavigateBack}
-            classes={styles}
+            styles={{
+                treeNode: treeNodeStyles,
+                leafNode: leafNodeStyles,
+            }}
         />
     );
 }

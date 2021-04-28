@@ -27,7 +27,7 @@
  */
 export class DataChartSeriesBase {
     /**
-     * Constructs an instance of DataChartSeriesBase object. See {@link https://echarts.apache.org/en/option.html#series} for more information.
+     * Constructs an instance of DataChartSeriesBase object. See https://echarts.apache.org/en/option.html#series for more information.
      *
      * @param {string} type The type of the chart, e.g. "line"
      * @param {any[]} data An array of values or objects.
