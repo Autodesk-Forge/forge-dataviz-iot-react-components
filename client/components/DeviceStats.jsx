@@ -16,7 +16,18 @@
 import React from "react";
 import Chip from "@material-ui/core/Chip";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import * as _ from "lodash";
+
+const useStyles = makeStyles((theme) => ({
+    chip: {
+        color: "#D0D0D0",
+        borderColor: "#D0D0D0",
+        margin: theme.spacing(0.5),
+        marginTop: "15px",
+    },
+    label: {
+        paddngLeft: "10px",
+    },
+}));
 
 /**
  * Displays the property value and corresponding property icon for a given device and property..
@@ -26,41 +37,22 @@ import * as _ from "lodash";
  * @param {string} props.deviceId String identifier of the device
  * @param {string} props.propertyValue String representation of the numerical value of the property and the corresponding data unit.
  * @param {string} props.propertyIcon Image src used to visually represent a property.
- * @param {Object} [props.styles] Material UI styles to apply to each Chip component. See https://material-ui.com/api/chip/#css
- *
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.DeviceStats
  */
 function DeviceStats(props) {
-    const useStyles = makeStyles((theme) => {
-        const defaultStyles = {
-            root: {
-                color: "#D0D0D0",
-                borderColor: "#D0D0D0",
-                margin: theme.spacing(0.5),
-                marginTop: "15px",
-            },
-            label: {
-                paddingLeft: "12px",
-            },
-            icon: {
-                marginRight: "1px",
-                paddingLeft: "4px",
-            },
-        };
-
-        return _.merge(defaultStyles, props.styles);
-    });
-
-    const classes = useStyles();
+    const styles = useStyles();
 
     return (
         <Chip
             key={props.deviceId}
-            classes={classes}
+            classes={{
+                root: styles.chip,
+                label: styles.label,
+            }}
             variant="outlined"
             label={props.propertyValue}
-            icon={<img src={props.propertyIcon} alt="property-icon" />}
+            icon={<img src={props.propertyIcon} style={{ marginLeft: "8px", marginRight: "1px" }} />}
         />
     );
 }

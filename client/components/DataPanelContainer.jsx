@@ -44,11 +44,6 @@ import Dashboard from "./Dashboard.jsx";
  * &nbsp;each {@link DeviceStats} object.
  * @param {(SurfaceShadingGroup|SurfaceShadingNode)} props.selectedGroupNode Represents the
  * &nbsp;group node that is currently selected in the scene.
- * @param {Object} [props.styles]
- * @param {Object} [props.styles.autocomplete] Material-UI styles to apply to the Autocomplete component. See https://material-ui.com/api/autocomplete/#css
- * @param {Object} [props.styles.treeNode] Material UI styles to apply to {@link TreeNode} with children. See https://material-ui.com/api/tree-item/#css
- * @param {Object} [props.styles.leafNode] Material UI styles to apply to {@link TreeNode} without children. See https://material-ui.com/api/tree-item/#css
- * @param {Object} [props.styles.deviceStats] Material UI styles to apply to each Chip component. See https://material-ui.com/api/chip/#css
  *
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.DataPanelContainer
@@ -95,7 +90,6 @@ function DataPanelContainer(props) {
                     currentDeviceData={props.currentDeviceData}
                     selectedGroupNode={props.selectedGroupNode}
                     eventBus={props.eventBus}
-                    styles={props.styles}
                 />
             );
         }
@@ -111,7 +105,7 @@ function DataPanelContainer(props) {
                         width: panelSpecs.width,
                         height: panelSpecs.height,
                     }}
-                    minWidth="25%"
+                    minWidth={"25%"}
                     disableDragging={true}
                     resizeHandleComponent={{ left: <CustomHandle /> }}
                     resizeHandleStyles={{

@@ -1129,7 +1129,7 @@ export default function BaseApp(props) {
 
     return (
         <React.Fragment>
-            <div id="main_header">
+            <div id="main_header" style={{ display: "flex", backgroundColor: "#474747" }}>
                 <ChronosTimeSlider
                     rangeStart={startRange.toISOString()}
                     rangeEnd={endRange.toISOString()}
@@ -1196,7 +1196,11 @@ export default function BaseApp(props) {
                     eventBus={props.eventBus}
                 />
             )}
-            <img className="logo" src={adskLogoSvg} alt="Autodesk Logo" />
+            <img
+                className="logo"
+                src={adskLogoSvg}
+                style={{ width: "9%", bottom: "22px", position: "absolute", zIndex: 2, left: "15px", opacity: 0.85 }}
+            ></img>
         </React.Fragment>
     );
 }

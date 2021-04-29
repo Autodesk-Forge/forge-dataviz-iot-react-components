@@ -29,7 +29,18 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
-import * as _ from "lodash";
+
+const useStyles = makeStyles({
+    root: {
+        width: "75%",
+        zIndex: 1,
+        display: "flex",
+        height: "10%",
+        justifyContent: "center",
+        position: "absolute",
+        pointerEvents: "none",
+    },
+});
 
 const CustomIconButton = withStyles({
     root: {
@@ -44,7 +55,34 @@ const CustomIconButton = withStyles({
     },
 })(IconButton);
 
-const propertyFormStyles = {
+const useSliderStyle = makeStyles({
+    rail: {
+        backgroundImage: (props) => props.backgroundImage,
+        height: "10px",
+        opacity: "1",
+        left: 0,
+        borderRadius: "10px",
+    },
+    mark: {
+        backgroundColor: "#ffffff33",
+        height: 10,
+        width: 1,
+        left: 0,
+    },
+    root: {
+        width: "30%",
+        margin: "1%",
+        marginTop: "20px",
+        "& .MuiSlider-markLabel": {
+            color: "#000000",
+        },
+    },
+    thumb: {
+        display: "none",
+    },
+});
+
+const SensorCustomForm = withStyles({
     fullWidth: {
         width: "fit-content",
     },
@@ -67,15 +105,34 @@ const propertyFormStyles = {
             borderRadius: "5px",
         },
     },
-};
+})(FormControl);
 
-const resolutionFormStyles = {};
-_.merge(resolutionFormStyles, propertyFormStyles, {
+const ResolutionCustomForm = withStyles({
+    fullWidth: {
+        width: "fit-content",
+    },
     root: {
         paddingLeft: "20px",
         paddingRight: "20px",
+        width: "auto",
+        pointerEvents: "auto",
+        "& .MuiFilledInput-input": {
+            padding: "10px",
+            paddingRight: "27px",
+        },
+        "& .MuiSelect-icon": {
+            color: "white",
+        },
+        "& .MuiInputBase-root": {
+            color: "white",
+            background: "none",
+        },
+        "& .MuiFormControl-marginNormal": {
+            background: "#2D2C2C",
+            borderRadius: "5px",
+        },
     },
-});
+})(FormControl);
 
 /**
  * A menu to pick sensor type and resolution
@@ -88,28 +145,14 @@ _.merge(resolutionFormStyles, propertyFormStyles, {
  * @param {Map.<string,DeviceProperty>} props.deviceModelProperties Map of all the properties across all devicesModels in a {@link DataStore} object.
  * @param {OnHeatMapOptionChange} props.onHeatmapOptionChange A callback function invoked when any combination of
  * &nbsp;resolutionValue, selectedPropertyId, and showHeatMap are changed.
- * @param {Object} [props.heatmapSelectionStyles]
- * @param {Object} [props.heatmapSelectionStyles.propertyForm]  Material UI styles to apply to the FormControl component used to select properties. See https://material-ui.com/api/form-control/#css
- * @param {Object} [props.heatmapSelectionStyles.resolutionForm] Material Material UI styles to apply to the FormControl component used to select resolution. See https://material-ui.com/api/form-control/#css
  *
- * @memberof Autodesk.DataVisualization.UI.HeatmapOptions
- * @alias Autodesk.DataVisualization.UI.HeatmapOptions.HeatmapSelectionMenu
+ * @memberof Autodesk.DataVisualization.UI.SurfaceShader
+ * @alias Autodesk.DataVisualization.UI.SurfaceShader.ShaderOptionsMenu
  */
-function HeatmapSelectionMenu(props) {
+function ShaderOptionsMenu(props) {
     const resolutionValue = props.resolutionValue;
     const selectedPropertyId = props.selectedPropertyId;
     const showHeatMap = props.showHeatMap;
-
-    if (props.heatmapSelectionStyles) {
-        _.merge(propertyFormStyles, props.heatmapSelectionStyles.propertyForm);
-        _.merge(resolutionFormStyles, props.heatmapSelectionStyles.resolutionForm);
-    }
-
-    const usePropertyFormStyles = makeStyles(propertyFormStyles);
-    const useResolutionFormStyles = makeStyles(resolutionFormStyles);
-
-    const propertyFormClasses = usePropertyFormStyles();
-    const resolutionFormClasses = useResolutionFormStyles();
 
     /**
      * Updates showheatMap based on user selection.
@@ -166,7 +209,7 @@ function HeatmapSelectionMenu(props) {
      * @private
      */
     function generateSensorProperties() {
-        const allProperties = [...props.deviceModelProperties.keys()];
+        const allProperties = [...props.deviceModelProperties.keys()]
         return allProperties.map((propId) => {
             return (
                 <MenuItem key={propId} value={propId}>
@@ -194,67 +237,44 @@ function HeatmapSelectionMenu(props) {
     }
 
     return (
-        <div id="heatmapSelection">
-            <FormControl classes={propertyFormClasses}>
+        <div id="menuOptions" style={{ display: "flex", pointerEvents: "none" }}>
+            <SensorCustomForm>
                 <TextField
                     select
                     variant="filled"
-                    margin="normal"
+                    margin={"normal"}
                     value={selectedPropertyId}
                     onChange={(event) => onSensorTypeChange(event)}
                     InputProps={{ disableUnderline: true }}
                 >
                     {generateSensorProperties()}
                 </TextField>
-            </FormControl>
+            </SensorCustomForm>
 
-            <FormControl classes={resolutionFormClasses}>
+            <ResolutionCustomForm>
                 <TextField
                     select
                     variant="filled"
-                    margin="normal"
+                    margin={"normal"}
                     value={resolutionValue}
                     onChange={(event) => onResolutionChange(event)}
                     InputProps={{ disableUnderline: true }}
                 >
                     {generateResolutions()}
                 </TextField>
-            </FormControl>
+            </ResolutionCustomForm>
             <Tooltip title={showHeatMap ? "Hide HeatMap" : "Show HeatMap"}>
                 <CustomIconButton id="showHeatMap" onClick={onHeatmapCheckboxChange}>
-                    {showHeatMap ? <VisibilityIcon id="visibility-icon" /> : <VisibilityOffIcon id="visibility-icon" />}
+                    {showHeatMap ? (
+                        <VisibilityIcon style={{ fill: "inherit" }} />
+                    ) : (
+                            <VisibilityOffIcon style={{ fill: "inherit" }} />
+                        )}
                 </CustomIconButton>
             </Tooltip>
         </div>
     );
 }
-
-const defaultGradientBarStyles = {
-    rail: {
-        backgroundImage: (props) => props.backgroundImage,
-        height: "10px",
-        opacity: "1",
-        left: 0,
-        borderRadius: "10px",
-    },
-    mark: {
-        backgroundColor: "#ffffff33",
-        height: 10,
-        width: 1,
-        left: 0,
-    },
-    root: {
-        width: "30%",
-        margin: "1%",
-        marginTop: "20px",
-        "& .MuiSlider-markLabel": {
-            color: "#000000",
-        },
-    },
-    thumb: {
-        display: "none",
-    },
-};
 
 /**
  * A linear gradient slider with labeled marks
@@ -266,14 +286,11 @@ const defaultGradientBarStyles = {
  * IDs to their corresponding gradient color values.
  * @param {GetPropertyRanges} props.getPropertyRanges The function to get the selected property's range and dataUnit
  * @param {number} props.totalMarkers The total number of slider marks to display on the slider.
- * @param {Object} [props.gradientBarStyles] Material UI styles to apply to the Slider component. See https://material-ui.com/api/slider/#css
  *
- * @memberof Autodesk.DataVisualization.UI.HeatmapOptions
- * @alias Autodesk.DataVisualization.UI.HeatmapOptions.GradientBar
+ * @memberof Autodesk.DataVisualization.UI.SurfaceShader
+ * @alias Autodesk.DataVisualization.UI.SurfaceShader.ShaderSlider
  */
-function GradientBar(props) {
-    const useSliderStyle = makeStyles(_.merge(defaultGradientBarStyles, props.gradientBarStyles));
-
+function ShaderSlider(props) {
     const [sliderMarks, setSliderMarks] = useState([
         { value: 20, label: "1" },
         { value: 40, label: "2" },
@@ -282,10 +299,10 @@ function GradientBar(props) {
     ]);
 
     /**
-     *
+     * 
      * @param {Object.<string, number[]>} propIdGradientMap A mapping of property IDs to their corresponding gradient color values.
      * @param {string} propertyId string identifier of selected property.
-     *
+     * 
      * @returns {string} String representation of the background gradient image used for the slider.
      * @private
      */
@@ -336,7 +353,7 @@ function GradientBar(props) {
 }
 
 /**
- * The HeatmapOptions component with a linear gradient and an options menu.
+ * The surface shader component with a linear gradient and options menu.
  * @component
  *
  * @param props
@@ -350,19 +367,17 @@ function GradientBar(props) {
  * @param {OnHeatMapOptionChange} props.onHeatMapOptionChange A callback function invoked when any combination of
  * &nbsp;resolutionValue, selectedPropertyId, and showHeatMap are changed.
  * @param {Map.<string, DeviceProperty>} props.deviceModelProperties  Map of all the properties across all devicesModels in a {@link DataStore} object.
- * @param {Object} [props.gradientBarStyles] Material UI styles to apply to the Slider component. See https://material-ui.com/api/slider/#css
- * @param {Object} [props.heatmapSelectionStyles]
- * @param {Object} [props.heatmapSelectionStyles.propertyForm] Material UI styles to apply to the FormControl component used to select properties. See https://material-ui.com/api/form-control/#css
- * @param {Object} [props.heatmapSelectionStyles.resolutionForm] Material UI styles to apply to the FormControl component used to select resolution. See https://material-ui.com/api/form-control/#css
  *
  * @memberof Autodesk.DataVisualization.UI
- * @alias Autodesk.DataVisualization.UI.HeatmapOptions
+ * @alias Autodesk.DataVisualization.UI.SurfaceShader
  */
 function HeatmapOptions(props) {
+    const classes = useStyles();
+
     return (
-        <div id="heatmapOptions_Container">
-            <GradientBar {...props} />
-            <HeatmapSelectionMenu {...props} />
+        <div id="surfaceShader_Container" className={classes.root}>
+            <ShaderSlider {...props} />
+            <ShaderOptionsMenu {...props} />
         </div>
     );
 }
