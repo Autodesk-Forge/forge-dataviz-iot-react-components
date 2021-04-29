@@ -146,10 +146,10 @@ const ResolutionCustomForm = withStyles({
  * @param {OnHeatMapOptionChange} props.onHeatmapOptionChange A callback function invoked when any combination of
  * &nbsp;resolutionValue, selectedPropertyId, and showHeatMap are changed.
  *
- * @memberof Autodesk.DataVisualization.UI.SurfaceShader
- * @alias Autodesk.DataVisualization.UI.SurfaceShader.ShaderOptionsMenu
+ * @memberof Autodesk.DataVisualization.UI.HeatmapOptions
+ * @alias Autodesk.DataVisualization.UI.HeatmapOptions.HeatmapSelectionMenu
  */
-function ShaderOptionsMenu(props) {
+function HeatmapSelectionMenu(props) {
     const resolutionValue = props.resolutionValue;
     const selectedPropertyId = props.selectedPropertyId;
     const showHeatMap = props.showHeatMap;
@@ -287,10 +287,10 @@ function ShaderOptionsMenu(props) {
  * @param {GetPropertyRanges} props.getPropertyRanges The function to get the selected property's range and dataUnit
  * @param {number} props.totalMarkers The total number of slider marks to display on the slider.
  *
- * @memberof Autodesk.DataVisualization.UI.SurfaceShader
- * @alias Autodesk.DataVisualization.UI.SurfaceShader.ShaderSlider
+ * @memberof Autodesk.DataVisualization.UI.HeatmapOptions
+ * @alias Autodesk.DataVisualization.UI.HeatmapOptions.GradientBar
  */
-function ShaderSlider(props) {
+function GradientBar(props) {
     const [sliderMarks, setSliderMarks] = useState([
         { value: 20, label: "1" },
         { value: 40, label: "2" },
@@ -353,7 +353,7 @@ function ShaderSlider(props) {
 }
 
 /**
- * The surface shader component with a linear gradient and options menu.
+ * The HeatmapOptions component with a linear gradient and an options menu.
  * @component
  *
  * @param props
@@ -369,15 +369,15 @@ function ShaderSlider(props) {
  * @param {Map.<string, DeviceProperty>} props.deviceModelProperties  Map of all the properties across all devicesModels in a {@link DataStore} object.
  *
  * @memberof Autodesk.DataVisualization.UI
- * @alias Autodesk.DataVisualization.UI.SurfaceShader
+ * @alias Autodesk.DataVisualization.UI.HeatmapOptions
  */
 function HeatmapOptions(props) {
     const classes = useStyles();
 
     return (
         <div id="surfaceShader_Container" className={classes.root}>
-            <ShaderSlider {...props} />
-            <ShaderOptionsMenu {...props} />
+            <GradientBar {...props} />
+            <HeatmapSelectionMenu {...props} />
         </div>
     );
 }
