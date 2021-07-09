@@ -92,12 +92,12 @@ export class DataChartXAxis {
  * @alias Autodesk.DataVisualization.UI.DataChart.DataChartYAxis
  */
 class DataChartYAxis {
-    constructor() { }
+    constructor() {}
 
     /**
      * Minimum in data range on the Y-axis
      * @type {number}
-     * 
+     *
      * @param {number} value The minimum in data range on Y-axis
      */
     set dataMin(value) {
@@ -107,7 +107,7 @@ class DataChartYAxis {
     /**
      * Maximum in data range on the Y-axis
      * @type {number}
-     * 
+     *
      * @param {number} value The maximum in data range on Y-axis
      */
     set dataMax(value) {
@@ -115,10 +115,10 @@ class DataChartYAxis {
     }
 
     /**
-     * 
+     *
      * Callback function invoked when the chart requires a label string.
      * @type {IndexedFormatterFunc}
-     * 
+     *
      * @param {IndexedFormatterFunc} callback The callback function
      * invoked when the chart requires a label string.
      * @memberof Autodesk.DataVisualization.UI.DataChart.DataChartYAxis
@@ -131,7 +131,7 @@ class DataChartYAxis {
     /**
      * Callback function invoked when the chart requires a pointer label string.
      * @type {PointerLabelFormatter}
-     * 
+     *
      * @param {PointerLabelFormatter} callback The callback function
      * &nbsp;invoked when the chart requires a pointer label string.
      * @memberof Autodesk.DataVisualization.UI.DataChart.DataChartYAxis
@@ -143,7 +143,7 @@ class DataChartYAxis {
 
     /**
      * Generates the options object representing the Echarts configurations.
-     * 
+     *
      * @memberof Autodesk.DataVisualization.UI.DataChart.DataChartYAxis
      * @alias Autodesk.DataVisualization.UI.DataChart.DataChartYAxis#generateOptions
      */
@@ -172,11 +172,12 @@ class DataChartYAxis {
         };
     }
 }
-export { DataChartYAxis }
+
+export { DataChartYAxis };
 
 /**
  * Tooltip options for the data chart to be used with {@link DataChartOptions}
- * 
+ *
  * @memberof Autodesk.DataVisualization.UI.DataChart
  * @alias Autodesk.DataVisualization.UI.DataChart.DataChartToolTip
  */
@@ -191,7 +192,7 @@ export class DataChartToolTip {
     /**
      * Callback function invoked when the chart requires a tool-tip string.
      * @type {Function}
-     * 
+     *
      * @param {Function} callback The callback function
      * invoked when the chart requires a tool-tip string.
      * @memberof Autodesk.DataVisualization.UI.DataChart
@@ -203,7 +204,7 @@ export class DataChartToolTip {
 
     /**
      * Generates the options object representing the Echarts configurations.
-     * 
+     *
      * @memberof Autodesk.DataVisualization.UI.DataChart
      * @alias Autodesk.DataVisualization.UI.DataChart.DataChartToolTip#generateOptions
      */

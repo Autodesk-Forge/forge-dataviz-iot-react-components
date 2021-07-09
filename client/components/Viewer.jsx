@@ -20,21 +20,21 @@ import React, { useEffect, useRef } from "react";
  * @component
  * Component for rendering LMV
  * @param {Object} props
- * @param {("AutodeskProduction"|"AutodeskStaging"|"MD20ProdUS"|"MD20ProdEU")} props.env Forge API environment
+ * @param {("AutodeskProduction"|"AutodeskStaging"|"MD20ProdUS"|"MD20ProdEU")} [props.env] Forge API environment
  * @param {Function} props.getToken Returns the Forge API token to access LMV
- * @param {"derivativeV2"|"derivativeV2_EU"|"modelDerivativeV2"|"fluent"|"D3S"|"D3S_EU"} props.api Default = "derivativeV2". Please refer to LMV documentation for more information.
+ * @param {"derivativeV2"|"derivativeV2_EU"|"modelDerivativeV2"|"fluent"|"D3S"|"D3S_EU"} [props.api] Default = "derivativeV2". Please refer to LMV documentation for more information.
  * @param {string} props.docUrn Document URN of model
- * @param {OnModelLoaded} props.onModelLoaded Callback function invoked when the model has loaded
- * @param {OnViewerInitialized} props.onViewerInitialized Callback function invoked when LMV has been intialized
+ * @param {OnModelLoaded} [props.onModelLoaded] Callback function invoked when the model has loaded
+ * @param {OnViewerInitialized} [props.onViewerInitialized] Callback function invoked when LMV has been intialized
  * @param {string[]} [props.extensions] List of extension ids forwarded to viewer config to load.
  * @param {Object.<string, Object>} [props.disabledExtensions] Default extensions to prevent being loaded.
  * @param {string} [props.phaseName] phaseName of view to load in scene.
  * @param {string} [props.guid] guid of BubbleNode to load in scene.
  * @param {string} [props.viewableID] viewableID of BubbleNode to load in scene.
  * @param {number} [props.geomIndex] Index of geometry to load in scene.
- * @param {Boolean} props.skipHiddenFragments Boolean to specify if hidden fragments should be skipped (Default: false,
+ * @param {Boolean} [props.skipHiddenFragments] Boolean to specify if hidden fragments should be skipped (Default: false,
  * Hidden fragments are required for heatmaps in rooms, only applicable to SVF2)
- * @param {Object} props.viewerOptions Options object to forward to Autodesk.Viewing.Initializer
+ * @param {Object} [props.viewerOptions] Options object to forward to Autodesk.Viewing.Initializer
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.Viewer
  */
@@ -75,12 +75,11 @@ export default function Viewer(props) {
         });
 
         Autodesk.Viewing.Initializer(options, async function () {
-
             const extensionsToLoad = props.extensions;
 
             const extensionsWithConfig = [];
             const extensionsWithoutConfig = [];
-            
+
             for (let key in extensionsToLoad) {
                 const config = extensionsToLoad[key];
                 if (Object.keys(config).length === 0) {
@@ -96,8 +95,8 @@ export default function Viewer(props) {
             });
 
             extensionsWithConfig.forEach((ext) => {
-                viewer.loadExtension(ext, extensionsToLoad[ext])
-            })
+                viewer.loadExtension(ext, extensionsToLoad[ext]);
+            });
 
             viewerRef.current = viewer;
 
@@ -141,14 +140,13 @@ export default function Viewer(props) {
                 if (results && results.length) {
                     defaultModel = results[0];
                 }
-            }
-            else if (props.geomIndex) {
-                const geoms = bubbleNode.search({ 'type': 'geometry' })
+            } else if (props.geomIndex) {
+                const geoms = bubbleNode.search({ type: "geometry" });
                 if (geoms.length) {
                     if (props.geomIndex < 0 || props.geomIndex >= geoms.length) {
-                        console.warn("GeometryIndex Error: Invalid geometry index.")
+                        console.warn("GeometryIndex Error: Invalid geometry index.");
                     }
-                    const index = Math.min(Math.max(props.geomIndex, 0), geoms.length - 1) // Ensure index is valid.
+                    const index = Math.min(Math.max(props.geomIndex, 0), geoms.length - 1); // Ensure index is valid.
                     defaultModel = geoms[index];
                 }
             }
@@ -170,7 +168,11 @@ export default function Viewer(props) {
         }
 
         if (documentId) {
-            Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
+            Autodesk.Viewing.Document.load(
+                documentId,
+                onDocumentLoadSuccess,
+                onDocumentLoadFailure
+            );
         } else {
             props.eventBus.dispatchEvent({ type: "VIEWER_READY", data: { viewer } });
         }

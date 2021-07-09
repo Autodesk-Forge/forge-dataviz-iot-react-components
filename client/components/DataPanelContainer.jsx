@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-import React, { useState } from "react";
+import React from "react";
 import { Rnd } from "react-rnd";
 import DevicePanel from "./DevicePanel.jsx";
 import Dashboard from "./Dashboard.jsx";
@@ -49,13 +49,6 @@ import Dashboard from "./Dashboard.jsx";
  * @alias Autodesk.DataVisualization.UI.DataPanelContainer
  */
 function DataPanelContainer(props) {
-    const [panelSpecs, setPanelSpecs] = useState({
-        width: "25%",
-        height: "calc(100% - 120px)",
-        x: 20,
-        y: 20,
-    });
-
     /**
      * @returns {HTMLDivElement} Containing a vertical ellipsis representing a movable handle.
      * @private
@@ -99,31 +92,15 @@ function DataPanelContainer(props) {
         <React.Fragment>
             {props.deviceId2DbIdMap && props.dataVizExtn && (
                 <Rnd
+                    id="data-panel-container"
+                    className={props.selectedDevice ? "dashboard-view" : "device-panel-view"}
                     default={{
-                        x: panelSpecs.x,
-                        y: panelSpecs.y,
-                        width: panelSpecs.width,
-                        height: panelSpecs.height,
+                        width: "inherit",
+                        height: "inherit",
                     }}
-                    minWidth={"25%"}
                     disableDragging={true}
                     resizeHandleComponent={{ left: <CustomHandle /> }}
-                    resizeHandleStyles={{
-                        left: {
-                            top: props.selectedDevice ? "15%" : "25%",
-                            height: "70%",
-                            paddingLeft: "2px",
-                            paddingRight: "2px",
-                        },
-                    }}
                     bounds="parent"
-                    // eslint-disable-next-line no-unused-vars
-                    onResizeStop={(_e, _direction, ref, _delta, _position) => {
-                        setPanelSpecs({
-                            width: ref.style.width,
-                            height: ref.style.height,
-                        });
-                    }}
                     enableResizing={{
                         top: false,
                         right: false,

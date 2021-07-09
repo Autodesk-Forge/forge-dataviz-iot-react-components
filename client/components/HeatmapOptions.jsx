@@ -20,7 +20,7 @@
     }]
 */
 import React, { useState, useEffect } from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Slider from "@material-ui/core/Slider";
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
@@ -29,110 +29,6 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
-
-const useStyles = makeStyles({
-    root: {
-        width: "75%",
-        zIndex: 1,
-        display: "flex",
-        height: "10%",
-        justifyContent: "center",
-        position: "absolute",
-        pointerEvents: "none",
-    },
-});
-
-const CustomIconButton = withStyles({
-    root: {
-        paddingTop: "10px",
-        height: "10px",
-        "&:hover, &:focus": { background: "none", outline: "0" },
-        fill: "#353536",
-        display: "inline-block",
-        marginTop: "15px",
-        marginLeft: "-10px",
-        pointerEvents: "auto",
-    },
-})(IconButton);
-
-const useSliderStyle = makeStyles({
-    rail: {
-        backgroundImage: (props) => props.backgroundImage,
-        height: "10px",
-        opacity: "1",
-        left: 0,
-        borderRadius: "10px",
-    },
-    mark: {
-        backgroundColor: "#ffffff33",
-        height: 10,
-        width: 1,
-        left: 0,
-    },
-    root: {
-        width: "30%",
-        margin: "1%",
-        marginTop: "20px",
-        "& .MuiSlider-markLabel": {
-            color: "#000000",
-        },
-    },
-    thumb: {
-        display: "none",
-    },
-});
-
-const SensorCustomForm = withStyles({
-    fullWidth: {
-        width: "fit-content",
-    },
-    root: {
-        width: "auto",
-        pointerEvents: "auto",
-        "& .MuiFilledInput-input": {
-            padding: "10px",
-            paddingRight: "27px",
-        },
-        "& .MuiSelect-icon": {
-            color: "white",
-        },
-        "& .MuiInputBase-root": {
-            color: "white",
-            background: "none",
-        },
-        "& .MuiFormControl-marginNormal": {
-            background: "#2D2C2C",
-            borderRadius: "5px",
-        },
-    },
-})(FormControl);
-
-const ResolutionCustomForm = withStyles({
-    fullWidth: {
-        width: "fit-content",
-    },
-    root: {
-        paddingLeft: "20px",
-        paddingRight: "20px",
-        width: "auto",
-        pointerEvents: "auto",
-        "& .MuiFilledInput-input": {
-            padding: "10px",
-            paddingRight: "27px",
-        },
-        "& .MuiSelect-icon": {
-            color: "white",
-        },
-        "& .MuiInputBase-root": {
-            color: "white",
-            background: "none",
-        },
-        "& .MuiFormControl-marginNormal": {
-            background: "#2D2C2C",
-            borderRadius: "5px",
-        },
-    },
-})(FormControl);
 
 /**
  * A menu to pick sensor type and resolution
@@ -160,7 +56,7 @@ function HeatmapSelectionMenu(props) {
      * @param {MouseEvent} event Click event indication that user has modified showHeatmap.
      * @private
      */
-    const onHeatmapCheckboxChange = (event) => {
+    const onHeatmapCheckboxChange = (/* event */) => {
         if (props.onHeatmapOptionChange) {
             props.onHeatmapOptionChange({
                 resolutionValue,
@@ -209,7 +105,7 @@ function HeatmapSelectionMenu(props) {
      * @private
      */
     function generateSensorProperties() {
-        const allProperties = [...props.deviceModelProperties.keys()]
+        const allProperties = [...props.deviceModelProperties.keys()];
         return allProperties.map((propId) => {
             return (
                 <MenuItem key={propId} value={propId}>
@@ -237,40 +133,40 @@ function HeatmapSelectionMenu(props) {
     }
 
     return (
-        <div id="menuOptions" style={{ display: "flex", pointerEvents: "none" }}>
-            <SensorCustomForm>
+        <div id="heatmapSelection">
+            <FormControl id="property-form">
                 <TextField
                     select
                     variant="filled"
-                    margin={"normal"}
+                    margin="normal"
                     value={selectedPropertyId}
                     onChange={(event) => onSensorTypeChange(event)}
                     InputProps={{ disableUnderline: true }}
                 >
                     {generateSensorProperties()}
                 </TextField>
-            </SensorCustomForm>
+            </FormControl>
 
-            <ResolutionCustomForm>
+            <FormControl id="resolution-form">
                 <TextField
                     select
                     variant="filled"
-                    margin={"normal"}
+                    margin="normal"
                     value={resolutionValue}
                     onChange={(event) => onResolutionChange(event)}
                     InputProps={{ disableUnderline: true }}
                 >
                     {generateResolutions()}
                 </TextField>
-            </ResolutionCustomForm>
+            </FormControl>
             <Tooltip title={showHeatMap ? "Hide HeatMap" : "Show HeatMap"}>
-                <CustomIconButton id="showHeatMap" onClick={onHeatmapCheckboxChange}>
+                <IconButton id="showHeatMap" onClick={onHeatmapCheckboxChange}>
                     {showHeatMap ? (
-                        <VisibilityIcon style={{ fill: "inherit" }} />
+                        <VisibilityIcon id="visibility-icon" />
                     ) : (
-                            <VisibilityOffIcon style={{ fill: "inherit" }} />
-                        )}
-                </CustomIconButton>
+                        <VisibilityOffIcon id="visibility-icon" />
+                    )}
+                </IconButton>
             </Tooltip>
         </div>
     );
@@ -291,6 +187,12 @@ function HeatmapSelectionMenu(props) {
  * @alias Autodesk.DataVisualization.UI.HeatmapOptions.GradientBar
  */
 function GradientBar(props) {
+    const useSliderStyle = makeStyles({
+        rail: {
+            backgroundImage: (props) => props.backgroundImage,
+        },
+    });
+
     const [sliderMarks, setSliderMarks] = useState([
         { value: 20, label: "1" },
         { value: 40, label: "2" },
@@ -299,10 +201,10 @@ function GradientBar(props) {
     ]);
 
     /**
-     * 
+     *
      * @param {Object.<string, number[]>} propIdGradientMap A mapping of property IDs to their corresponding gradient color values.
      * @param {string} propertyId string identifier of selected property.
-     * 
+     *
      * @returns {string} String representation of the background gradient image used for the slider.
      * @private
      */
@@ -349,7 +251,15 @@ function GradientBar(props) {
         backgroundImage: generateGradientStyle(props.propIdGradientMap, props.selectedPropertyId),
     });
 
-    return <Slider classes={classes} valueLabelDisplay="off" marks={sliderMarks} track={false} disabled={true} />;
+    return (
+        <Slider
+            classes={classes}
+            valueLabelDisplay="off"
+            marks={sliderMarks}
+            track={false}
+            disabled={true}
+        />
+    );
 }
 
 /**
@@ -372,10 +282,8 @@ function GradientBar(props) {
  * @alias Autodesk.DataVisualization.UI.HeatmapOptions
  */
 function HeatmapOptions(props) {
-    const classes = useStyles();
-
     return (
-        <div id="surfaceShader_Container" className={classes.root}>
+        <div id="heatmapOptions_Container">
             <GradientBar {...props} />
             <HeatmapSelectionMenu {...props} />
         </div>

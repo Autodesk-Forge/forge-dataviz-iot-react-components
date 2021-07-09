@@ -32,15 +32,6 @@ import TreeItem from "@material-ui/lab/TreeItem";
  * @param {OnMouseEvent} props.onLabelClick Function to be invoked when a label is clicked
  * @param {OnMouseEvent} props.onMouseOver Function to be invoked on the mouseover of a {@link TreeNode}
  * @param {OnMouseEvent} props.onMouseOut Function to be invoked when the mouse hovers off a {@link TreeNode}.
- * @param {Object} props.classes Material UI Styles object applied to a {@link TreeNode}. See {@link https://material-ui.com/api/tree-item/#css} for structure.
- * @param {Object} [props.classes.root] 
- * @param {Object} [props.classes.selected]
- * @param {Object} [props.classes.group]
- * @param {Object} [props.classes.categoryContent] Content styles applied applied to a {@link TreeNode} with children.
- * @param {Object} [props.classes.itemContent] Content styles applied to a {@link TreeNode} without children.
- * @param {Object} [props.classes.categoryLabel] Label styles applied to a {@link TreeNode} with children.
- * @param {Object} [props.classes.itemLabel] Label styles applied to a {@link TreeNode} without children.
- * @param {Object} [props.classes.iconContainer]
  *
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.BasicTree
@@ -48,7 +39,7 @@ import TreeItem from "@material-ui/lab/TreeItem";
 export default function BasicTree(props) {
     /**
      * Calls the corresponding handler with data if found.
-     * 
+     *
      * @param {string} handlerName Name of event handler.
      * @param {TreeNode} data Node that triggered event.
      * @private
@@ -60,8 +51,6 @@ export default function BasicTree(props) {
             }
         };
     }
-
-    const classes = props.classes;
 
     /**
      *
@@ -79,10 +68,10 @@ export default function BasicTree(props) {
 
     /**
      * Finds a path from the root of the tree to the target {@link TreeNode}.
-     * 
+     *
      * @param {TreeNode[]} tree Tree of device {@link TreeNode} in the scene.
      * @param {string} goal Id of {@link TreeNode}
-     * @returns {string[]} An array of node identifiers representing the path from root to goal. Returns [] if a path to the 
+     * @returns {string[]} An array of node identifiers representing the path from root to goal. Returns [] if a path to the
      * &nbsp;{@link TreeNode} cannot be found.
      * @private
      */
@@ -112,30 +101,37 @@ export default function BasicTree(props) {
      * @param {TreeNode} node Represents a node in props.data
      * @private
      */
-    const renderTree = (node) => (
-        <TreeItem
-            classes={{
-                root: classes.root,
-                selected: classes.selected,
-                group: classes.group,
-                content: node.children.length > 0 ? classes.categoryContent : classes.itemContent,
-                label: node.children.length > 0 ? classes.categoryLabel : classes.itemLabel,
-                iconContainer: classes.iconContainer,
-            }}
-            key={node.id}
-            nodeId={node.id.toString()}
-            onMouseOver={onEvent("onMouseOver", node)}
-            onMouseOut={onEvent("onMouseOut", node)}
-            onLabelClick={onEvent("onLabelClick", node)}
-            onIconClick={onEvent("onIconClick", node)}
-            label={props.onLabelRequest(node)}
-        >
-            {
-                // Render only child nodes of the expanded node.
-                getChildNodes(node).map((child) => renderTree(child))
-            }
-        </TreeItem>
-    );
+    const renderTree = (node) => {
+        if (node.children.length > 0) {
+            return (
+                <TreeItem
+                    id={`tree-node-${node.id}`}
+                    key={node.id}
+                    nodeId={node.id.toString()}
+                    onMouseOver={onEvent("onMouseOver", node)}
+                    onMouseOut={onEvent("onMouseOut", node)}
+                    onLabelClick={onEvent("onLabelClick", node)}
+                    onIconClick={onEvent("onIconClick", node)}
+                    label={props.onLabelRequest(node)}
+                >
+                    {getChildNodes(node).map((child) => renderTree(child))}
+                </TreeItem>
+            );
+        } else {
+            return (
+                <TreeItem
+                    id={`leaf-node-${node.id}`}
+                    key={node.id}
+                    nodeId={node.id.toString()}
+                    onMouseOver={onEvent("onMouseOver", node)}
+                    onMouseOut={onEvent("onMouseOut", node)}
+                    onLabelClick={onEvent("onLabelClick", node)}
+                    onIconClick={onEvent("onIconClick", node)}
+                    label={props.onLabelRequest(node)}
+                />
+            );
+        }
+    };
 
     return (
         <TreeView
@@ -148,4 +144,3 @@ export default function BasicTree(props) {
         </TreeView>
     );
 }
-

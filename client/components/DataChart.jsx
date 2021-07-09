@@ -21,8 +21,14 @@ import echarts from "echarts/lib/echarts";
 import "echarts/lib/chart/line";
 import "echarts/lib/component/tooltip";
 import "echarts/lib/component/title";
-import { DataChartOptions, DataChartXAxis, DataChartYAxis, DataChartToolTip } from "./DataChartOptions";
 import { DataChartSeriesLine } from "./DataChartSeries";
+
+import {
+    DataChartOptions,
+    DataChartXAxis,
+    DataChartYAxis,
+    DataChartToolTip,
+} from "./DataChartOptions";
 
 /**
  * A chart that displays values of a single property for a single device.
@@ -44,7 +50,7 @@ function DataChart(props) {
 
     /**
      * Used as the pointer formatter for a {@link DataChartXAxis#pointerFormatter}
-     * 
+     *
      * @param {Object} params
      * @param {number} params.value An integer timestamp value that represents the number of milliseconds since January 1, 1970
      * @returns {string} Formatted pointer value
@@ -59,7 +65,7 @@ function DataChart(props) {
 
     /**
      * Used as the label formatter for a {@link DataChartYAxis#labelFormatter} in {@link DataChart#createBasicChartOptions}
-     * 
+     *
      * @param {number} value chart value of the property
      * @param {number} index index of the axis label
      * @returns {string} Formatted label value
@@ -67,12 +73,13 @@ function DataChart(props) {
      * @alias Autodesk.DataVisualization.UI.DataChart#yAxisLabelFormatter
      */
     function yAxisLabelFormatter(value, index) {
+        index;
         return value ? value.toFixed(2) : "0.00";
     }
 
     /**
      * Used as the pointer formatter for a {@link DataChartYAxis#pointerFormatter} in {@link DataChart#createBasicChartOptions}
-     * 
+     *
      * @param {Object} params
      * @param {number} params.value chart value of the property
      * @returns {string} Formatted pointer value
@@ -86,7 +93,7 @@ function DataChart(props) {
 
     /**
      * Used as a tooltip formatter for a {@link DataChartToolTip#formatter} in {@link DataChart#createBasicChartOptions}
-     * 
+     *
      * @param {Object} params
      * @param {number} params.value chart value of the property
      * @returns {string} Formatted tool tip value
@@ -100,7 +107,7 @@ function DataChart(props) {
 
     /**
      * Creates basic chart options for the given Device.
-     * 
+     *
      * @returns {DataChartOptions} A configured {@link DataChartOptions} object.
      * @memberof Autodesk.DataVisualization.UI
      * @alias Autodesk.DataVisualization.UI.DataChart#createBasicChartOptions
@@ -128,7 +135,7 @@ function DataChart(props) {
 
     /**
      * Gets the chart line color associated with the specified property
-     * 
+     *
      * @param {string} propertyId The id of the property
      * @returns {string} Color to use for the specified property. #ffffff if propertyId isn't found.
      * @memberof Autodesk.DataVisualization.UI
@@ -146,7 +153,7 @@ function DataChart(props) {
 
     /**
      * Creates a new {@link DataChartSeriesLine} with the specified values and color
-     * 
+     *
      * @param {ChartSeriesData} values Data values to be used for the chart line.
      * @param {string} colorValue Color value obtained from getColorForProperty method
      * @returns {DataChartSeriesLine} Series line with the specified values and color
@@ -195,11 +202,7 @@ function DataChart(props) {
             <ReactEchartsCore
                 echarts={echarts}
                 option={chartOptions}
-                style={
-                    props.tooltip
-                        ? { width: "170px", height: "30px" }
-                        : { width: "100%", height: "220px", padding: "15px 20px 15px 20px" }
-                }
+                className={props.tooltip ? "tooltip-size" : "dashboard-size"}
                 showLoading={showLoading}
             />
         </div>

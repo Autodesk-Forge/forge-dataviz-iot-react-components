@@ -52,7 +52,10 @@ function BasicDatePicker(props) {
         start = start ? moment.utc(start).toDate() : props.startTime;
         end = end ? moment.utc(end).toDate() : props.endTime;
 
-        if (props.onRangeChange && (!timeEqual(props.startTime, start) || !timeEqual(props.endTime, end))) {
+        if (
+            props.onRangeChange &&
+            (!timeEqual(props.startTime, start) || !timeEqual(props.endTime, end))
+        ) {
             props.onRangeChange(start, end);
         }
     }

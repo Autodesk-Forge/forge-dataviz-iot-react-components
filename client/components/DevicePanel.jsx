@@ -17,33 +17,9 @@ import React from "react";
 import DeviceTree from "./DeviceTree.jsx";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import withStyles from "@material-ui/core/styles/withStyles";
-import makeStyles from "@material-ui/core/styles/makeStyles";
 import SearchIcon from "@material-ui/icons/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 // eslint-disable-next-line no-unused-vars
-
-const useStyles = makeStyles(() => ({
-    root: {
-        marginBottom: "30px",
-        display: "inline-flex",
-        width: "91%",
-        marginTop: "16px",
-        marginLeft: "6px",
-        marginRight: "5px",
-    },
-    inputRoot: {
-        borderColor: "#999999",
-    },
-    input: {
-        color: "#D0D0D0",
-        fontSize: "13px",
-    },
-    icon: {
-        fill: "#999999",
-        float: "right",
-    },
-}));
 
 /**
  * A panel component that displays all of devices in the scene.
@@ -85,36 +61,12 @@ function DevicePanel(props) {
         return deviceLabels;
     }
 
-    const classes = useStyles();
-
-    const CustomTextField = withStyles({
-        root: {
-            "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                    borderColor: "#999999",
-                },
-                "&:hover fieldset": {
-                    borderColor: "#999999",
-                },
-                "&.Mui-focused fieldset": {
-                    borderColor: "#6facfc",
-                },
-            },
-            "& .MuiSvgIcon-root": {
-                fill: "#999999",
-            },
-        },
-    })(TextField);
-
     return (
         <React.Fragment>
             <div id="title">Sensor List</div>
             <div id="searchBarDiv">
                 <Autocomplete
-                    classes={{ root: classes.root, input: classes.input, inputRoot: classes.inputRoot }}
                     autoComplete={true}
-                    autoHighlight={true}
-                    autoSelect={true}
                     disableClearable
                     forcePopupIcon={false}
                     clearOnEscape={true}
@@ -125,7 +77,7 @@ function DevicePanel(props) {
                         if (newValue) props.onNodeSelected(event, newValue.id);
                     }}
                     renderInput={(params) => (
-                        <CustomTextField
+                        <TextField
                             {...params}
                             placeholder="Search"
                             variant="outlined"
@@ -144,7 +96,7 @@ function DevicePanel(props) {
                     )}
                 />
             </div>
-            <div id="treeView">
+            <div id="device-tree-view">
                 <DeviceTree
                     devices={props.devices}
                     onNodeSelected={props.onNodeSelected}

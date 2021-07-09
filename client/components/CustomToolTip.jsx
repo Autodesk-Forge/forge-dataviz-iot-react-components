@@ -15,34 +15,9 @@
 //
 import React from "react";
 import Tooltip from "@material-ui/core/Tooltip";
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from "@material-ui/core/CircularProgress";
 import DataChart from "../components/DataChart.jsx";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
 // eslint-disable-next-line no-unused-vars
-
-const HtmlTooltip = withStyles(() => ({
-    tooltip: {
-        backgroundColor: "#373737",
-        fontSize: "12px",
-        padding: "0px",
-        paddingTop: "2px",
-        paddingBottom: "3px",
-        margin: "0px",
-    },
-    arrow: {
-        color: "#373737",
-        marginBottom: "0px",
-        fontSize: "20px",
-    },
-}))(Tooltip);
-
-const loadingIconStyles = makeStyles({
-    loadingIcon: {
-        display: "block",
-        margin: "auto",
-        padding: "5px"
-    }
-});
 
 /**
  * A custom tool-tip that is displayed over Forge Viewer canvas when a user hovers over a device. Contains a {@link DataChart} for each property along with the estimated current property value.
@@ -59,41 +34,25 @@ const loadingIconStyles = makeStyles({
  * @alias Autodesk.DataVisualization.UI.CustomToolTip
  */
 function CustomToolTip(props) {
-    const classes = loadingIconStyles();
-
     if (props.hoveredDeviceInfo.id) {
         const chartData = props.chartData[props.hoveredDeviceInfo.id];
-        const deviceName = chartData ? chartData.name : <CircularProgress color="secondary" size={30} classes={{ root: classes.loadingIcon }} />;
+        const deviceName = chartData ? (
+            chartData.name
+        ) : (
+            <CircularProgress className="tooltip-loading-icon" color="secondary" size={30} />
+        );
         const properties = chartData ? Object.keys(chartData["properties"]) : [];
 
         const currentDeviceData = props.currentDeviceData[props.hoveredDeviceInfo.id];
 
         return (
-            <HtmlTooltip
+            <Tooltip
                 title={
                     <React.Fragment>
-                        <span
-                            style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                fontWeight: "bold",
-                                fontSize: "12px",
-                                paddingTop: "1px",
-                                paddingBottom: "3px",
-                            }}
-                        >
-                            {deviceName}
-                        </span>
-
+                        <span className="tooltip-device-name">{deviceName}</span>
                         {properties.map((property) => (
                             <React.Fragment key={`${props.hoveredDeviceInfo.id}-${property}`}>
-                                <span
-                                    style={{
-                                        fontSize: "13px",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                    }}
-                                >
+                                <span className="tooltip-property-val">
                                     {currentDeviceData ? currentDeviceData[property] : ""}
                                 </span>
                                 <DataChart
@@ -112,15 +71,13 @@ function CustomToolTip(props) {
                 open={Boolean(props.hoveredDeviceInfo.id)}
             >
                 <span
-                    id="tooltip"
+                    className="tooltip"
                     style={{
-                        position: "absolute",
                         left: `${props.hoveredDeviceInfo.xcoord}px`,
                         top: `${props.hoveredDeviceInfo.ycoord - 2}px`,
-                        zIndex: 2,
                     }}
                 ></span>
-            </HtmlTooltip>
+            </Tooltip>
         );
     }
 

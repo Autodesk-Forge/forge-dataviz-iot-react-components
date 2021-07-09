@@ -8,12 +8,35 @@ body {
     margin: 0 0 0 0;
     overflow: hidden;
     font-family: "Roboto";
-    color: white;
+    color: #ffffff;
     background-color: #373737;
 }
 
 input {
     font-family: "Roboto";
+}
+
+#hyperion_container {
+    height: 100%;
+
+    .outer-container {
+        height: 100%;
+    }
+}
+
+//--------------------------BaseApp component styles-------------------------//
+#main_header{
+    display: flex;
+    background-color: #474747;
+}
+
+.logo {
+    width: 9%;
+    bottom: 22px;
+    position: absolute;
+    z-index: 2;
+    left: 15px;
+    opacity: 0.85
 }
 
 div.viewer-container {
@@ -29,63 +52,25 @@ div.viewer-container {
     top: #{$time_slider_height + $contact_us_card_height};
 }
 
+//---------------------ChronosTimeSlider component styles---------------------//
+#timeline_header {
+    width: 75%;
+    height: $time_slider_height;
+}
+
+//--------------------------Viewer component styles--------------------------//
 #forgeViewer {
     width: 100%;
     height: 100%;
     margin: 0;
     background-color: #f0f8ff;
 
-    div.reference_app {
-        padding: 6px;
-        position: absolute;
-        bottom: 5px;
-        z-index: 3;
-        user-select: none;
-        color: black;
-    }
-
     div.adsk-toolbar .adsk-control-group {
         border-radius: 13px;
     }
 }
 
-#resizeHandle {
-    color: white;
-    width: 100%;
-    padding-left: 5px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: auto;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-
-#title {
-    text-align: center;
-    font-size: 20px;
-    font-weight: 900;
-    margin-top: 25px;
-}
-
-#deviceName {
-    display: block;
-    align-items: center;
-}
-
-#goToSensorButton {
-    fill: #d0d0d0;
-}
-
-#searchBarDiv {
-    text-align: center;
-    overflow-y: auto;
-}
-
+//-------------------HyperionToolContainer component styles-------------------//
 #hyperionToolContainer {
     z-index: 2;
     position: absolute;
@@ -101,42 +86,272 @@ div.viewer-container {
     top: #{30px + $time_slider_height + $contact_us_card_height};
 }
 
-#surfaceShader_Container {
-    top: #{10px + $time_slider_height};
+#layers-icon {
+    fill: inherit
 }
 
-#ContactUsBar + div.viewer-container + #hyperionToolContainer + #surfaceShader_Container {
-    top: #{10px + $time_slider_height + $contact_us_card_height};
+.container-button {
+    fill: #ffffff;
 }
 
-#treeView {
-    width: 100%;
+.container-button:hover, .container-button:focus{
+    fill: #00bfff;
+}
+
+#ssd-tree-view {
+
+    [id^="tree-node-"].Mui-selected {
+        .MuiTreeItem-content {
+            color: #00bfff
+        }
+    }
+
+    div.MuiTreeItem-label:hover {
+        background-color:#808080;
+    }
+
+    .MuiTreeItem-iconContainer {
+        margin-left: 10px;
+        margin-right: 0px;
+    }
+}
+
+.leafName {
+    display: block;
+    align-items: center;
+    color: #ffffff;
+}
+
+#divider {
+    background-color: #ffffff;
+}
+
+#ssd-typography, #settings-typography {
+    padding: 16px;
+    background-color: #373737;
+    color: #ffffff;
+    font-size: 14px;
+    border-radius: 7px;
+    margin-left: 7px;
+}
+
+.arrow {
+    position: absolute;
+    font-size: 7px;
+    width: 4em;
+    height: 4em;
+}
+
+.arrow::before {
+    content: "";
+    margin: auto;
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.popper {
+    z-index: 2;
+    max-height: calc(100% - 250px);
     overflow-y: auto;
-    overflow-x: hidden;
+    border-radius: 7px;  
 }
 
-.react-draggable {
-    float: right !important;
-    position: relative !important;
+[x-placement*="right"] .arrow {
+    left: 0;
+    height: 3em;
+    width: 1em;
+}
+
+[x-placement*="right"] .arrow::before {
+    border-width: 1em 1em 1em 0;
+    border-color: transparent #373737 transparent transparent;
+}
+
+#form-divider {
+    background-color: #555555;
+    margin: 6px;
+}
+
+.hm-radio-group {
+    margin-top: 1px;
+}
+
+.radio-selection-form {
+    margin-left: 35px;
+    font-size: 10px;
+}
+
+#sensor-option-icon {
+    fill: inherit;
+    width: 30px;
+    height: 26px;
+}
+
+#form-label-hm {
+    color: #ffffff;
+    padding: 2px;
+    margin-top: 8px;
+    margin-bottom: 3px;
+    margin-left: -6px;
+}
+
+.form-group {
+    margin-left: 20px;
+}
+
+span.MuiRadio-root, span.MuiCheckbox-root {
+    color: #ffffff;
+    padding: 6px;
+}
+
+//--------------------DataPanelContainer component styles--------------------//
+#data-panel-container {
+    width: 25%;
+    min-width: 25%;
+    height: calc(100% - #{$time_slider_height});
     transform: none !important;
     padding-left: 2px;
     z-index: 2;
     background-color: #373737;
     width: 25%;
-    min-width: 345px;
+    min-width: 25%;
     height: calc(100% - #{$time_slider_height});
     max-height: calc(100% - #{$time_slider_height});
     overflow-y: auto;
+    position: relative !important;
 }
 
-#hyperion_container {
-    height: 100%;
+.react-draggable {
+    float: right !important;
 
-    .outer-container {
-        height: 100%;
+    #resizeHandle {
+        width: 100%;
+        padding-left: 7px;
+        padding-right: 2px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 70%;
+        top: 25%;
     }
 }
 
+.dashboard-view {
+    #resizeHandle {
+        top: 15%;
+    }
+}
+
+//----------------------HeatmapOptions component styles----------------------//
+#heatmapOptions_Container {
+    top: #{10px + $time_slider_height};
+    width: 75%;
+    z-index: 1;
+    display: flex;
+    height: 10%;
+    justify-content: center;
+    position: absolute;
+    pointer-events: none;
+}
+
+#ContactUsBar + div.viewer-container + #hyperionToolContainer + #heatmapOptions_Container {
+    top: #{10px + $time_slider_height + 80px};
+}
+
+//-------------------------GradientBar component styles------------------------//
+span.MuiSlider-rail {
+    height: 10px;
+    opacity: 1;
+    left: 0;
+    border-radius: 10px;
+}
+
+span.MuiSlider-mark {
+    background-color: #ffffff;
+    height: 10px;
+    width: 1px;
+    left: 0px;
+}
+
+span.MuiSlider-root {
+    width: 30%;
+    margin: 1%;
+    margin-top: 20px;
+
+    span.MuiSlider-markLabel {
+        color: #000000;
+    }
+}
+
+
+span.MuiSlider-thumb {
+    display: none;
+}
+
+//----------------------HeatmapSelection component styles---------------------//
+#heatmapSelection {
+    display: flex;
+    pointer-events: none;
+}
+
+div#property-form.MuiFormControl-fullWidth, div#resolution-form.MuiFormControl-fullWidth {
+    width: fit-content;
+}
+
+div#property-form.MuiFormControl-root, div#resolution-form.MuiFormControl-root {
+   width: auto;
+   pointer-events: auto;
+
+   .MuiFilledInput-input {
+       padding: 10px;
+       padding-right: 27px;
+   }
+
+   .MuiSelect-icon {
+       color: #ffffff;
+   }
+
+   .MuiInputBase-root {
+       color: #ffffff;
+       background: none;
+   }
+
+   .MuiFormControl-marginNormal {
+       background: #2D2C2C;
+       border-radius: 5px;
+   }
+}
+
+div#resolution-form.MuiFormControl-root {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+#visibility-icon {
+    fill: inherit
+}
+
+#showHeatMap {
+    padding-top: 10px;
+    height: 10px;
+    fill: #353536;
+    display: inline-block;
+    margin-top: 15px;
+    margin-left: -10px;
+    pointer-events: auto;
+    :hover, :focus{
+        background: none;
+    }
+}
+
+//-----------------------BasicDatePicker component styles---------------------//
 .date-picker-container {
     display: flex;
     width: 25%;
@@ -192,13 +407,401 @@ div.viewer-container {
     border: 1px solid #555555;
 }
 
+//--------------------------Dashboard component styles-------------------------//
+.dashboard{
+    padding-right: 2px;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    background-color: #2a2a2a;
+    padding: 15px 5px 15px 5px;
+}
+
+#dashboard-back-arrow {
+    color:#ffffff;
+    position: absolute;
+    z-index: 2;
+}
+
+.dashboard-device-name {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+    flex-grow: 1;
+    position: relative;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+}
+
+#dashboard-loading-icon {
+    display: block;
+    margin: auto;
+    margin-top: 30px;
+}
+
+//--------------------------DataChart component styles-------------------------//
 .chart-container {
     display: flex;
     justify-content: center;
+}
+
+//------------------------CustomToolTip component styles-----------------------//
+.tooltip-device-name {
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+    padding-top: 1px;
+    padding-bottom: 3px;
+}
+
+.tooltip-property-val {
+    font-size: 13px;
+    display: flex;
+    justify-content: center;
+}
+
+.tooltip {
+    position: absolute;
+    z-index: 2;
+}
+
+.tooltip-loading-icon {
+    display: block;
+    margin: auto;
+    padding: 5px;
+}
+
+div.MuiTooltip-tooltip.MuiTooltip-tooltipArrow {
+    background-color: #373737;
+    font-size: 12px;
+    padding: 0px;
+    padding-top: 2px;
+    padding-bottom: 3px;
+    margin: 0px;
+}
+
+span.MuiTooltip-arrow {
+    color: #373737;
+    margin-bottom: 0px;
+    font-size: 20px;
+}
+
+//------------------------Data Chart component styles-----------------------//
+.tooltip-size {
+    width: 170px;
+    height: 30px !important;
+}
+
+.dashboard-size {
+    width: 100%;
+    height: 220px !important;
+    padding: 15px 20px 15px 20px;
+}
+
+//-----------------------Device Panel component styles-----------------------//
+#title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 900;
+    margin-top: 25px;
+}
+
+//-----------------------Autocomplete component styles------------------------//
+#searchBarDiv {
+    text-align: center;
+    overflow-y: auto;
+
+    .MuiTextField-root {
+        .MuiOutlinedInput-root {
+            fieldset {
+                border-color: #999999;
+            }
+            fieldset:hover {
+                border-color: #999999;
+            }
+        }
+        
+        .Mui-focused > fieldset {
+            border-color: #6facfc;
+        }
+
+        .MuiSvgIcon-root {
+            fill: #999999
+        }
+    }
+}
+
+.MuiAutocomplete-root {
+    margin-bottom: 30px;
+    display: inline-flex;
+    width: 91%;
+    margin-top: 16px;
+    margin-left: 6px;
+    margin-right: 5px;
+}
+
+div.MuiAutocomplete-inputRoot {
+    border-color: #999999;
+}
+
+input.MuiAutocomplete-input {
+    color: #D0D0D0;
+    font-size: 13px;
+}
+
+//-------------------------DeviceTree component styles------------------------//
+.tree-device-row-heading {
+    display: block;
+    align-items: center;
+}
+
+.tree-device-name {
+    font-weight: 900;
+    padding-top: 5px;
+}
+
+.badge {
+    border-radius: 50%;
+    text-align: center;
+    width: 24px;
+    line-height: 24px;
+    margin-left: 12px;
+    font-size: 10px;
+    background-color: #5B5B5B;
+}
+
+#device-tree-view {
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    [id^="tree-node-"] {
+
+        .MuiTreeItem-content {
+            background-color: #2A2A2A;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .MuiTreeItem-label {
+            background-color: #2A2A2A;
+            font-size: 16px;
+            padding: 5px;
+            vertical-align: bottom;
+            align-items: center;
+            display: inline-flex;
+            padding-top: 5px;
+        }
+
+        .MuiTreeItem-group {
+            padding: 0;
+            margin: 0;
+        }
+
+        .MuiTreeItem-iconContainer {
+            margin-left: 10px;
+            margin-right: 0px;
+        }
+    }
+
+    [id^="leaf-node-"] {
+
+        .MuiTreeItem-content {
+            background-color: #373737;
+            display: contents;
+            border: 1px solid black;
+        }
+
+        .MuiTreeItem-label {
+            background-color: #373737;
+            padding: 10px;
+            border-bottom: 1px solid #555555;
+            font-size: 16px;
+            margin-left: 0px;
+            margin-right: 0px;
+            display: block;
+        }
+
+        div.MuiTreeItem-label:hover {
+            background-color: #2A2A2A;
+        }
+    }
+}
+
+//------------------------DeviceStats component styles------------------------//
+div.MuiChip-root.MuiChip-outlined {
+    color: #D0D0D0;
+    border-color: #D0D0D0;
+    margin: 4px;
+    margin-top: 15px;
+}
+
+.MuiChip-label {
+    padding-left: 10px;
+}
+
+img.chip-icon.MuiChip-icon {
+    margin-right: 1px;
+    margin-left: 8px;
 }
 
 @media screen and (max-width: 1130px) and (min-width: 988px) {
     .logo {
         display: none !important;
     }
+}
+
+//------------------------SelectionTool component styles------------------------//
+
+#selectionToolContainer {
+    z-index: 2;
+    position: absolute;
+    top: #{80px + $time_slider_height};
+    left: 15px;
+    background-color: #373737;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    pointer-events: auto;
+}
+
+#sensor-selection-tool-icon {
+    fill: inherit;
+}
+
+#sensor-selection-tool-icon-in-bar{
+    width: 30px;
+    height: 30px;
+}
+
+#showAllDiv{
+    display: block;
+    position: absolute;
+    z-index: 3;
+    top: 160px;
+    width: 25%;
+    min-width: 25%;
+    padding: 10px 10px;
+    background-color: #2A2A2A;
+    border-radius: 14px;
+    right: 10px;
+    max-height: 450px;
+}
+
+.react-codemirror2 .CodeMirror{
+    height: 350px;
+    max-height: 85%;
+    overflow-y: scroll;
+    flex: 1;
+    background-color: #2a2a2a;
+}
+
+#closeIcon{
+    width: 30px;
+    height: 30px;
+}
+
+#selectionDoneBar{
+    display: flex;
+    z-index: 1;
+    top: 0px;
+    position: absolute;
+    width: 100%;
+    height: 50px;
+    padding: 10px 10px;
+    background-color: #007FC6;
+}
+
+#CopyButtonDiv {
+   display: block; 
+   padding: 0 23%;
+   position: absolute; 
+}
+
+div.MuiListItem-root {
+    width: 100%;
+    display: flex;
+    position: relative;
+    box-sizing: border-box;
+    text-align: left;
+    align-items: center;
+    justify-content: flex-start;
+    text-decoration: none;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin: 0;
+}
+
+#doneButton {
+    display: flex;
+    position: absolute;
+    height: 40px;
+    padding: 0px 16px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    color: #007FC6;
+    border: 1px solid #FFFFFF;
+    font-family: 'Artifakt Element';
+}
+
+button#doneButton.MuiButton-root:hover{
+    background-color:rgba(255, 255, 255, 1.0);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#AddPointsTextContainer{
+    display: flex; 
+    width: 50%; 
+    padding: 1%; 
+}
+
+#AddPointsTypography{
+    position: relative;
+    display: block;
+    font-family: 'Artifakt Element';
+    font-style: normal;
+    font-size: 18px;
+    line-height: 23px;
+    color: #FFFFFF;
+    padding-right: 18px;
+}
+
+#Copybutton {
+    position: absolute;
+    height: 40px;
+    width: 100%;
+    padding: 0px 16px;
+    background: #2A2A2A;
+    border-radius: 8px;
+    font-family: 'Artifakt Element';
+    color: #FFFFFF;
+    border: 2px solid #FFFFFF;
+}
+
+button#Copybutton.MuiButton-root:hover{
+    border: 2px solid rgba(255, 255, 255,0.2)
+}
+
+#doneButtonDiv{
+    display: flex;
+    padding: 0.5% 0 0.5% 40%;
+}
+
+.preStyle {
+    white-space: pre-wrap;
+    word-break: keep-all;
+}
+
+#closeIconButton {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+}
+
+#listDiv {
+    height: 420px;
 }

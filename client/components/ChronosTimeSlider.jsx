@@ -42,12 +42,6 @@ function ChronosTimeSlider(props) {
     const [timeSelectionId, setTimeselectionId] = useState(null);
     const containerRef = useRef();
 
-    const cntrStyle = {
-        height: "120px",
-        backgroundColor: "gray",
-        width: "75%",
-    };
-
     /**
      * Creates a timeline selection for the provided Date range.
      *
@@ -98,7 +92,7 @@ function ChronosTimeSlider(props) {
 
                 const resizeApp = () => {
                     const w = parentCntr.clientWidth;
-                    const h = "120";
+                    const h = parentCntr.clientHeight;
                     timeSliderControl.resize(w, h);
                 };
                 window.onresize = resizeApp;
@@ -113,10 +107,16 @@ function ChronosTimeSlider(props) {
      */
     function createTimeSlider() {
         const sliderWidth = containerRef.current.clientWidth;
-        const sliderHeight = cntrStyle.height.replace("px", "");
+        const sliderHeight = containerRef.current.clientHeight;
         const theme = getCurrentTheme();
 
-        let timeSliderControl = new TimeSlider(sliderWidth, sliderHeight, props.rangeStart, props.rangeEnd, theme);
+        let timeSliderControl = new TimeSlider(
+            sliderWidth,
+            sliderHeight,
+            props.rangeStart,
+            props.rangeEnd,
+            theme
+        );
 
         timeSliderControl._timeFormat = "dddd, MMMM Do YYYY, HH:mm:ss";
         timeSliderControl._userDefinedTimeFormat = true;
@@ -252,7 +252,6 @@ function ChronosTimeSlider(props) {
     return (
         <div
             id="timeline_header"
-            style={cntrStyle}
             ref={containerRef}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}

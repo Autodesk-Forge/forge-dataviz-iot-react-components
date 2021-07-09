@@ -65,7 +65,7 @@ var config = [
         },
     },
     {
-        entry: ["./scss/components.scss", "./node_modules/react-dates/lib/css/_datepicker.css"],
+        entry: ["./node_modules/react-dates/lib/css/_datepicker.css", "./scss/components.scss"],
         output: {
             path: __dirname + "/dist",
             libraryTarget: "umd",
@@ -77,15 +77,15 @@ var config = [
             rules: [
                 {
                     test: /\.(css|sass|scss)$/,
-                        use: [
-                            MiniCssExtractPlugin.loader,
-                            {
-                                loader: "css-loader",
-                            },
-                            {
-                                loader: "sass-loader",
-                            },
-                        ],
+                    use: [
+                        MiniCssExtractPlugin.loader,
+                        {
+                            loader: "css-loader",
+                        },
+                        {
+                            loader: "sass-loader",
+                        },
+                    ],
                 },
             ],
         },

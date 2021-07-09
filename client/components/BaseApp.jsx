@@ -16,7 +16,7 @@
 
 /* eslint no-unused-vars: [
     "error", {
-        "varsIgnorePattern": "(DataStore|DataView|masterDataView|deviceTypes|currentTime|startSecond|endSecond|resolution|currentSecond|DeviceProperty)"
+        "varsIgnorePattern": "(DataStore|DataView|DeviceProperty|dataContext)"
     }
 ] */
 
@@ -25,14 +25,26 @@ import Viewer from "./Viewer.jsx";
 import CustomToolTip from "./CustomToolTip.jsx";
 import DataPanelContainer from "./DataPanelContainer.jsx";
 import HyperionToolContainer from "./HyperionToolContainer.jsx";
-import { SpriteSize, SensorStyleDefinitions, PropIdGradientMap, PropertyIconMap } from "../config/SensorStyles.js";
 import adskLogoSvg from "../../assets/images/autodesk-logo.svg";
 import ChronosTimeSlider from "./ChronosTimeSlider.jsx";
 import BasicDatePicker from "./BasicDatePicker.jsx";
-import { getPaddedRange, getTimeInEpochSeconds, getClosestValue, clamp } from "../../shared/Utility";
 import HeatmapOptions from "./HeatmapOptions.jsx";
 import EventTypes from "./EventTypes.js";
 import io from "socket.io-client";
+
+import {
+    SpriteSize,
+    SensorStyleDefinitions,
+    PropIdGradientMap,
+    PropertyIconMap,
+} from "../config/SensorStyles.js";
+
+import {
+    getPaddedRange,
+    getTimeInEpochSeconds,
+    getClosestValue,
+    clamp,
+} from "../../shared/Utility";
 
 
 
@@ -44,7 +56,7 @@ import {
     DateTimeSpan,
     EventType,
     DeviceProperty,
-    DeviceModel
+    DeviceModel,
 } from "forge-dataviz-iot-data-modules/client";
 
 // End Range for timeslider
@@ -93,7 +105,7 @@ function initialDeviceModelStyleMap(surfaceShadingConfig) {
  * @property {string} resolution Current resolution of data
  * @property {Date} currentDate Current date of the timeslice
  */
-class TimeOptions { }
+class TimeOptions {}
 export { TimeOptions };
 
 /**
@@ -109,7 +121,7 @@ startDate.setUTCHours(0, 0, 0, 0);
 
 /**
  * Main Base App component.
- * 
+ *
  * @component
  * @param {Object} props
  * @param {Object} props.appData Data passed to the BaseApp.
@@ -171,7 +183,10 @@ export default function BaseApp(props) {
         startRange.setTime(dataStart.getTime());
         endRange.setTime(dataEnd.getTime());
 
-        if (startDate.getTime() < startRange.getTime() || startDate.getTime() >= endRange.getTime()) {
+        if (
+            startDate.getTime() < startRange.getTime() ||
+            startDate.getTime() >= endRange.getTime()
+        ) {
             startDate.setTime(startRange.getTime());
         }
 
@@ -179,7 +194,10 @@ export default function BaseApp(props) {
             endDate.setTime(endRange.getTime());
         }
 
-        if (currDate.getTime() <= startRange.getTime() || currDate.getTime() >= endRange.getTime()) {
+        if (
+            currDate.getTime() <= startRange.getTime() ||
+            currDate.getTime() >= endRange.getTime()
+        ) {
             currDate.setTime(endRange.getTime());
         }
 
@@ -202,12 +220,18 @@ export default function BaseApp(props) {
     const [deviceTree, setDeviceTree] = useState([]);
     const [selectedDevice, setSelectedDevice] = useState("");
     const [selectedGroupNode, setSelectedGroupNode] = useState();
-    const [renderSettings, setRenderSettings] = useState(Object.assign({}, {
-        showViewables: true,
-        occlusion: false,
-        showTextures: true,
-        heatmapType: "GeometryHeatmap"
-    }, props.renderSettings));
+    const [renderSettings, setRenderSettings] = useState(
+        Object.assign(
+            {},
+            {
+                showViewables: true,
+                occlusion: false,
+                showTextures: true,
+                heatmapType: "GeometryHeatmap",
+            },
+            props.renderSettings
+        )
+    );
 
     const currentSurfaceShadingGroupRef = useRef("");
 
@@ -262,7 +286,12 @@ export default function BaseApp(props) {
      * window is to be adjusted.
      * @private
      */
-    function setTimeWindow(startTime, endTime, dataView, resolution = timeOptionRef.current.resolution) {
+    function setTimeWindow(
+        startTime,
+        endTime,
+        dataView,
+        resolution = timeOptionRef.current.resolution
+    ) {
         const startSecond = getTimeInEpochSeconds(startTime);
         const endSecond = getTimeInEpochSeconds(endTime);
 
@@ -311,32 +340,38 @@ export default function BaseApp(props) {
         return [session, masterDataView];
     }
 
-
     // Called when heatmap type has changed.
     useEffect(() => {
         async function updateHeatmapType() {
             const currAppState = appStateRef.current;
             if (currAppState.dataVizExtn) {
-                await currAppState.dataVizExtn.setupSurfaceShading(currAppState.model, currAppState.shadingData, { type: renderSettings.heatmapType });
+                await currAppState.dataVizExtn.setupSurfaceShading(
+                    currAppState.model,
+                    currAppState.shadingData,
+                    { type: renderSettings.heatmapType }
+                );
 
                 const currentSelectedNode = selectedGroupNodeRef.current;
-                currAppState.dataVizExtn.renderSurfaceShading(currentSelectedNode.id, heatmapOptions.selectedPropertyId, getSensorValue)
+                currAppState.dataVizExtn.renderSurfaceShading(
+                    currentSelectedNode.id,
+                    heatmapOptions.selectedPropertyId,
+                    getSensorValue
+                );
             }
         }
         updateHeatmapType();
-
-    }, [renderSettings.heatmapType])
+    }, [renderSettings.heatmapType]);
 
     /**
      * Called by {@link Viewer} when the model has been loaded.
-     * 
+     *
      * @param {Autodesk.Viewing.GuiViewer3D} viewer Instance of Forge Viewer
-     * @param {*} data 
+     * @param {*} data
      * @callback
      */
     async function onModelLoaded(viewer, data) {
         const [session, masterDataView] = await initializeDataStore();
-        const dataVizExtn = viewer.getExtension("Autodesk.DataVisualization")
+        const dataVizExtn = viewer.getExtension("Autodesk.DataVisualization");
 
         // Optional: load the MinimapExtension
         // viewer.loadExtension('Autodesk.AEC.Minimap3DExtension')
@@ -344,7 +379,7 @@ export default function BaseApp(props) {
         props.eventBus.addEventListener(EventTypes.RENDER_SETTINGS_CHANGED, async (event) => {
             if (!event.hasStopped) {
                 let newSettings = event.data;
-                let { occlusion, showViewables, showTextures, heatmapType } = newSettings;
+                let { occlusion, showViewables, showTextures } = newSettings;
                 setRenderSettings(newSettings);
 
                 dataVizExtn.showHideViewables(showViewables, occlusion);
@@ -400,7 +435,10 @@ export default function BaseApp(props) {
         }
 
         props.eventBus.addEventListener(EventTypes.DEVICE_TREE_EXPAND_EVENT, handleTreeNodeClick);
-        props.eventBus.addEventListener(EventTypes.GROUP_SELECTION_MOUSE_CLICK, handleTreeNodeClick);
+        props.eventBus.addEventListener(
+            EventTypes.GROUP_SELECTION_MOUSE_CLICK,
+            handleTreeNodeClick
+        );
 
         function highlightOnMouseOver(event, isHighlight) {
             let node = shadingData.getNodeById(event.data.id);
@@ -410,13 +448,18 @@ export default function BaseApp(props) {
             } else {
                 for (let i = 0; i < leafNodes.length; i++) {
                     let leaf = leafNodes[i];
-                    if (leaf.shadingPoints && leaf.shadingPoints.find((item) => item.id == event.data.id)) {
+                    if (
+                        leaf.shadingPoints &&
+                        leaf.shadingPoints.find((item) => item.id == event.data.id)
+                    ) {
                         let sp = leaf.shadingPoints.find((item) => item.id == event.data.id);
 
                         if (sp.dbId != null) {
                             viewer.impl.highlightObjectNode(model, sp.dbId, isHighlight);
                         } else {
-                            leaf.dbIds.map((dbId) => viewer.impl.highlightObjectNode(model, dbId, isHighlight));
+                            leaf.dbIds.map((dbId) =>
+                                viewer.impl.highlightObjectNode(model, dbId, isHighlight)
+                            );
                         }
                         viewer.impl.invalidate(false, false, true);
                         break;
@@ -464,7 +507,10 @@ export default function BaseApp(props) {
             const deviceId2DbIdMap = {};
 
             const viewableData = new DataVizCore.ViewableData();
-            viewableData.spriteSize = props.surfaceShadingConfig && props.surfaceShadingConfig.spriteSize ? props.surfaceShadingConfig.spriteSize : SpriteSize;
+            viewableData.spriteSize =
+                props.surfaceShadingConfig && props.surfaceShadingConfig.spriteSize
+                    ? props.surfaceShadingConfig.spriteSize
+                    : SpriteSize;
 
             for (let i = 0; i < leafNodes.length; i++) {
                 let leaf = leafNodes[i];
@@ -492,14 +538,20 @@ export default function BaseApp(props) {
                 dataVizExtn.hideTextures();
             }
 
-            const propertyMap = session.dataStore.getPropertiesFromDataStore()
-            const defaultHeatmapOptions = Object.assign({}, heatmapOptions, { selectedPropertyId: Array.from(propertyMap.keys())[0] || "" });
+            const propertyMap = session.dataStore.getPropertiesFromDataStore();
+            const defaultHeatmapOptions = Object.assign({}, heatmapOptions, {
+                selectedPropertyId: Array.from(propertyMap.keys())[0] || "",
+            });
             setHeatmapOptions(defaultHeatmapOptions);
 
             if (props.surfaceShadingConfig && props.surfaceShadingConfig.gradientSetting) {
                 let gradientSettings = props.surfaceShadingConfig.gradientSetting;
                 for (let deviceType in gradientSettings) {
-                    dataVizExtn.registerSurfaceShadingColors(deviceType, gradientSettings[deviceType], 0.7);
+                    dataVizExtn.registerSurfaceShadingColors(
+                        deviceType,
+                        gradientSettings[deviceType],
+                        0.7
+                    );
                 }
             }
 
@@ -529,8 +581,8 @@ export default function BaseApp(props) {
 
         /**
          * Called when a user selects a device in the scene. The corresponding device is selected in the scene.
-         * 
-         * @param {Event} event 
+         *
+         * @param {Event} event
          * @private
          */
         function onItemClick(event) {
@@ -542,8 +594,8 @@ export default function BaseApp(props) {
 
         /**
          * Called when a user hovers over a device in the scene.
-         * 
-         * @param {Event} event 
+         *
+         * @param {Event} event
          * @private
          */
         async function onItemHovering(event) {
@@ -557,12 +609,16 @@ export default function BaseApp(props) {
                     const mappedPosition = currAppState.viewer.impl.worldToClient(position);
 
                     // Accounting for vertical offset of viewer container.
-                    const vertificalOffset = event.originalEvent.clientY - event.originalEvent.offsetY;
+                    const vertificalOffset =
+                        event.originalEvent.clientY - event.originalEvent.offsetY;
 
                     setHoveredDeviceInfo({
                         id: deviceId,
                         xcoord: mappedPosition.x,
-                        ycoord: mappedPosition.y + vertificalOffset - SpriteSize / viewer.getWindow().devicePixelRatio,
+                        ycoord:
+                            mappedPosition.y +
+                            vertificalOffset -
+                            SpriteSize / viewer.getWindow().devicePixelRatio,
                     });
                 }
             } else {
@@ -575,7 +631,7 @@ export default function BaseApp(props) {
         /**
          * When we work with client provided shading data, in order to get the internal device model working,
          * we have to provide a way to populate the shading data in the devices model.
-         * @param {DataAdapter} adapter 
+         * @param {DataAdapter} adapter
          */
         function updateDataStore(adapter) {
             const dataStore = session.dataStore;
@@ -584,7 +640,10 @@ export default function BaseApp(props) {
             let nodes = [];
             shadingData.getChildLeafs(nodes);
 
-            let model = new DeviceModel("synthetic_device_model_" + new Date().getTime(), adapter.id);
+            let model = new DeviceModel(
+                "synthetic_device_model_" + new Date().getTime(),
+                adapter.id
+            );
             let hasData = false;
 
             for (let node of nodes) {
@@ -607,7 +666,12 @@ export default function BaseApp(props) {
         }
 
         // Need to convert the deviceList to viewable data
-        await Promise.all([dataVizExtn.setupSurfaceShading(model, shadingData, { type: renderSettings.heatmapType }), generateViewables(shadingData)]);
+        await Promise.all([
+            dataVizExtn.setupSurfaceShading(model, shadingData, {
+                type: renderSettings.heatmapType,
+            }),
+            generateViewables(shadingData),
+        ]);
 
         updateDataStore();
         const completeDeviceTree = devicePanelData;
@@ -623,9 +687,9 @@ export default function BaseApp(props) {
 
         //Initialize websocket
         /**
-         * 
-         * @param {Session} session {@link Session} object 
-         * initialized from the {@link BaseApp#initializeDataStore} 
+         *
+         * @param {Session} session {@link Session} object
+         * initialized from the {@link BaseApp#initializeDataStore}
          * @private
          */
         async function createWebsocket(session) {
@@ -664,7 +728,7 @@ export default function BaseApp(props) {
 
     /**
      * Called when by {@link Viewer} when Forge Viewer has been initialized.
-     * 
+     *
      * @param {Autodesk.Viewing.GuiViewer3D} viewer Instance of Forge Viewer
      * @callback
      */
@@ -739,7 +803,7 @@ export default function BaseApp(props) {
 
     /**
      * Called when a device has been selected. Uses the Data Visualization Extension to highlight node.
-     * 
+     *
      * @param {MouseEvent} event Click event indicating that a row in {@link DeviceTree} has been selected.
      * @param {string} node Device identifier
      * @private
@@ -816,7 +880,7 @@ export default function BaseApp(props) {
 
     /**
      * Uses the application based on user changes to the {@link HeatmapOptions} component.
-     * 
+     *
      * @param {Object} options Settings defined in the {@link HeatmapOptions}.
      * @private
      */
@@ -842,7 +906,11 @@ export default function BaseApp(props) {
             const { dataVizExtn } = currAppState;
             if (options.showHeatMap) {
                 const selectedProperty = options.selectedPropertyId;
-                dataVizExtn.renderSurfaceShading(selectedGroupNode.id, selectedProperty, getSensorValue);
+                dataVizExtn.renderSurfaceShading(
+                    selectedGroupNode.id,
+                    selectedProperty,
+                    getSensorValue
+                );
             } else {
                 dataVizExtn.removeSurfaceShading();
             }
@@ -850,9 +918,9 @@ export default function BaseApp(props) {
     }
 
     /**
-     * Called when a user has changed the selected group in the scene using the {@link HyperionToolContainer} 
+     * Called when a user has changed the selected group in the scene using the {@link HyperionToolContainer}
      * or the {@link DeviceTree}
-     * 
+     *
      * @private
      */
     function checkGroupChange() {
@@ -888,7 +956,11 @@ export default function BaseApp(props) {
             }
             if (heatmapOptions.showHeatMap) {
                 const selectedProperty = heatmapOptions.selectedPropertyId;
-                dataVizExtn.renderSurfaceShading(selectedGroupNode.id, selectedProperty, getSensorValue);
+                dataVizExtn.renderSurfaceShading(
+                    selectedGroupNode.id,
+                    selectedProperty,
+                    getSensorValue
+                );
             }
         } else if (selectedGroupNode == null && dataVizExtn) {
             dataVizExtn.removeSurfaceShading();
@@ -909,7 +981,7 @@ export default function BaseApp(props) {
 
     /**
      * Gets the selected property's range min, max and dataUnit value.
-     * 
+     *
      * @param {string} propertyId String identifier of a device property.
      * @returns {Object} The rangeMin, rangeMax and dataUnit for the selected propertyId
      * @private
@@ -960,7 +1032,7 @@ export default function BaseApp(props) {
 
     /**
      * Returns the {@link TreeNode} in deviceTree that matches the given id.
-     * 
+     *
      * @param {string} selectedNodeId group name
      * @private
      */
@@ -968,16 +1040,16 @@ export default function BaseApp(props) {
         let stack = deviceTree.slice();
 
         while (stack.length) {
-            let item = stack.shift()
+            let item = stack.shift();
             if (item.id == selectedNodeId) return item;
 
-            stack = stack.concat(item.children)
+            stack = stack.concat(item.children);
         }
     }
 
     /**
      * Returns all devices given the name of a group. [] if no devices found.
-     * 
+     *
      * @param {Object} selectedNode Group object
      * @returns {Array.<TreeNode>} All devices (if any) on selectedNode.
      * @private
@@ -1005,7 +1077,7 @@ export default function BaseApp(props) {
 
     /**
      * Given a list of deviceToQuery, checks masterDataView for relevant data. If not found, triggers a fetch and updates currentDeviceData when complete.
-     * 
+     *
      * @param {*} devicesToQuery List of {@link TreeNode} to fetch device data for.
      * @private
      */
@@ -1016,7 +1088,7 @@ export default function BaseApp(props) {
         let propertyMap = currAppState.propertyMap;
         devicesToQuery.forEach((device) => {
             device.propIds.forEach((property) => {
-                let av = currAppState.masterDataView.getAggregatedValues(device.id, property)
+                let av = currAppState.masterDataView.getAggregatedValues(device.id, property);
                 if (av) {
                     let options = timeOptionRef.current;
                     const ct = getTimeInEpochSeconds(options.currentTime);
@@ -1038,7 +1110,7 @@ export default function BaseApp(props) {
 
     /**
      * Fetches and populates chartData for all devices in devicesToQuery that haven't already been fetched.
-     * 
+     *
      * @param {Array.<TreeNode>} devicesToQuery List of {@link TreeNode} to retrieve chart data for.
      * @private
      */
@@ -1050,7 +1122,7 @@ export default function BaseApp(props) {
 
         devicesToQuery.forEach((device) => {
             device.propIds.forEach((property) => {
-                let av = currAppState.masterDataView.getAggregatedValues(device.id, property)
+                let av = currAppState.masterDataView.getAggregatedValues(device.id, property);
                 if (av) {
                     const { min, max } = getPaddedRange(av.avgValues, 10.0);
                     Object.assign(data, chartDataRef.current);
@@ -1089,10 +1161,13 @@ export default function BaseApp(props) {
     if (selectedGroupNode && deviceTree.length) {
         devicesToQuery = getDevicesInGroup(selectedGroupNode);
     }
-    if (hoveredDeviceInfoRef.current.id && !currentDeviceDataRef.current[hoveredDeviceInfoRef.current.id]) {
+    if (
+        hoveredDeviceInfoRef.current.id &&
+        !currentDeviceDataRef.current[hoveredDeviceInfoRef.current.id]
+    ) {
         devicesToQuery.push(findNode(hoveredDeviceInfoRef.current.id));
-    }
-    else if (selectedGroupNode === null && deviceTree) { // Viewing entire model, need to query all devices.
+    } else if (selectedGroupNode === null && deviceTree) {
+        // Viewing entire model, need to query all devices.
         deviceTree.forEach((group) => {
             devicesToQuery.push.apply(devicesToQuery, group.children);
         });
@@ -1101,35 +1176,44 @@ export default function BaseApp(props) {
     getChartData(devicesToQuery);
 
     /**
-    * Handle QueryCompleted event originating from the DataView object. Informs this component about the completion of a particular data fetch.
-    * 
-    * @param {QueryCompletedEventArgs} eventArgs The arguments for which the {@link DataView} was queried.
-    * @private
-    */
+     * @private
+     *
+     * Handle QueryCompleted event originating from the DataView object. Informs
+     * this component about the completion of a particular data fetch.
+     *
+     * @param {QueryCompletedEventArgs} eventArgs The arguments for which
+     * the {@link DataView} was queried.
+     */
     function handleQueryCompleted(eventArgs) {
         // The following hook causes BaseApp to repaint every time a device
         // fetch is completed. E.g. if the time slider is adjusted, and 10 devices
-        // are being queried for their data (in bulk), then the following will 
+        // are being queried for their data (in bulk), then the following will
         // trigger 10 renders. This should not be a concern as React will only ever
         // update the relevant DOM sub-tree that actually changes.
         const query = eventArgs.query;
         setDataContext(`${query.dateTimeSpan.hashCode}-${query.deviceId}`);
-    };
+    }
 
     checkGroupChange();
 
     useEffect(() => {
         if (currAppState.masterDataView) {
-            currAppState.masterDataView.addEventListener(EventType.QueryCompleted, handleQueryCompleted);
+            currAppState.masterDataView.addEventListener(
+                EventType.QueryCompleted,
+                handleQueryCompleted
+            );
             return () => {
-                currAppState.masterDataView.removeEventListener(EventType.QueryCompleted, handleQueryCompleted);
+                currAppState.masterDataView.removeEventListener(
+                    EventType.QueryCompleted,
+                    handleQueryCompleted
+                );
             };
         }
     }, [currAppState.masterDataView]);
 
     return (
         <React.Fragment>
-            <div id="main_header" style={{ display: "flex", backgroundColor: "#474747" }}>
+            <div id="main_header">
                 <ChronosTimeSlider
                     rangeStart={startRange.toISOString()}
                     rangeEnd={endRange.toISOString()}
@@ -1157,7 +1241,10 @@ export default function BaseApp(props) {
                     onViewerInitialized={onViewerInitialized}
                     onModelLoaded={onModelLoaded}
                     getToken={getToken}
-                    extensions={{ "Autodesk.Viewing.ZoomWindow": {}, "Autodesk.DataVisualization": {} }}
+                    extensions={{
+                        "Autodesk.Viewing.ZoomWindow": {},
+                        "Autodesk.DataVisualization": {},
+                    }}
                     geomIndex={props.geomIndex}
                 />
             </div>
@@ -1173,7 +1260,9 @@ export default function BaseApp(props) {
                 <HeatmapOptions
                     {...heatmapOptions}
                     propIdGradientMap={
-                        props.surfaceShadingConfig ? props.surfaceShadingConfig.gradientSetting : PropIdGradientMap
+                        props.surfaceShadingConfig
+                            ? props.surfaceShadingConfig.gradientSetting
+                            : PropIdGradientMap
                     }
                     onHeatmapOptionChange={onHeatmapOptionChange}
                     getPropertyRanges={getPropertyRanges}
@@ -1189,19 +1278,16 @@ export default function BaseApp(props) {
                     devices={props.data.devicePanelData}
                     onNodeSelected={onNodeSelected}
                     onNavigateBack={navigateBackToDevices}
-                    propertyIconMap={props.propertyIconMap ? props.propertyIconMap : PropertyIconMap}
+                    propertyIconMap={
+                        props.propertyIconMap ? props.propertyIconMap : PropertyIconMap
+                    }
                     selectedGroupNode={selectedGroupNode}
                     currentDeviceData={currentDeviceDataRef.current}
                     chartData={chartDataRef.current}
                     eventBus={props.eventBus}
                 />
             )}
-            <img
-                className="logo"
-                src={adskLogoSvg}
-                style={{ width: "9%", bottom: "22px", position: "absolute", zIndex: 2, left: "15px", opacity: 0.85 }}
-            ></img>
+            <img className="logo" src={adskLogoSvg} alt="Autodesk Logo" />
         </React.Fragment>
     );
 }
-
