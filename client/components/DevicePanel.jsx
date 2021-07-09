@@ -85,7 +85,7 @@ function DevicePanel(props) {
                             InputProps={{
                                 ...params.InputProps,
                                 endAdornment: (
-                                    <InputAdornment>
+                                    <InputAdornment position="end">
                                         <SearchIcon />
                                     </InputAdornment>
                                 ),
