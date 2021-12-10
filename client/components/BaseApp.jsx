@@ -148,6 +148,7 @@ startDate.setUTCHours(0, 0, 0, 0);
  * @param {Object.<string, number[]>} [props.surfaceShadingConfig.gradientSetting] Mapping of proerties to corresponding gradient bar color stop values.
  * @param {Object} [props.propertyIconMap]  A mapping of property names to image paths used for each {@link DeviceStats} object.
  * @param {number} [props.geomIndex] Index of geometry to load in scene.
+ * @param {Object.<string, Object>} [props.extensions] Object with keys representing the IDs of viewer extensions that should be loaded, and values representing any options the extension may require.
  * @memberof Autodesk.DataVisualization.UI
  * @alias Autodesk.DataVisualization.UI.BaseApp
  */
@@ -1211,6 +1212,9 @@ export default function BaseApp(props) {
         }
     }, [currAppState.masterDataView]);
 
+    const extensions = props.extensions || {};
+    extensions["Autodesk.Viewing.ZoomWindow"] ||= {};
+    extensions["Autodesk.DataVisualization"] ||= {};
     return (
         <React.Fragment>
             <div id="main_header">
@@ -1241,10 +1245,7 @@ export default function BaseApp(props) {
                     onViewerInitialized={onViewerInitialized}
                     onModelLoaded={onModelLoaded}
                     getToken={getToken}
-                    extensions={{
-                        "Autodesk.Viewing.ZoomWindow": {},
-                        "Autodesk.DataVisualization": {},
-                    }}
+                    extensions={extensions}
                     geomIndex={props.geomIndex}
                 />
             </div>
