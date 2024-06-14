@@ -26,7 +26,7 @@ import React, { useEffect, useRef } from "react";
  * @param {string} props.docUrn Document URN of model
  * @param {OnModelLoaded} [props.onModelLoaded] Callback function invoked when the model has loaded
  * @param {OnViewerInitialized} [props.onViewerInitialized] Callback function invoked when LMV has been intialized
- * @param {string[]} [props.extensions] List of extension ids forwarded to viewer config to load.
+ * @param {Object.<string, Object>} [props.extensions] Object with keys representing the IDs of viewer extensions that should be loaded, and values representing any options the extension may require.
  * @param {Object.<string, Object>} [props.disabledExtensions] Default extensions to prevent being loaded.
  * @param {string} [props.phaseName] phaseName of view to load in scene.
  * @param {string} [props.guid] guid of BubbleNode to load in scene.
